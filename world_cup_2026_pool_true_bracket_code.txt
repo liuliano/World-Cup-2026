@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>World Cup 2026 Pool</title>
+<style>
+:root{--bg:#080e1c;--card:#0d1524;--card2:#111827;--border:#30405c;--text:#e5e7eb;--muted:#94a3b8;--gold:#facc15;--green:#22c55e;--red:#f87171;--blue:#2563eb}
+*{box-sizing:border-box}body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);margin:0;padding:14px}h1{margin:0;font-size:30px}.sub{color:var(--muted);margin:6px 0 14px;font-size:14px}
+.tabs{display:flex;gap:8px;margin:12px 0 14px;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:5;overflow-x:auto}.tab-btn{background:#1e293b;color:#cbd5e1;border:1px solid var(--border);border-radius:999px;padding:9px 13px;font-weight:700;white-space:nowrap}.tab-btn.active{background:var(--blue);color:white}.tab{display:none}.tab.active{display:block}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}button{background:var(--blue);color:white;border:none;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700}button.secondary{background:#334155}button.green{background:#15803d}button.red{background:#991b1b}
+.small{color:var(--muted);font-size:13px}.summary,.panel{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:16px;color:#cbd5e1;line-height:1.5}
+.owner-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:15px}.owner-header{display:flex;justify-content:space-between;align-items:center;gap:12px;font-weight:bold;font-size:20px;margin-bottom:8px}.owner-meta{display:flex;flex-wrap:wrap;gap:14px;color:var(--gold);font-size:15px;margin-bottom:12px;font-weight:bold}
+.team-header,.team-row{display:grid;grid-template-columns:1.65fr .5fr .45fr .75fr .45fr;gap:8px;align-items:center}.team-header{color:var(--muted);font-size:13px;margin-bottom:8px}.team-row{font-size:15px;padding:5px 0;border-bottom:1px solid #1e293b}.team-row:last-child{border-bottom:none}.active-box{margin-top:10px;padding-top:10px;border-top:1px solid #1e293b;color:#cbd5e1;font-size:13px;line-height:1.45}
+.inherit{color:#fbbf24;font-weight:700}.up{color:var(--green);font-weight:bold}.down{color:var(--red);font-weight:bold}.flat{color:var(--text)}
+input,textarea,select{width:100%;background:#020617;color:var(--text);border:1px solid var(--border);border-radius:10px;padding:10px;font-size:14px}label{color:var(--muted);font-size:13px;display:block;margin:10px 0 5px}
+.line-row{background:#0d1524;border:1px solid #24324a;border-radius:12px;padding:10px;margin-bottom:10px}.line-grid{display:grid;grid-template-columns:1.25fr .55fr 1.25fr .55fr .85fr;gap:8px;align-items:center;margin:8px 0}.line-header{color:var(--muted);font-size:12px;font-weight:700}
+.bracket-scroll{overflow-x:auto;padding-bottom:10px}.bracket{display:grid;grid-template-columns:repeat(6,240px);gap:10px;min-width:1500px}.bracket.stack{display:block;min-width:0}.bracket.stack .round-col{margin-bottom:12px}.bracket.stack .round-col{width:100%}.round-col{background:#0b1220;border:1px solid var(--border);border-radius:14px;padding:10px}.round-title{font-weight:800;margin-bottom:10px;color:#fff}.game{background:#0d1524;border:1px solid #263653;border-radius:12px;padding:10px;margin-bottom:10px}.game-team{display:flex;justify-content:space-between;gap:8px;padding:3px 0}.game-time{color:#94a3b8;font-size:12px;margin-bottom:6px}.game-meta{color:#cbd5e1;font-size:12px;margin-top:6px}.winner{color:var(--green);font-weight:800}.owner-chip{display:block;color:var(--gold);font-size:12px;margin-top:4px}.spread{color:#cbd5e1;font-size:12px}.empty{color:var(--muted);font-size:13px;padding:8px}
+.rules h2{margin:18px 0 8px;font-size:20px}.rules li{color:#cbd5e1;line-height:1.5}.rules ul{padding-left:20px}.footer-note{color:var(--muted);font-size:12px;margin-top:18px;line-height:1.4}
+@media(max-width:520px){body{padding:10px}h1{font-size:28px}.owner-header{font-size:18px}.team-header,.team-row{grid-template-columns:1.45fr .45fr .4fr .65fr .35fr;gap:6px;font-size:14px}.line-grid{grid-template-columns:1fr .45fr 1fr .45fr}.hide-mobile{display:none}}
+
+/* --- true March Madness bracket override --- */
+.bracket-scroll{overflow-x:auto;padding:12px;border:1px solid var(--border);border-radius:14px;background:#07101f}
+.bracket{display:flex!important;gap:34px;align-items:stretch;min-width:1780px}
+.bracket.stack{display:block!important;min-width:0}
+.round-col{width:260px;display:flex;flex-direction:column;justify-content:space-around;gap:14px;background:transparent!important;border:0!important;padding:0!important}
+.bracket.stack .round-col{width:100%;margin-bottom:14px}
+.round-title{font-weight:900;margin-bottom:10px;color:#fff;text-align:center;font-size:18px}
+.game{position:relative;background:#0d1524;border:1px solid #263653;border-radius:12px;padding:10px;min-height:88px;margin-bottom:12px}
+.bracket:not(.stack) .game:after{content:"";position:absolute;right:-35px;top:50%;width:35px;border-top:2px solid #64748b}
+.bracket:not(.stack) .round-col:last-child .game:after{display:none}
+.game-team{display:flex;justify-content:space-between;gap:8px;padding:3px 0;font-size:13px}
+.team-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:185px}
+.game-time{color:#94a3b8;font-size:12px;margin-bottom:6px}
+.game-meta{color:#cbd5e1;font-size:12px;margin-top:6px}
+.winner{color:var(--green);font-weight:800}
+.owner-chip{display:block;color:var(--gold);font-size:12px;margin-top:4px}
+.spread{color:#cbd5e1;font-size:12px;margin-top:5px}
+.empty{color:var(--muted);font-size:13px;padding:8px}
+@media(max-width:520px){.bracket{min-width:1480px}.round-col{width:215px}.team-name{max-width:140px}}
+
+</style>
+</head>
+<body>
+<h1>World Cup 2026</h1>
+<div class="sub">Pool pts · locked lines · inherited-team bracket</div>
+<div class="tabs">
+<button class="tab-btn active" onclick="showTab('standings')">Standings</button>
+<button class="tab-btn" onclick="showTab('knockout')">Knockout</button>
+<button class="tab-btn" onclick="showTab('bracket')">Bracket</button>
+<button class="tab-btn" onclick="showTab('rules')">Rules</button>
+</div>
+
+<section id="tab-standings" class="tab active">
+<div class="toolbar"><button onclick="refreshFromEspn()">Refresh ESPN Results</button><button class="secondary" onclick="useFallbackMatches()">Use Built-In Results</button><span id="status" class="small">Ready.</span></div>
+<div id="summary" class="summary"></div><div id="standings"></div>
+</section>
+
+<section id="tab-knockout" class="tab">
+<div class="panel"><strong>Knockout Control Center</strong><p class="small">Dropdowns are populated from active teams. After a spread-cover takeover, inherited teams are recalculated and the dropdown reflects the current active slots.</p>
+<label>Round</label><select id="roundSelect"><option>Round of 32</option><option>Round of 16</option><option>Quarterfinals</option><option>Semifinals</option><option>Final</option></select>
+<div class="toolbar" style="margin-top:12px"><button onclick="addBlankLine()">Add Match Line</button><button class="green" onclick="lockVisibleLines()">Lock Round Lines</button><button class="red" onclick="clearLockedLines()">Clear Locked Lines</button></div><span id="lineStatus" class="small">Enter DraftKings spreads manually.</span></div>
+<div class="panel"><strong>Round Lines To Lock</strong><div class="line-grid line-header"><span>Team A</span><span>Spread</span><span>Team B</span><span>Spread</span><span class="hide-mobile">Round</span></div><div id="lineEditor"></div></div>
+<div class="panel"><strong>Locked Lines</strong><div id="lockedLines"></div></div>
+</section>
+
+<section id="tab-bracket" class="tab">
+<div class="panel"><strong>ESPN Knockout Bracket</strong><p class="small">True March Madness-style bracket tree. Round of 32 is prefilled from active teams; future rounds populate from ESPN results, locked spreads, and takeover logic.</p><div class="toolbar"><button onclick="renderBracket()">Refresh Bracket View</button><button class="secondary" onclick="toggleBracketMode()">Toggle Phone / Bracket View</button></div></div>
+<div class="bracket-scroll"><div id="bracket" class="bracket"></div></div>
+</section>
+
+<section id="tab-rules" class="tab rules"><div class="panel">
+<h2>Pool Structure</h2><ul><li>16 owners.</li><li>Each owner starts with 3 teams.</li><li>Owner score is credited to the current owner of a team/slot.</li></ul>
+<h2>Group Stage Scoring</h2><ul><li>Win = 3 points.</li><li>Draw = 1 point.</li><li>Loss = 0 points.</li></ul>
+<h2>Knockout Rules</h2><ul><li>Goal line that makes teams as even as possible is chosen when applicable.</li><li>DraftKings determines proper lines before each round.</li><li>Once lines are set, they do not change regardless of line movement.</li><li>If your team loses but covers the spread, you take over the winning team in the next round.</li></ul>
+<h2>Prize Structure</h2><ul><li>Winner: $1,120</li><li>Runner-up: $480</li></ul>
+</div></section>
+<div class="footer-note">Local file. ESPN refresh only runs when tapped. Knockout lines are manually entered and saved locally.</div>
+
+<script>
+function showTab(name){document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));document.getElementById(`tab-${name}`).classList.add("active");[...document.querySelectorAll(".tab-btn")].find(b=>b.textContent.toLowerCase().includes(name)).classList.add("active");if(name==="bracket")renderBracket();if(name==="knockout")renderLineEditor()}
+const ESPN_SCOREBOARD_URL="https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=20260611-20260719&limit=300";
+const poolOwners=[{owner:"Baxter",teams:["Colombia","Canada","Ghana"]},{owner:"Dolan",teams:["Senegal","Czech Republic","Saudi Arabia"]},{owner:"E. Schwartz",teams:["Switzerland","Austria","Haiti"]},{owner:"Gal",teams:["Brazil","South Korea","New Zealand"]},{owner:"J. Schwartz",teams:["Belgium","Croatia","Cape Verde"]},{owner:"Joe",teams:["England","Egypt","South Africa"]},{owner:"Knox",teams:["France","Norway","Iraq"]},{owner:"Larry",teams:["Japan","Ivory Coast","Jordan"]},{owner:"Madden",teams:["Germany","Algeria","Tunisia"]},{owner:"McCartney",teams:["Argentina","Türkiye","DR Congo"]},{owner:"Merc",teams:["United States","Mexico","Curaçao"]},{owner:"Nixon",teams:["Netherlands","Australia","Panama"]},{owner:"Nolan",teams:["Morocco","Scotland","Bosnia & Herzegovina"]},{owner:"Roynan",teams:["Portugal","Ecuador","Uzbekistan"]},{owner:"Tonrey",teams:["Uruguay","Iran","Qatar"]},{owner:"Whelan",teams:["Spain","Sweden","Paraguay"]}];
+const teamRanks={"France":"#1","Brazil":"#2","Argentina":"#3","Spain":"#4","England":"#5","Portugal":"#6","Japan":"#7T","Netherlands":"#7T","Türkiye":"#9","Uruguay":"#10","Morocco":"#11","Norway":"#12","United States":"#13","Sweden":"#14","Belgium":"#15","South Korea":"#16T","Egypt":"#16T","Ecuador":"#16T","DR Congo":"#19","Germany":"#20","Colombia":"#21","Iraq":"#22T","Australia":"#22T","Ivory Coast":"#22T","Iran":"#22T","Switzerland":"#26","Mexico":"#27","South Africa":"#28","Scotland":"#29","Croatia":"#30T","Canada":"#30T","Paraguay":"#30T","New Zealand":"#30T","Senegal":"#34T","Uzbekistan":"#34T","Panama":"#34T","Qatar":"#37T","Cape Verde":"#37T","Austria":"#39T","Algeria":"#39T","Czech Republic":"#41T","Ghana":"#41T","Tunisia":"#43T","Curaçao":"#43T","Bosnia & Herzegovina":"#43T","Jordan":"#46T","Saudi Arabia":"#46T","Haiti":"#48"};
+const teamContrib={"France":"7.5%","Brazil":"7.2%","Argentina":"7.0%","Spain":"6.5%","England":"6.0%","Portugal":"5.0%","Japan":"4.6%","Netherlands":"4.6%","Türkiye":"3.8%","Uruguay":"3.6%","Morocco":"3.3%","Norway":"2.8%","United States":"2.5%","Sweden":"2.4%","Belgium":"2.3%","South Korea":"2.0%","Egypt":"2.0%","Ecuador":"2.0%","DR Congo":"1.9%","Germany":"1.8%","Colombia":"1.7%","Iraq":"1.5%","Australia":"1.5%","Ivory Coast":"1.5%","Iran":"1.5%","Switzerland":"1.5%","Mexico":"1.4%","South Africa":"1.3%","Scotland":"1.2%","Croatia":"1.1%","Canada":"1.1%","Paraguay":"1.1%","New Zealand":"1.1%","Senegal":"1.0%","Uzbekistan":"1.0%","Panama":"1.0%","Qatar":"0.8%","Cape Verde":"0.8%","Austria":"0.7%","Algeria":"0.7%","Czech Republic":"0.6%","Ghana":"0.6%","Tunisia":"0.5%","Curaçao":"0.5%","Bosnia & Herzegovina":"0.5%","Jordan":"0.4%","Saudi Arabia":"0.4%","Haiti":"0.3%"};
+const teamDelta={"Argentina":"▼0.1","France":"▼0.1","Brazil":"▲0.2","Spain":"▼0.7","England":"▲0.1","Portugal":"▲0.1","Japan":"▲0.3","Ivory Coast":"▲0.1","Uruguay":"▲0.1","Morocco":"▲0.1","Belgium":"▲0.2","Cape Verde":"▲0.2","Switzerland":"▼0.2","Senegal":"▼0.1"};
+const ownerOdds={"McCartney":"12.7% ▼0.1","Knox":"11.8% ▼0.1","Gal":"10.3% ▲0.2","Whelan":"10.0% ▼0.7","Joe":"9.3% ▲0.1","Roynan":"8.0% ▲0.1","Nixon":"7.1% ▢","Larry":"6.5% ▲0.2","Tonrey":"5.9% ▲0.1","Nolan":"5.0% ▲0.1","Merc":"4.4% ▢","J. Schwartz":"4.2% ▲0.4","Baxter":"3.4% ▢","Madden":"3.0% ▢","E. Schwartz":"2.5% ▼0.2","Dolan":"2.0% ▼0.1"};
+const originalOwnerByTeam={};for(const p of poolOwners)for(const t of p.teams)originalOwnerByTeam[normalizeTeamName(t)]=p.owner;
+const fallbackMatches=[["Mexico",2,"South Africa",0,"Group"],["South Korea",2,"Czech Republic",1,"Group"],["Canada",1,"Bosnia & Herzegovina",1,"Group"],["United States",4,"Paraguay",1,"Group"],["Qatar",1,"Switzerland",1,"Group"],["Brazil",1,"Morocco",1,"Group"],["Haiti",0,"Scotland",1,"Group"],["Australia",2,"Türkiye",0,"Group"],["Germany",7,"Curaçao",1,"Group"],["Netherlands",2,"Japan",2,"Group"],["Ivory Coast",1,"Ecuador",0,"Group"],["Sweden",5,"Tunisia",1,"Group"],["Spain",0,"Cape Verde",0,"Group"],["Belgium",1,"Egypt",1,"Group"],["Saudi Arabia",1,"Uruguay",1,"Group"],["Iran",2,"New Zealand",2,"Group"],["France",3,"Senegal",1,"Group"],["Iraq",1,"Norway",4,"Group"],["Argentina",3,"Algeria",0,"Group"],["Austria",3,"Jordan",1,"Group"],["Portugal",1,"DR Congo",1,"Group"],["England",4,"Croatia",2,"Group"],["Ghana",1,"Panama",0,"Group"],["Uzbekistan",1,"Colombia",3,"Group"],["Czech Republic",1,"South Africa",1,"Group"],["Switzerland",4,"Bosnia & Herzegovina",1,"Group"],["Canada",6,"Qatar",0,"Group"],["Mexico",1,"South Korea",0,"Group"],["United States",2,"Australia",0,"Group"],["Scotland",0,"Morocco",1,"Group"],["Brazil",3,"Haiti",0,"Group"],["Türkiye",0,"Paraguay",1,"Group"]];
+let completedMatches=loadSavedMatches()||fallbackMatches;let allFixtures=loadSavedFixtures()||fallbackMatches.map(m=>matchToFixture(m));let knockoutLines=loadSavedLines()||[];let editableLines=[];let bracketMode=localStorage.getItem('wc2026_bracket_mode')||'bracket';
+
+
+async function refreshFromEspn(){
+  const s=document.getElementById("status");
+  s.textContent="Calling ESPN...";
+  try{
+    const r=await fetch(ESPN_SCOREBOARD_URL);
+    if(!r.ok)throw new Error(`HTTP ${r.status}`);
+    const d=await r.json();
+    const fixtures=parseEspnFixtures(d);
+    const finals=fixtures.filter(f=>f.completed).map(f=>[f.home,f.homeScore,f.away,f.awayScore,f.round]);
+    if(!fixtures.length)throw new Error("No ESPN fixtures returned.");
+    allFixtures=fixtures;
+    completedMatches=finals.length ? finals : completedMatches;
+    saveFixtures(fixtures);
+    saveMatches(completedMatches);
+    s.textContent=`ESPN updated ${fixtures.length} fixtures / ${finals.length} finals · ${new Date().toLocaleString()}`;
+    refreshPool();
+    renderBracket();
+  }catch(e){
+    console.error(e);
+    s.textContent=`ESPN failed: ${e.message}. Using saved/built-in results.`;
+    refreshPool();
+    renderBracket();
+  }
+}
+
+function parseEspnFixtures(data){
+  const events=data?.events||[], fixtures=[];
+  for(const event of events){
+    const comp=event?.competitions?.[0];
+    if(!comp)continue;
+    const cs=comp?.competitors||[];
+    if(cs.length<2)continue;
+
+    const home=cs.find(c=>c.homeAway==="home")||cs[0];
+    const away=cs.find(c=>c.homeAway==="away")||cs[1];
+    const hn=getEspnTeamName(home), an=getEspnTeamName(away);
+    if(!hn||!an)continue;
+
+    const statusName=String(event?.status?.type?.name||comp?.status?.type?.name||"").toUpperCase();
+    const completed=event?.status?.type?.completed===true||comp?.status?.type?.completed===true||statusName.includes("STATUS_FINAL")||statusName.includes("FINAL");
+
+    const hs=Number(home?.score);
+    const as=Number(away?.score);
+
+    const round=detectRoundName(event, comp);
+    const date=event?.date||comp?.date||"";
+    const venue=comp?.venue?.fullName||event?.competitions?.[0]?.venue?.fullName||"";
+
+    fixtures.push({
+      home:normalizeTeamName(hn),
+      away:normalizeTeamName(an),
+      homeScore:Number.isFinite(hs)?hs:null,
+      awayScore:Number.isFinite(as)?as:null,
+      completed,
+      status:statusName||"",
+      round,
+      date,
+      venue
+    });
+  }
+  return dedupeFixtures(fixtures);
+}
+
+function detectRoundName(event, comp){
+  const text=[
+    event?.name,event?.shortName,event?.season?.slug,event?.group?.name,
+    event?.week?.text,comp?.notes?.[0]?.headline
+  ].filter(Boolean).join(" ").toLowerCase();
+
+  if(text.includes("round of 32"))return"Round of 32";
+  if(text.includes("round of 16"))return"Round of 16";
+  if(text.includes("quarter"))return"Quarterfinals";
+  if(text.includes("semi"))return"Semifinals";
+  if(text.includes("final"))return"Final";
+
+  // Before ESPN labels knockout rounds clearly, leave it blank so the bracket can use locked lines/fallback.
+  return "";
+}
+
+function dedupeFixtures(fixtures){
+  const seen=new Set(),out=[];
+  for(const f of fixtures){
+    const k=`${f.home}|${f.away}|${f.date}`;
+    if(!seen.has(k)){seen.add(k);out.push(f)}
+  }
+  return out;
+}
+
+function getEspnTeamName(c){const t=c?.team||{};return t.displayName||t.name||t.shortDisplayName||t.abbreviation||""}
+function dedupeMatches(m){const s=new Set(),o=[];for(const x of m){const k=`${x[0]}-${x[1]}-${x[2]}-${x[3]}`;if(!s.has(k)){s.add(k);o.push(x)}}return o}
+
+function getActiveTeamsForDropdown(){const state=calculatePoolState();return Object.keys(state.activeTeams).sort((a,b)=>rankNum(a)-rankNum(b)||a.localeCompare(b))}
+function rankNum(t){return parseInt(String(teamRanks[t]||"#999").replace(/[^0-9]/g,""))||999}
+function teamOptions(selected){return getActiveTeamsForDropdown().map(t=>`<option value="${escapeHtml(t)}" ${normalizeTeamName(selected)===t?"selected":""}>${escapeHtml(teamRanks[t]||"")} ${escapeHtml(t)} (${escapeHtml(stateOwnerPreview(t))})</option>`).join("")}
+function stateOwnerPreview(team){return calculatePoolState().currentOwnerByTeam[normalizeTeamName(team)]||originalOwnerByTeam[normalizeTeamName(team)]||""}
+function addBlankLine(){const teams=getActiveTeamsForDropdown();editableLines.push({round:document.getElementById("roundSelect").value,teamA:teams[0]||"",spreadA:-1.5,teamB:teams[1]||"",spreadB:1.5});renderLineEditor()}
+function renderLineEditor(){const box=document.getElementById("lineEditor");box.innerHTML="";if(!editableLines.length){box.innerHTML=`<div class="small">No lines entered yet. Tap Add Match Line.</div>`;return}editableLines.forEach((l,i)=>{const div=document.createElement("div");div.className="line-row";div.innerHTML=`<div class="line-grid"><select data-field="teamA" data-idx="${i}">${teamOptions(l.teamA)}</select><input value="${escapeHtml(l.spreadA)}" data-field="spreadA" data-idx="${i}" type="number" step="0.5"><select data-field="teamB" data-idx="${i}">${teamOptions(l.teamB)}</select><input value="${escapeHtml(l.spreadB)}" data-field="spreadB" data-idx="${i}" type="number" step="0.5"><input class="hide-mobile" value="${escapeHtml(l.round)}" data-field="round" data-idx="${i}"></div>`;box.appendChild(div)})}
+function getVisibleLinesFromEditor(){const lines=[...editableLines];document.querySelectorAll("[data-field]").forEach(inp=>{const i=Number(inp.dataset.idx),f=inp.dataset.field;if(!lines[i])lines[i]={};lines[i][f]=(f==="spreadA"||f==="spreadB")?Number(inp.value):normalizeTeamName(inp.value.trim())});return lines.filter(l=>l.teamA&&l.teamB&&Number.isFinite(l.spreadA)&&Number.isFinite(l.spreadB))}
+function lockVisibleLines(){const newLines=getVisibleLinesFromEditor().map(l=>({...l,lockedAt:new Date().toISOString()}));const byKey={};for(const l of knockoutLines)byKey[lineKey(l)]=l;for(const l of newLines)byKey[lineKey(l)]=l;knockoutLines=Object.values(byKey);saveLockedLines();editableLines=[];renderLineEditor();renderLockedLines();refreshPool();renderBracket();document.getElementById("lineStatus").textContent=`Locked ${newLines.length} line(s).`}
+function clearLockedLines(){if(!confirm("Clear all locked knockout lines from this device?"))return;knockoutLines=[];saveLockedLines();renderLockedLines();refreshPool();renderBracket()}
+function lineKey(l){return[normalizeTeamName(l.teamA),normalizeTeamName(l.teamB)].sort().join("|")}
+function renderLockedLines(){const box=document.getElementById("lockedLines");if(!knockoutLines.length){box.innerHTML=`<div class="small">No locked lines yet.</div>`;return}box.innerHTML=knockoutLines.map(l=>`<div class="line-row"><strong>${escapeHtml(l.round||"Knockout")}</strong><br>${escapeHtml(teamRanks[l.teamA]||"")} ${escapeHtml(l.teamA)} ${formatSpread(l.spreadA)} vs ${escapeHtml(teamRanks[l.teamB]||"")} ${escapeHtml(l.teamB)} ${formatSpread(l.spreadB)}<br><span class="small">Locked: ${l.lockedAt?new Date(l.lockedAt).toLocaleString():"saved"}</span></div>`).join("")}
+function saveLockedLines(){localStorage.setItem("wc2026_knockout_lines",JSON.stringify(knockoutLines))}
+function loadSavedLines(){try{const raw=localStorage.getItem("wc2026_knockout_lines");return raw?JSON.parse(raw):null}catch{return null}}
+function saveMatches(m){localStorage.setItem("wc2026_matches",JSON.stringify(m))}
+function loadSavedMatches(){try{const raw=localStorage.getItem("wc2026_matches");return raw?JSON.parse(raw):null}catch{return null}}
+function saveFixtures(f){localStorage.setItem("wc2026_fixtures",JSON.stringify(f))}
+function loadSavedFixtures(){try{const raw=localStorage.getItem("wc2026_fixtures");return raw?JSON.parse(raw):null}catch{return null}}
+function matchToFixture(m){return {home:m[0],homeScore:m[1],away:m[2],awayScore:m[3],completed:true,round:m[4]||"Group",date:"",status:"FINAL",venue:""}}
+
+function useFallbackMatches(){completedMatches=fallbackMatches;allFixtures=fallbackMatches.map(m=>matchToFixture(m));saveMatches(completedMatches);saveFixtures(allFixtures);document.getElementById("status").textContent="Using built-in results.";refreshPool();renderBracket()}
+
+function normalizeTeamName(name){const clean=String(name||"").trim();const aliases={"USA":"United States","United States of America":"United States","USMNT":"United States","Turkey":"Türkiye","Turkiye":"Türkiye","Czechia":"Czech Republic","Bosnia and Herzegovina":"Bosnia & Herzegovina","Bosnia-Herzegovina":"Bosnia & Herzegovina","Congo DR":"DR Congo","Democratic Republic of Congo":"DR Congo","Côte d’Ivoire":"Ivory Coast","Côte d'Ivoire":"Ivory Coast","Cote d'Ivoire":"Ivory Coast","Korea Republic":"South Korea","Curacao":"Curaçao"};return aliases[clean]||clean}
+function getMatchPointsForTeam(team,match){const[h,hs,a,as]=match,target=normalizeTeamName(team),home=normalizeTeamName(h),away=normalizeTeamName(a);if(target!==home&&target!==away)return 0;if(hs===as)return 1;if((target===home&&hs>as)||(target===away&&as>hs))return 3;return 0}
+function getWinnerLoser(match){const[h,hs,a,as]=match,home=normalizeTeamName(h),away=normalizeTeamName(a);if(hs>as)return{winner:home,loser:away};if(as>hs)return{winner:away,loser:home};return{winner:null,loser:null}}
+function findKnockoutLine(match){const[h,,a]=match,home=normalizeTeamName(h),away=normalizeTeamName(a);return knockoutLines.find(l=>{const x=normalizeTeamName(l.teamA),y=normalizeTeamName(l.teamB);return(x===home&&y===away)||(x===away&&y===home)})||null}
+function getSpreadForTeam(line,team){const t=normalizeTeamName(team);if(normalizeTeamName(line.teamA)===t)return Number(line.spreadA);if(normalizeTeamName(line.teamB)===t)return Number(line.spreadB);return NaN}
+function didTeamCover(team,match,line){const[h,hs,a,as]=match,home=normalizeTeamName(h),away=normalizeTeamName(a),target=normalizeTeamName(team),spread=getSpreadForTeam(line,target);if(!Number.isFinite(spread))return false;let ts,os;if(target===home){ts=hs;os=as}else if(target===away){ts=as;os=hs}else return false;return ts+spread>os}
+function numericOdds(o){return Number(String(o).split("%")[0])||0}
+function classForDelta(v){if(String(v).includes("▲"))return"up";if(String(v).includes("▼"))return"down";return"flat"}
+function formatSpread(n){const x=Number(n);return x>0?`+${x}`:String(x)}
+
+function calculatePoolState(){const currentOwnerByTeam={...originalOwnerByTeam},ownerPoints={},takeoverLog=[],activeTeams={...originalOwnerByTeam};for(const p of poolOwners)ownerPoints[p.owner]=0;for(const match of completedMatches){const[h,,a]=match,home=normalizeTeamName(h),away=normalizeTeamName(a),ho=currentOwnerByTeam[home]||originalOwnerByTeam[home],ao=currentOwnerByTeam[away]||originalOwnerByTeam[away];if(ho)ownerPoints[ho]+=getMatchPointsForTeam(home,match);if(ao)ownerPoints[ao]+=getMatchPointsForTeam(away,match);const line=findKnockoutLine(match);if(!line)continue;const{winner,loser}=getWinnerLoser(match);if(!winner||!loser)continue;delete activeTeams[loser];const loserCovered=didTeamCover(loser,match,line),winnerOwnerBefore=currentOwnerByTeam[winner]||originalOwnerByTeam[winner],loserOwnerBefore=currentOwnerByTeam[loser]||originalOwnerByTeam[loser];if(loserCovered&&loserOwnerBefore){currentOwnerByTeam[winner]=loserOwnerBefore;activeTeams[winner]=loserOwnerBefore;takeoverLog.push({winner,loser,newOwner:loserOwnerBefore,previousOwner:winnerOwnerBefore,reason:`${loser} covered ${formatSpread(getSpreadForTeam(line,loser))}`})}else if(winnerOwnerBefore){currentOwnerByTeam[winner]=winnerOwnerBefore;activeTeams[winner]=winnerOwnerBefore}}return{currentOwnerByTeam,ownerPoints,takeoverLog,activeTeams}}
+function getTeamActualPts(team){return completedMatches.reduce((s,m)=>s+getMatchPointsForTeam(team,m),0)}
+
+function buildRows(){const state=calculatePoolState(),activeTeamsByOwner={};for(const p of poolOwners)activeTeamsByOwner[p.owner]=[];for(const[team,owner]of Object.entries(state.activeTeams)){if(!activeTeamsByOwner[owner])activeTeamsByOwner[owner]=[];activeTeamsByOwner[owner].push(team)}const rows=poolOwners.map(player=>{const teams=player.teams.map(team=>({team,rank:teamRanks[team]||"-",pts:getTeamActualPts(team),contrib:teamContrib[team]||"0.0%",delta:teamDelta[team]||"▢"}));return{owner:player.owner,teams,poolPts:state.ownerPoints[player.owner]||0,odds:ownerOdds[player.owner]||"0.0% ▢",activeTeams:activeTeamsByOwner[player.owner]||[]}});rows.sort((a,b)=>b.poolPts!==a.poolPts?b.poolPts-a.poolPts:numericOdds(b.odds)-numericOdds(a.odds));return{rows,state}}
+function renderSummary(rows,state){const leader=rows[0],second=rows[1];const recent=state.takeoverLog.slice(-3).map(t=>`${t.newOwner} took over ${t.winner} from ${t.previousOwner||"unowned"} (${t.reason})`).join("<br>");document.getElementById("summary").innerHTML=`<strong>Current Leader:</strong> ${leader.owner} — ${leader.poolPts} pts<br><strong>Closest Challenger:</strong> ${second.owner} — ${second.poolPts} pts<br><strong>Completed Matches Loaded:</strong> ${completedMatches.length}<br><strong>Locked Lines:</strong> ${knockoutLines.length}<br><strong>Takeovers:</strong> ${state.takeoverLog.length}${recent?`<br><br><strong>Recent Takeovers:</strong><br>${recent}`:""}`}
+function renderStandings(rows){const c=document.getElementById("standings");c.innerHTML="";rows.forEach((row,i)=>{const card=document.createElement("div");card.className="owner-card";const activeText=row.activeTeams.length?row.activeTeams.sort().join(", "):"None";card.innerHTML=`<div class="owner-header"><span>#${i+1} ${row.owner}</span><span class="${classForDelta(row.odds)}">${row.odds}</span></div><div class="owner-meta"><span>Pool Pts: ${row.poolPts}</span></div><div class="team-header"><span>Team</span><span>Rank</span><span>Pts</span><span>Contrib</span><span>Δ</span></div>${row.teams.map(t=>`<div class="team-row"><span>${escapeHtml(t.team)}</span><span>${escapeHtml(t.rank)}</span><span>${t.pts}</span><span>${escapeHtml(t.contrib)}</span><span class="${classForDelta(t.delta)}">${escapeHtml(t.delta)}</span></div>`).join("")}<div class="active-box"><span class="inherit">Active / inherited teams:</span> ${escapeHtml(activeText)}</div>`;c.appendChild(card)})}
+function refreshPool(){const r=buildRows();renderSummary(r.rows,r.state);renderStandings(r.rows);renderLineEditor()}
+
+
+
+
+function inferRound(match,line){
+  if(line?.round)return line.round;
+  const s=String(match[4]||"").toLowerCase();
+  if(s.includes("round of 32"))return"Round of 32";
+  if(s.includes("round of 16"))return"Round of 16";
+  if(s.includes("quarter"))return"Quarterfinals";
+  if(s.includes("semi"))return"Semifinals";
+  if(s.includes("final"))return"Final";
+  return null;
+}
+
+function toggleBracketMode(){
+  bracketMode=bracketMode==="stack"?"bracket":"stack";
+  localStorage.setItem("wc2026_bracket_mode",bracketMode);
+  renderBracket();
+}
+
+function bracketRounds(){
+  return ["Round of 32","Round of 16","Quarterfinals","Semifinals","Final","Champion"];
+}
+
+function roundSize(r){
+  return {"Round of 32":32,"Round of 16":16,"Quarterfinals":8,"Semifinals":4,"Final":2,"Champion":1}[r]||0;
+}
+
+function buildBracketData(){
+  const state=calculatePoolState();
+  const rounds=bracketRounds();
+  const data=Object.fromEntries(rounds.map(r=>[r,[]]));
+
+  // Locked lines become scheduled matchups.
+  for(const line of knockoutLines){
+    const r=line.round||"Round of 32";
+    if(data[r])data[r].push({type:"line",line});
+  }
+
+  // ESPN fixtures/results with dates.
+  for(const fx of allFixtures){
+    const line=findLineForTeams(fx.home,fx.away);
+    let r=fx.round||inferRound([fx.home,fx.homeScore,fx.away,fx.awayScore,fx.round],line);
+    if(!r&&line)r=line.round;
+    if(!r||!data[r])continue;
+    data[r].push({type:fx.completed?"result":"fixture",fixture:fx,line});
+  }
+
+  // Completed fallback/current results not already present.
+  for(const match of completedMatches){
+    const line=findKnockoutLine(match);
+    const r=inferRound(match,line);
+    if(!r||!data[r])continue;
+    const key=matchKeyTeams(match[0],match[2]);
+    if(!data[r].some(g=>gameKey(g)===key)){
+      data[r].push({type:"result",match,line});
+    }
+  }
+
+  // De-dupe: result > fixture > line.
+  for(const r of rounds){
+    if(r==="Champion")continue;
+    const best={};
+    for(const g of data[r]){
+      const k=gameKey(g);
+      if(!k)continue;
+      const p=g.type==="result"?3:g.type==="fixture"?2:1;
+      if(!best[k]||p>best[k].p)best[k]={p,g};
+    }
+    data[r]=Object.values(best).map(x=>x.g);
+  }
+
+  // Round of 32 always shows every active team.
+  const used=new Set();
+  for(const g of data["Round of 32"])teamsFromGame(g).forEach(t=>used.add(t));
+  const active=Object.keys(state.activeTeams).sort((a,b)=>rankNum(a)-rankNum(b)||a.localeCompare(b));
+  for(const t of active){
+    if(!used.has(t))data["Round of 32"].push({type:"seed",team:t});
+  }
+
+  // If winners exist, push them into the next round as projected slots.
+  const order=["Round of 32","Round of 16","Quarterfinals","Semifinals","Final"];
+  for(let i=1;i<order.length;i++){
+    const r=order[i];
+    if(data[r].length)continue;
+    const prev=order[i-1];
+    const winners=data[prev].map(g=>winnerFromGame(g)).filter(Boolean);
+    if(winners.length){
+      winners.slice(0,roundSize(r)).forEach(team=>data[r].push({type:"projected",team}));
+    }
+  }
+
+  // Before actual knockout results, fill future columns from top active teams.
+  const hasKnockout=knockoutLines.length||data["Round of 32"].some(g=>g.type==="fixture"||g.type==="result");
+  if(hasKnockout){
+    for(const r of ["Round of 16","Quarterfinals","Semifinals","Final"]){
+      if(!data[r].length){
+        active.slice(0,roundSize(r)).forEach(team=>data[r].push({type:"projected",team}));
+      }
+    }
+  }
+
+  const champ=data["Final"].map(g=>winnerFromGame(g)).filter(Boolean)[0];
+  if(champ)data["Champion"]=[{type:"champion",team:champ}];
+
+  return {data,state};
+}
+
+function renderBracket(){
+  const box=document.getElementById("bracket");
+  if(!box)return;
+  box.classList.toggle("stack",bracketMode==="stack");
+  const {data,state}=buildBracketData();
+  box.innerHTML=bracketRounds().map(r=>`
+    <div class="round-col">
+      <div class="round-title">${r}</div>
+      ${r==="Champion"?renderChampionCard(data[r][0],state):renderRoundColumn(data[r],state)}
+    </div>`).join("");
+}
+
+function renderRoundColumn(games,state){
+  if(!games.length)return`<div class="game"><div class="empty">Waiting for matchup</div></div>`;
+  const out=[];
+  let pair=[];
+  for(const g of games){
+    if(g.type==="seed"||g.type==="projected"){
+      pair.push(g);
+      if(pair.length===2){out.push(renderPairCard(pair[0],pair[1],state));pair=[];}
+    }else{
+      if(pair.length){out.push(renderPairCard(pair[0],null,state));pair=[];}
+      out.push(renderGameCard(g,state));
+    }
+  }
+  if(pair.length)out.push(renderPairCard(pair[0],null,state));
+  return out.join("");
+}
+
+function renderPairCard(a,b,state){
+  const ta=normalizeTeamName(a.team);
+  const tb=b?normalizeTeamName(b.team):"TBD";
+  const label=a.type==="projected"?"Projected matchup":"Seeded slot";
+  return `<div class="game">
+    <div class="game-time">${label}</div>
+    ${renderTeamLine(ta,null,false)}
+    ${tb==="TBD"?`<div class="game-team"><span class="team-name">TBD</span><span></span></div>`:renderTeamLine(tb,null,false)}
+    <span class="owner-chip">${escapeHtml(ownerFor(ta,state))}${tb==="TBD"?"":` / ${escapeHtml(ownerFor(tb,state))}`}</span>
+  </div>`;
+}
+
+function renderGameCard(g,state){
+  const m=gameToMatch(g);
+  const line=g.line;
+  const fx=g.fixture;
+
+  if(m){
+    const [h,hs,a,as]=m;
+    const {winner}=getWinnerLoser(m);
+    return `<div class="game">
+      ${fx?.date?`<div class="game-time">${formatGameTime(fx.date)}</div>`:""}
+      ${renderTeamLine(h,hs,winner===h)}
+      ${renderTeamLine(a,as,winner===a)}
+      ${line?`<div class="spread">${escapeHtml(h)} ${formatSpread(getSpreadForTeam(line,h))} / ${escapeHtml(a)} ${formatSpread(getSpreadForTeam(line,a))}</div>`:""}
+      <span class="owner-chip">Advancing owner: ${escapeHtml(ownerFor(winner,state))}</span>
+    </div>`;
+  }
+
+  if(fx){
+    const lineText=line?`${fx.home} ${formatSpread(getSpreadForTeam(line,fx.home))} / ${fx.away} ${formatSpread(getSpreadForTeam(line,fx.away))}`:"Line not locked";
+    return `<div class="game">
+      <div class="game-time">${formatGameTime(fx.date)}</div>
+      ${renderTeamLine(fx.home,null,false)}
+      ${renderTeamLine(fx.away,null,false)}
+      <div class="game-meta">${escapeHtml(lineText)}</div>
+      <span class="owner-chip">${escapeHtml(ownerFor(fx.home,state))} / ${escapeHtml(ownerFor(fx.away,state))}</span>
+    </div>`;
+  }
+
+  if(line){
+    return `<div class="game">
+      <div class="game-time">Time TBD</div>
+      ${renderTeamLine(line.teamA,formatSpread(line.spreadA),false)}
+      ${renderTeamLine(line.teamB,formatSpread(line.spreadB),false)}
+      <span class="owner-chip">${escapeHtml(ownerFor(line.teamA,state))} / ${escapeHtml(ownerFor(line.teamB,state))}</span>
+    </div>`;
+  }
+
+  return `<div class="game"><div class="empty">Waiting for matchup</div></div>`;
+}
+
+function renderTeamLine(team,score,isWinner){
+  const rank=teamRanks[team]||"";
+  const right=(score===null||score===undefined)?"":score;
+  return `<div class="game-team ${isWinner?"winner":""}">
+    <span class="team-name">${escapeHtml(rank)} ${escapeHtml(team)}</span>
+    <span>${escapeHtml(right)}</span>
+  </div>`;
+}
+
+function renderChampionCard(g,state){
+  if(!g||!g.team)return`<div class="game"><div class="empty">Champion not decided</div></div>`;
+  const team=normalizeTeamName(g.team);
+  return `<div class="game">
+    <div class="game-team winner"><span class="team-name">${escapeHtml(teamRanks[team]||"")} ${escapeHtml(team)}</span><span>🏆</span></div>
+    <span class="owner-chip">Champion owner: ${escapeHtml(ownerFor(team,state))}</span>
+  </div>`;
+}
+
+function winnerFromGame(g){
+  const m=gameToMatch(g);
+  return m?getWinnerLoser(m).winner:null;
+}
+
+function gameToMatch(g){
+  if(g.match)return g.match;
+  if(g.fixture&&g.fixture.completed&&g.fixture.homeScore!==null&&g.fixture.awayScore!==null){
+    return [g.fixture.home,g.fixture.homeScore,g.fixture.away,g.fixture.awayScore,g.fixture.round];
+  }
+  return null;
+}
+
+function teamsFromGame(g){
+  if(g.fixture)return[normalizeTeamName(g.fixture.home),normalizeTeamName(g.fixture.away)];
+  if(g.match)return[normalizeTeamName(g.match[0]),normalizeTeamName(g.match[2])];
+  if(g.line)return[normalizeTeamName(g.line.teamA),normalizeTeamName(g.line.teamB)];
+  if(g.team)return[normalizeTeamName(g.team)];
+  return[];
+}
+
+function gameKey(g){
+  const t=teamsFromGame(g);
+  return t.length>=2?matchKeyTeams(t[0],t[1]):"";
+}
+
+function matchKeyTeams(a,b){return[normalizeTeamName(a),normalizeTeamName(b)].sort().join("|")}
+
+function findLineForTeams(a,b){
+  const x=normalizeTeamName(a),y=normalizeTeamName(b);
+  return knockoutLines.find(l=>{
+    const p=normalizeTeamName(l.teamA),q=normalizeTeamName(l.teamB);
+    return(p===x&&q===y)||(p===y&&q===x);
+  })||null;
+}
+
+function ownerFor(team,state){
+  const t=normalizeTeamName(team);
+  return state.currentOwnerByTeam[t]||state.activeTeams[t]||originalOwnerByTeam[t]||"";
+}
+
+function formatGameTime(dateText){
+  if(!dateText)return"Time TBD";
+  const d=new Date(dateText);
+  if(Number.isNaN(d.getTime()))return String(dateText);
+  return d.toLocaleString([],{weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
+}
+
+function escapeHtml(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+refreshPool();renderLockedLines();renderBracket();document.getElementById("status").textContent=`Loaded ${completedMatches.length} matches.`;
+</script></body></html>
