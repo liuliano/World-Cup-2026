@@ -21,13 +21,54 @@ h1{font-size:29px;margin:0}.sub{color:var(--muted);margin:6px 0 14px;font-size:1
 .round-title{font-weight:900;margin-bottom:10px;text-align:center;font-size:18px}.game{position:relative;background:#0d1524;border:1px solid #263653;border-radius:12px;padding:10px;min-height:82px;margin-bottom:12px}.bracket:not(.stack) .game:after{content:"";position:absolute;right:-31px;top:50%;width:31px;border-top:2px solid #64748b}.bracket:not(.stack) .round-col:last-child .game:after{display:none}.game-team{display:flex;justify-content:space-between;gap:8px;padding:3px 0;font-size:13px}.game-team .name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:170px}.game-time{color:#94a3b8;font-size:12px;margin-bottom:6px}.winner{color:var(--green);font-weight:800}.owner-chip{display:block;color:var(--gold);font-size:12px;margin-top:4px}
 .rules h2{margin:18px 0 8px;font-size:20px}.rules li{line-height:1.5}.note{color:var(--muted);font-size:12px;line-height:1.4;margin-top:18px}
 @media(max-width:520px){body{padding:10px}h1{font-size:26px}.team-name{font-size:14px}.bracket{min-width:1420px}.round-col{width:205px}.game-team .name{max-width:132px}}
+
+.dashboard-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:14px}
+.dash-card{background:#0d1524;border:1px solid var(--border);border-radius:14px;padding:12px}
+.dash-title{color:var(--muted);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+.dash-main{font-size:20px;font-weight:900;color:#fff}
+.dash-sub{font-size:13px;color:#cbd5e1;margin-top:4px;line-height:1.35}
+.owner-live-row{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid #1e293b;padding:5px 0;font-size:13px}
+.owner-live-row:last-child{border-bottom:none}
+.alert{border-color:#7c2d12;background:#1c1917}
+.alert .dash-main{color:#fdba74}
+@media(max-width:520px){.dashboard-grid{grid-template-columns:1fr}.dash-main{font-size:18px}}
+
+
+.full-owner-status{display:grid;grid-template-columns:1fr;gap:8px;margin-top:8px}
+.owner-status-row{background:#0b1220;border:1px solid #263653;border-radius:10px;padding:10px}
+.owner-status-head{display:flex;justify-content:space-between;gap:8px;font-weight:900;margin-bottom:6px}
+.alive-list{color:#86efac;font-size:13px;line-height:1.35}
+.elim-list{color:#fecaca;font-size:13px;line-height:1.35;margin-top:4px}
+
+
+.prob-bar-wrap{height:9px;background:#1e293b;border-radius:999px;overflow:hidden;margin-top:4px}
+.prob-bar{height:100%;background:#22c55e;border-radius:999px}
+.sim-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+.sim-table th,.sim-table td{border-bottom:1px solid #1e293b;padding:6px;text-align:left}
+.sim-table th{color:var(--muted);font-size:12px;text-transform:uppercase}
+.sim-note{color:var(--muted);font-size:12px;margin-top:8px;line-height:1.35}
+
+
+/* Bracket readability fix */
+.bracket{min-width:1900px}
+.round-col{width:285px}
+.game{min-height:108px;padding:14px}
+.game-team{font-size:15px;line-height:1.35}
+.game-team .name{max-width:230px;white-space:normal;overflow:visible;text-overflow:clip}
+.game-time{font-size:13px}
+@media(max-width:520px){
+  .bracket{min-width:1750px}
+  .round-col{width:275px}
+  .game-team .name{max-width:220px;white-space:normal;overflow:visible;text-overflow:clip}
+}
+
 </style>
 </head>
 <body>
 <h1>World Cup 2026 Takeover Pool</h1>
-<div class="sub">Round of 32 full odds locked · regulation spread rule · inherited ownership</div>
+<div class="sub">Round of 32 full odds locked · live pool dashboard · inherited ownership</div>
 <div class="tabs"><button class="tab-btn active" onclick="showTab('standings')">Standings</button><button class="tab-btn" onclick="showTab('control')">Pool Control</button><button class="tab-btn" onclick="showTab('bracket')">Bracket</button><button class="tab-btn" onclick="showTab('rules')">Rules</button></div>
-<section id="tab-standings" class="tab active"><div class="toolbar"><button onclick="refreshFromEspn()">Refresh ESPN Results</button><button class="secondary" onclick="toggleBracketMode()">Toggle Bracket View</button><button class="red" onclick="resetLocal()">Reset Local</button><span id="status" class="small">Ready.</span></div><div id="summary" class="summary"></div><div id="standings"></div></section>
+<section id="tab-standings" class="tab active"><div class="toolbar"><button onclick="refreshFromEspn()">Refresh ESPN Results</button><button class="secondary" onclick="toggleBracketMode()">Toggle Bracket View</button><button class="red" onclick="resetLocal()">Reset Local</button><span id="status" class="small">Ready.</span></div><div id="dashboard" class="dashboard-grid"></div><div id="summary" class="summary"></div><div id="standings"></div></section>
 <section id="tab-control" class="tab"><div class="panel"><b>Round of 32 Control Center</b><p class="small">Lines are regulation-time only. If a favorite advances in extra time or penalties, the underdog owner takes over the advancing team.</p></div><div id="matchCards"></div></section>
 <section id="tab-bracket" class="tab"><div class="panel"><b>March Madness Bracket</b><p class="small">Round of 32 is preloaded from your pool sheet. Future rounds populate from winners and inherited owners.</p><button class="secondary" onclick="toggleBracketMode()">Toggle Phone / Wide</button></div><div class="bracket-scroll"><div id="bracket" class="bracket"></div></div></section>
 <section id="tab-rules" class="tab rules"><div class="panel"><h2>Pool Structure</h2><ul><li>Each owner starts with 3 teams.</li><li>Owner score follows the current owner of the advancing slot.</li></ul><h2>Group Stage Scoring</h2><ul><li>Win = 3 points.</li><li>Draw = 1 point.</li><li>Loss = 0 points.</li></ul><h2>Knockout Spread Rule</h2><ul><li>DraftKings lines are locked before each round.</li><li>All lines are for regulation time only.</li><li>If a -0.5 or -1.5 favorite advances in extra time or penalties, the underdog owner takes over the advancing team.</li><li>If the favorite wins in regulation but does not cover, the underdog owner takes over the advancing team.</li><li>Once lines are locked, they do not change.</li></ul><h2>Prize Structure</h2><ul><li>Winner: $1,120</li><li>Runner-up: $480</li></ul></div></section>
@@ -53,14 +94,332 @@ function norm(t){const a={"USA":"United States","United States of America":"Unit
 function rank(t){return TEAM_RANKS[t]||""} function ownerOriginal(t){for(const p of POOL_OWNERS)if(p.teams.map(norm).includes(norm(t)))return p.owner;return""} function fmtLine(n){if(n===null||n===undefined||n==="")return"TBD";const x=Number(n);if(x===0)return"PK";return x>0?"+"+x:String(x)} function oppLine(n){if(n===null||n===undefined||n==="")return"";const x=-Number(n);return x===0?0:x}
 function getFixture(a,b){return fixtures.find(f=>(norm(f.home)===norm(a)&&norm(f.away)===norm(b))||(norm(f.home)===norm(b)&&norm(f.away)===norm(a)));} function getResult(a,b){const f=getFixture(a,b);if(f&&f.completed)return{home:f.home,away:f.away,homeScore:f.homeScore,awayScore:f.awayScore,status:f.status,method:"REG"};return null;} function gameWinner(res){if(!res)return null;if(Number(res.homeScore)>Number(res.awayScore))return norm(res.home);if(Number(res.awayScore)>Number(res.homeScore))return norm(res.away);return norm(res.winner||"");}
 function takeoverOwner(match,res,current){const line=lines[match.id];const fav=line===null||line===undefined?null:match.home;const dog=line===null||line===undefined?null:match.away;const winner=gameWinner(res);if(!winner)return null;const winnerOwner=current[winner]||ownerOriginal(winner);if(line===null||line===undefined)return winnerOwner;const favWon=norm(winner)===norm(fav);if(!favWon)return current[winner]||ownerOriginal(winner);const favScore=norm(res.home)===norm(fav)?Number(res.homeScore):Number(res.awayScore);const dogScore=norm(res.home)===norm(dog)?Number(res.homeScore):Number(res.awayScore);const covered=(favScore+Number(line))>dogScore;const method=String(res.method||"REG").toUpperCase();if(method==="ET"||method==="PK")return current[dog]||ownerOriginal(dog);if(!covered)return current[dog]||ownerOriginal(dog);return winnerOwner;}
-function buildState(){const current={},ownerPts={},active={},log=[];for(const p of POOL_OWNERS){ownerPts[p.owner]=0;for(const t of p.teams){current[norm(t)]=p.owner;active[norm(t)]=p.owner;}}for(const m of completedMatches){const[h,hs,a,as]=m,ho=current[norm(h)]||ownerOriginal(h),ao=current[norm(a)]||ownerOriginal(a);if(ho)ownerPts[ho]+=hs===as?1:(hs>as?3:0);if(ao)ownerPts[ao]+=hs===as?1:(as>hs?3:0);}for(const match of R32){const res=getResult(match.home,match.away);if(!res)continue;const winner=gameWinner(res);if(!winner)continue;const loser=norm(winner)===norm(match.home)?match.away:match.home;delete active[norm(loser)];const prev=current[norm(winner)]||ownerOriginal(winner);const newOwner=takeoverOwner(match,res,current);current[norm(winner)]=newOwner;active[norm(winner)]=newOwner;if(newOwner!==prev)log.push(`${newOwner} takes over ${winner} from ${prev}`);}return{current,active,log,ownerPts};}
+function buildState(){
+  const current={}, ownerPts={}, active={}, log=[];
+
+  // Original owner map and owner point buckets.
+  for(const p of POOL_OWNERS){
+    ownerPts[p.owner]=0;
+    for(const t of p.teams){
+      current[norm(t)]=p.owner;
+    }
+  }
+
+  // IMPORTANT:
+  // "Alive" means teams that advanced into the knockout bracket, not every original team.
+  // Start active teams from Round of 32 only. Everyone not in R32 is considered eliminated.
+  for(const match of R32){
+    const home=norm(match.home), away=norm(match.away);
+    current[home]=match.homeOwner || current[home] || ownerOriginal(home);
+    current[away]=match.awayOwner || current[away] || ownerOriginal(away);
+    active[home]=current[home];
+    active[away]=current[away];
+  }
+
+  // Group-stage/current points still credit the current/original owner.
+  for(const m of completedMatches){
+    const [h,hs,a,as]=m;
+    const ho=current[norm(h)]||ownerOriginal(h);
+    const ao=current[norm(a)]||ownerOriginal(a);
+    if(ho)ownerPts[ho]+=hs===as?1:(hs>as?3:0);
+    if(ao)ownerPts[ao]+=hs===as?1:(as>hs?3:0);
+  }
+
+  // Apply Round of 32 takeover logic as games finish.
+  for(const match of R32){
+    const res=getResult(match.home,match.away);
+    if(!res)continue;
+    const winner=gameWinner(res);
+    if(!winner)continue;
+    const loser=norm(winner)===norm(match.home)?match.away:match.home;
+
+    delete active[norm(loser)];
+
+    const prev=current[norm(winner)]||ownerOriginal(winner);
+    const newOwner=takeoverOwner(match,res,current);
+
+    current[norm(winner)]=newOwner;
+    active[norm(winner)]=newOwner;
+
+    if(newOwner!==prev)log.push(`${newOwner} takes over ${winner} from ${prev}`);
+  }
+
+  return{current,active,log,ownerPts};
+}
 function teamPts(t){return completedMatches.reduce((s,m)=>s+((norm(m[0])===norm(t)||norm(m[2])===norm(t))?(m[1]===m[3]?1:(norm(m[0])===norm(t)?(m[1]>m[3]?3:0):(m[3]>m[1]?3:0))):0),0)}
+
+function nextUpcomingMatch(){
+  const now=new Date();
+  const candidates=R32.map(m=>{
+    const res=getResult(m.home,m.away);
+    if(res)return null;
+    const fx=getFixture(m.home,m.away);
+    const date=fx?.date||m.date||"";
+    return {...m,date};
+  }).filter(Boolean).filter(m=>m.date).sort((a,b)=>new Date(a.date)-new Date(b.date));
+  return candidates.find(m=>new Date(m.date)>=now)||candidates[0]||null;
+}
+
+function liveTeamCounts(){
+  const st=buildState();
+  const counts=Object.fromEntries(POOL_OWNERS.map(p=>[p.owner,0]));
+  for(const owner of Object.values(st.active)){
+    if(counts[owner]===undefined)counts[owner]=0;
+    counts[owner]++;
+  }
+  return Object.entries(counts).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]));
+}
+
+function biggestTakeoverSpots(){
+  return R32
+    .filter(m=>lines[m.id]!==null&&lines[m.id]!==undefined)
+    .map(m=>({match:m,abs:Math.abs(Number(lines[m.id]))}))
+    .sort((a,b)=>b.abs-a.abs)
+    .slice(0,3);
+}
+
+
+
+function strengthScore(team){
+  const raw=String(TEAM_RANKS[team]||"#48").replace(/[^0-9]/g,"");
+  const rank=Number(raw)||48;
+  return Math.max(1, 55-rank);
+}
+
+function winProb(teamA,teamB,lineForA){
+  const sA=strengthScore(teamA), sB=strengthScore(teamB);
+  let p=sA/(sA+sB);
+
+  // If a locked spread exists, use it as a stronger signal.
+  // Negative means teamA favorite. Positive means teamA underdog.
+  if(lineForA!==null && lineForA!==undefined && lineForA!==""){
+    const l=Number(lineForA);
+    if(l===0) p=0.50;
+    else if(l===-0.5) p=0.58;
+    else if(l===-1.5) p=0.72;
+    else if(l===-2.5) p=0.84;
+    else if(l===0.5) p=0.42;
+    else if(l===1.5) p=0.28;
+    else if(l===2.5) p=0.16;
+  }
+
+  return Math.min(0.92,Math.max(0.08,p));
+}
+
+function simulatedWinner(match){
+  const line=lines[match.id];
+  const p=winProb(match.home,match.away,line);
+  return Math.random()<p ? match.home : match.away;
+}
+
+function simulateTakeoverOwner(match,winner,current){
+  const line=lines[match.id];
+  if(line===null||line===undefined||line==="") return current[winner]||ownerOriginal(winner);
+
+  const fav=match.home;
+  const dog=match.away;
+  const winnerNorm=norm(winner);
+
+  if(winnerNorm!==norm(fav)) return current[winner]||ownerOriginal(winner);
+
+  // Approximate cover probability by spread.
+  // This simulates your pool rule without needing exact score distribution.
+  const l=Math.abs(Number(line));
+  let coverProb=0.55;
+  if(l===0.5) coverProb=0.68;
+  if(l===1.5) coverProb=0.48;
+  if(l===2.5) coverProb=0.34;
+
+  const favoriteCovered=Math.random()<coverProb;
+  if(!favoriteCovered) return current[dog]||ownerOriginal(dog);
+  return current[fav]||ownerOriginal(fav);
+}
+
+function runPoolSimulation(iterations=2500){
+  const ownerWins=Object.fromEntries(POOL_OWNERS.map(p=>[p.owner,0]));
+  const ownerEV=Object.fromEntries(POOL_OWNERS.map(p=>[p.owner,0]));
+
+  for(let i=0;i<iterations;i++){
+    const current={};
+    for(const p of POOL_OWNERS) for(const t of p.teams) current[norm(t)]=p.owner;
+
+    let roundTeams=[];
+    for(const match of R32){
+      const actual=getResult(match.home,match.away);
+      const winner=actual?gameWinner(actual):simulatedWinner(match);
+      const newOwner=actual?takeoverOwner(match,actual,current):simulateTakeoverOwner(match,winner,current);
+      current[norm(winner)]=newOwner;
+      roundTeams.push(norm(winner));
+    }
+
+    // Future rounds use strength only. Future round spreads will be added when you provide locked lines.
+    while(roundTeams.length>1){
+      const next=[];
+      for(let j=0;j<roundTeams.length;j+=2){
+        const a=roundTeams[j], b=roundTeams[j+1];
+        if(!b){next.push(a);continue;}
+        const p=winProb(a,b,null);
+        const winner=Math.random()<p?a:b;
+        next.push(winner);
+      }
+      roundTeams=next;
+    }
+
+    const champ=roundTeams[0];
+    const winningOwner=current[champ]||ownerOriginal(champ);
+    if(winningOwner) ownerWins[winningOwner]++;
+
+    // EV credit: remaining controlled teams weighted by strength.
+    for(const [team,owner] of Object.entries(current)){
+      if(ownerEV[owner]!==undefined) ownerEV[owner]+=strengthScore(team)/iterations;
+    }
+  }
+
+  return POOL_OWNERS.map(p=>({
+    owner:p.owner,
+    winPct:(ownerWins[p.owner]/iterations)*100,
+    ev:ownerEV[p.owner]
+  })).sort((a,b)=>b.winPct-a.winPct);
+}
+
+function nextUpcomingMatch(){
+  const now=new Date();
+  const candidates=R32.map(m=>{
+    const res=getResult(m.home,m.away);
+    if(res)return null;
+    const fx=getFixture(m.home,m.away);
+    const date=fx?.date||m.date||"";
+    return {...m,date};
+  }).filter(Boolean).filter(m=>m.date).sort((a,b)=>new Date(a.date)-new Date(b.date));
+  return candidates.find(m=>new Date(m.date)>=now)||candidates[0]||null;
+}
+
+function biggestTakeoverSpots(){
+  return R32
+    .filter(m=>lines[m.id]!==null&&lines[m.id]!==undefined)
+    .map(m=>({match:m,abs:Math.abs(Number(lines[m.id]))}))
+    .sort((a,b)=>b.abs-a.abs)
+    .slice(0,3);
+}
+
+function renderDashboard(){
+  const st=buildState();
+  const ownerStatus=POOL_OWNERS.map(p=>{
+    const allTeams=p.teams.map(norm);
+    const alive=allTeams.filter(t=>Object.prototype.hasOwnProperty.call(st.active,t));
+    const eliminated=allTeams.filter(t=>!Object.prototype.hasOwnProperty.call(st.active,t));
+    const inherited=Object.entries(st.active)
+      .filter(([team,owner])=>owner===p.owner && !allTeams.includes(team))
+      .map(([team])=>team);
+    return {
+      owner:p.owner,
+      pts:st.ownerPts[p.owner]||0,
+      alive,
+      eliminated,
+      inherited,
+      activeCount:alive.length+inherited.length,
+      odds:OWNER_ODDS[p.owner]||"0.0%"
+    };
+  }).sort((a,b)=>b.pts-a.pts||b.activeCount-a.activeCount||parseFloat(b.odds)-parseFloat(a.odds));
+
+  const sim=runPoolSimulation(3000);
+  const leader=ownerStatus[0];
+  const simLeader=sim[0];
+  const next=nextUpcomingMatch();
+  const alerts=biggestTakeoverSpots();
+
+  document.getElementById("dashboard").innerHTML=`
+    <div class="dash-card">
+      <div class="dash-title">Current Leader</div>
+      <div class="dash-main">${leader.owner}</div>
+      <div class="dash-sub">${leader.pts} pts · ${leader.activeCount} knockout alive/inherited teams</div>
+    </div>
+
+    <div class="dash-card">
+      <div class="dash-title">Projected Pool Favorite</div>
+      <div class="dash-main">${simLeader.owner}</div>
+      <div class="dash-sub">${simLeader.winPct.toFixed(1)}% simulated chance to win</div>
+      <div class="prob-bar-wrap"><div class="prob-bar" style="width:${Math.min(100,simLeader.winPct)}%"></div></div>
+    </div>
+
+    <div class="dash-card">
+      <div class="dash-title">Next Match</div>
+      <div class="dash-main">${next?`${next.home} vs ${next.away}`:"No upcoming match"}</div>
+      <div class="dash-sub">${next?(next.date?new Date(next.date).toLocaleString([],{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):"Time TBD"):""}</div>
+    </div>
+
+    <div class="dash-card alert">
+      <div class="dash-title">Biggest Takeover Spots</div>
+      <div class="dash-main">${alerts.length?`${alerts[0].match.home} ${fmtLine(lines[alerts[0].match.id])}`:"None"}</div>
+      <div class="dash-sub">${alerts.map(a=>`${a.match.home} ${fmtLine(lines[a.match.id])} vs ${a.match.away} ${fmtLine(oppLine(lines[a.match.id]))}`).join("<br>")}</div>
+    </div>
+
+    <div class="dash-card" style="grid-column:1/-1">
+      <div class="dash-title">Pool Win Probability</div>
+      <table class="sim-table">
+        <thead><tr><th>Owner</th><th>Win %</th><th>EV</th></tr></thead>
+        <tbody>
+          ${sim.map(o=>`
+            <tr>
+              <td>${o.owner}</td>
+              <td>${o.winPct.toFixed(1)}%</td>
+              <td>${o.ev.toFixed(1)}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+      <div class="sim-note">Simulation uses current ESPN results, locked spreads, team rankings, and your takeover rules. Future rounds use ranking strength until you provide locked lines for those rounds.</div>
+    </div>
+
+    <div class="dash-card" style="grid-column:1/-1">
+      <div class="dash-title">Knockout Alive / Eliminated Teams By Owner</div>
+      <div class="full-owner-status">
+        ${ownerStatus.map(o=>`
+          <div class="owner-status-row">
+            <div class="owner-status-head">
+              <span>${o.owner}</span>
+              <span>${o.activeCount} alive · ${o.eliminated.length} eliminated</span>
+            </div>
+            <div class="alive-list"><b>Alive:</b> ${[...o.alive,...o.inherited.map(t=>`${t} (inherited)`)].join(", ") || "None"}</div>
+            <div class="elim-list"><b>Eliminated:</b> ${o.eliminated.join(", ") || "None"}</div>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
 function renderStandings(){const st=buildState();const byOwner=Object.fromEntries(POOL_OWNERS.map(p=>[p.owner,[]]));for(const[t,o]of Object.entries(st.active)){if(!byOwner[o])byOwner[o]=[];byOwner[o].push(t);}const rows=POOL_OWNERS.map(p=>({owner:p.owner,teams:p.teams,pts:st.ownerPts[p.owner]||0,active:byOwner[p.owner]||[],odds:OWNER_ODDS[p.owner]||"0.0%"})).sort((a,b)=>b.pts-a.pts||parseFloat(b.odds)-parseFloat(a.odds));document.getElementById("summary").innerHTML=`<b>Leader:</b> ${rows[0].owner} — ${rows[0].pts} pts<br><b>Locked R32 Lines:</b> ${Object.values(lines).filter(v=>v!==null&&v!==undefined).length} / 16<br><b>Takeovers:</b> ${st.log.length}${st.log.length?"<br><br><b>Latest:</b><br>"+st.log.slice(-4).join("<br>"):""}`;document.getElementById("standings").innerHTML=rows.map((r,i)=>`<div class="owner-card"><div class="owner-header"><span>#${i+1} ${r.owner}</span><span>${r.odds}</span></div><div class="owner-meta">Pool Pts: ${r.pts}</div><div class="team-header"><span>Team</span><span>Rank</span><span>Pts</span><span>Contrib</span></div>${r.teams.map(t=>`<div class="team-row"><span>${t}</span><span>${rank(t)}</span><span>${teamPts(t)}</span><span>${TEAM_CONTRIB[t]||"0.0%"}</span></div>`).join("")}<div class="result-panel"><span style="color:#fbbf24;font-weight:800">Active/inherited:</span> ${r.active.sort().join(", ")||"None"}</div></div>`).join("");}
 function renderControl(){const st=buildState();document.getElementById("matchCards").innerHTML=R32.map(m=>{const line=lines[m.id],res=getResult(m.home,m.away),winner=gameWinner(res),newOwner=res?takeoverOwner(m,res,st.current):null;return`<div class="match-card"><div><span class="status-pill ${line!==null&&line!==undefined?"locked":"pending"}">${line!==null&&line!==undefined?"LINE LOCKED":"LINE TBD"}</span><span class="status-pill">${m.date?new Date(m.date).toLocaleString([],{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):"Time TBD"}</span></div><div class="match-grid"><div class="team-box"><div class="team-name">${rank(m.home)} ${m.home}</div><div class="owner">Owner: ${st.current[m.home]||m.homeOwner}</div><div>${fmtLine(line)}</div></div><div class="line">vs</div><div class="team-box"><div class="team-name">${rank(m.away)} ${m.away}</div><div class="owner">Owner: ${st.current[m.away]||m.awayOwner}</div><div>${line!==null&&line!==undefined?fmtLine(oppLine(line)):"TBD"}</div></div></div><label>Line for ${m.home}</label><input type="number" step="0.5" value="${line??""}" placeholder="Example -1.5" onchange="setLine('${m.id}',this.value)"><div class="result-panel">${res?`Winner: <b>${winner}</b><br>Advancing owner: <b>${newOwner}</b><br>Score: ${res.home} ${res.homeScore} - ${res.awayScore} ${res.away}<br>Method: ${res.method||"REG"}`:"No completed result yet."}</div></div>`;}).join("");}
 function setLine(id,val){lines[id]=val===""?null:Number(val);save("wc_lines",lines);renderAll();}
 function renderBracket(){const box=document.getElementById("bracket");box.classList.toggle("stack",bracketMode==="stack");const st=buildState();const r16=pairWinners(R32);const qf=pairSeeds(r16,"Quarterfinals");const sf=pairSeeds(qf,"Semifinals");const final=pairSeeds(sf,"Final");box.innerHTML=[col("Round of 32",R32.map(m=>cardMatch(m,st))),col("Round of 16",r16.map(m=>cardGeneric(m))),col("Quarterfinals",qf.map(m=>cardGeneric(m))),col("Semifinals",sf.map(m=>cardGeneric(m))),col("Final",final.map(m=>cardGeneric(m))),col("Champion",["<div class='game'><div class='game-time'>Champion not decided</div></div>"])].join("");}
-function pairWinners(matches){const winners=matches.map(m=>{const res=getResult(m.home,m.away);const w=gameWinner(res);return w||`Winner of ${m.home}/${m.away}`;});return pairSeeds(winners,"Round of 16");} function pairSeeds(list,round){const out=[];for(let i=0;i<list.length;i+=2)out.push({home:list[i]||"TBD",away:list[i+1]||"TBD",round});return out;} function col(title,cards){return`<div class="round-col"><div class="round-title">${title}</div>${cards.join("")}</div>`} function cardMatch(m,st){const res=getResult(m.home,m.away),w=gameWinner(res);return`<div class="game"><div class="game-time">${m.date?new Date(m.date).toLocaleString([],{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):"Time TBD"}</div>${teamLine(m.home,res,w)}${teamLine(m.away,res,w)}<div class="owner-chip">${st.current[m.home]||m.homeOwner} / ${st.current[m.away]||m.awayOwner}</div><div>${fmtLine(lines[m.id])} / ${lines[m.id]!==null&&lines[m.id]!==undefined?fmtLine(oppLine(lines[m.id])):"TBD"}</div></div>`} function cardGeneric(m){return`<div class="game"><div class="game-time">${m.round}</div><div class="game-team"><span class="name">${rank(m.home)} ${m.home}</span><span></span></div><div class="game-team"><span class="name">${rank(m.away)} ${m.away}</span><span></span></div></div>`} function teamLine(t,res,w){let score="";if(res)score=norm(res.home)===norm(t)?res.homeScore:(norm(res.away)===norm(t)?res.awayScore:"");return`<div class="game-team ${norm(w)===norm(t)?"winner":""}"><span class="name">${rank(t)} ${t}</span><span>${score}</span></div>`} function toggleBracketMode(){bracketMode=bracketMode==="stack"?"bracket":"stack";localStorage.setItem("wc_bracket_mode",bracketMode);renderBracket();}
-function renderAll(){renderStandings();renderControl();renderBracket();} renderAll();
+
+function displaySeed(value){
+  if(value===null || value===undefined) return "TBD";
+  if(typeof value==="string"){
+    if(value==="[object Object]") return "TBD";
+    return value;
+  }
+  if(typeof value==="object"){
+    if(value.home && value.away) return `Winner of ${shortTeam(value.home)}/${shortTeam(value.away)}`;
+    if(value.team) return value.team;
+    return "TBD";
+  }
+  return String(value);
+}
+
+function shortTeam(value){
+  const s=displaySeed(value);
+  if(s.startsWith("Winner of ")) return "TBD";
+  return s;
+}
+
+function pairWinners(matches){const winners=matches.map(m=>{const res=getResult(m.home,m.away);const w=gameWinner(res);return w||`Winner of ${m.home}/${m.away}`;});return pairSeeds(winners,"Round of 16");} function pairSeeds(list,round){const out=[];for(let i=0;i<list.length;i+=2)out.push({home:displaySeed(list[i]||"TBD"),away:displaySeed(list[i+1]||"TBD"),round});return out;} function col(title,cards){return`<div class="round-col"><div class="round-title">${title}</div>${cards.join("")}</div>`} function cardMatch(m,st){const res=getResult(m.home,m.away),w=gameWinner(res);return`<div class="game"><div class="game-time">${m.date?new Date(m.date).toLocaleString([],{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):"Time TBD"}</div>${teamLine(m.home,res,w)}${teamLine(m.away,res,w)}<div class="owner-chip">${st.current[m.home]||m.homeOwner} / ${st.current[m.away]||m.awayOwner}</div><div>${fmtLine(lines[m.id])} / ${lines[m.id]!==null&&lines[m.id]!==undefined?fmtLine(oppLine(lines[m.id])):"TBD"}</div></div>`} function cardGeneric(m){const h=displaySeed(m.home),a=displaySeed(m.away);return`<div class="game"><div class="game-time">${m.round}</div><div class="game-team"><span class="name">${rank(h)} ${h}</span><span></span></div><div class="game-team"><span class="name">${rank(a)} ${a}</span><span></span></div></div>`} function teamLine(t,res,w){let score="";if(res)score=norm(res.home)===norm(t)?res.homeScore:(norm(res.away)===norm(t)?res.awayScore:"");return`<div class="game-team ${norm(w)===norm(t)?"winner":""}"><span class="name">${rank(t)} ${t}</span><span>${score}</span></div>`} function toggleBracketMode(){bracketMode=bracketMode==="stack"?"bracket":"stack";localStorage.setItem("wc_bracket_mode",bracketMode);renderBracket();}
+function cleanObjectText(){
+  const b=document.getElementById("bracket");
+  if(b) b.innerHTML=b.innerHTML.replaceAll("[object Object]","TBD");
+}
+function renderAll(){renderDashboard();renderStandings();renderControl();renderBracket();cleanObjectText();} renderAll();
 </script>
 </body>
 </html>
