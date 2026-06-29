@@ -6,73 +6,92 @@
 <title>World Cup 2026 Takeover Pool</title>
 <link rel="stylesheet" href="styles.css" />
 <style>
-.scenario-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.scenario-card{background:#0d1524;border:1px solid var(--border);border-radius:14px;padding:12px}.scenario-title{font-weight:900;color:#fff;margin-bottom:6px}.match-center-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.admin-link{display:inline-block;color:#93c5fd;font-weight:900;text-decoration:none;margin-top:8px}@media(max-width:700px){.scenario-grid,.match-center-grid{grid-template-columns:1fr}}
+.hub-wrap{max-width:1200px;margin:0 auto}.hero{background:#0d1524;border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px}.hub-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.hub-card{background:#111827;border:1px solid var(--border);border-radius:14px;padding:14px;line-height:1.45}.hub-card h2{margin:0 0 6px;font-size:20px}.hub-card a{color:#93c5fd;font-weight:900;text-decoration:none}.status-line{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.pill{display:inline-block;border:1px solid var(--border);border-radius:999px;padding:5px 10px;color:#cbd5e1;background:#1e293b;font-size:12px;font-weight:800}.primary-link{display:inline-block;background:var(--blue);color:white!important;border-radius:10px;padding:10px 14px;margin-top:8px;text-decoration:none}.tab-note{color:var(--muted);font-size:13px;margin-top:6px}.today{border-color:#7c2d12;background:#1c1917}.today h2{color:#fdba74}@media(max-width:700px){.hub-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<h1>World Cup 2026 Takeover Pool</h1>
-<div class="sub">Round of 32 full odds locked · live pool dashboard · inherited ownership</div>
-<div class="tabs">
-<button class="tab-btn active" onclick="showTab('dashboard')">Dashboard</button>
-<button class="tab-btn" onclick="showTab('bracket')">Bracket</button>
-<button class="tab-btn" onclick="showTab('matchcenter')">Match Center</button>
-<button class="tab-btn" onclick="showTab('control')">Pool Control</button>
-<button class="tab-btn" onclick="showTab('owners')">Owners</button>
-<button class="tab-btn" onclick="showTab('simulator')">Simulator</button>
-<button class="tab-btn" onclick="showTab('rules')">Rules</button>
-<button class="tab-btn" onclick="location.href='admin.html'">Admin</button>
+<div class="hub-wrap">
+  <h1>World Cup 2026 Takeover Pool</h1>
+  <div class="sub">World Cup-specific pool hub · ESPN schedule/results · locked spreads · takeover scenarios</div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('dashboard')">Dashboard</button>
+    <button class="tab-btn" onclick="showTab('simulator')">Simulator</button>
+    <button class="tab-btn" onclick="showTab('bracket')">Bracket</button>
+    <button class="tab-btn" onclick="showTab('owners')">Owners</button>
+    <button class="tab-btn" onclick="showTab('control')">Pool Control</button>
+    <button class="tab-btn" onclick="showTab('rules')">Rules</button>
+    <button class="tab-btn" onclick="location.href='admin.html'">Admin</button>
+  </div>
+
+  <section id="tab-dashboard" class="tab active">
+    <div class="hero">
+      <h2>Pool Dashboard</h2>
+      <p class="small">Use this page as the main launcher while the full v2 app is being wired into the modular files. The Simulator is now the central place for schedule, scenarios, and pool impact.</p>
+      <div class="status-line">
+        <span class="pill">ESPN schedule/results</span>
+        <span class="pill">Locked spreads</span>
+        <span class="pill">Takeover logic</span>
+        <span class="pill">Manual spread admin</span>
+      </div>
+    </div>
+    <div class="hub-grid">
+      <div class="hub-card today">
+        <h2>Game of the Day</h2>
+        <p><b>Brazil vs Japan</b></p>
+        <p class="small">Japan is today. This is a high-impact Larry vs Gal matchup.</p>
+        <a class="primary-link" href="simulator.html#d-2026-06-29">Open Today in Simulator</a>
+      </div>
+      <div class="hub-card">
+        <h2>Spread Admin</h2>
+        <p>Password-protected manual spread edits only. Results remain ESPN-driven.</p>
+        <a href="admin.html">Open Admin</a>
+      </div>
+      <div class="hub-card">
+        <h2>Upgrade Preview</h2>
+        <p>Roadmap for the larger dashboard features we are staging.</p>
+        <a href="upgrade.html">Open Upgrade Preview</a>
+      </div>
+      <div class="hub-card">
+        <h2>Current Simulator</h2>
+        <p>Date grouped games, kickoff time, location, locked spread, owners, and takeover scenarios.</p>
+        <a href="simulator.html">Open Simulator</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="tab-simulator" class="tab">
+    <div class="panel"><b>Simulator</b><p class="small">The standalone Match Center was removed. Schedule and scenarios now live in Simulator.</p><a class="primary-link" href="simulator.html">Open Simulator</a></div>
+  </section>
+
+  <section id="tab-bracket" class="tab">
+    <div class="panel"><b>Bracket</b><p class="small">Bracket rendering remains staged in the existing bracket module while v2 is wired into the main app.</p><a class="primary-link" href="upgrade.html">Open Upgrade Preview</a></div>
+  </section>
+
+  <section id="tab-owners" class="tab">
+    <div class="panel"><b>Owners</b><p class="small">Owner standings, alive teams, eliminated teams, and inherited teams remain part of the v2 scope.</p></div>
+  </section>
+
+  <section id="tab-control" class="tab">
+    <div class="panel"><b>Pool Control</b><p class="small">Use Admin for manual spread overrides. ESPN schedule/results and line locking are staged for the next integrated release.</p><a class="primary-link" href="admin.html">Open Spread Admin</a></div>
+  </section>
+
+  <section id="tab-rules" class="tab rules">
+    <div class="panel">
+      <h2>World Cup Pool Rules</h2>
+      <ul>
+        <li>Each owner starts with 3 teams.</li>
+        <li>Group-stage scoring: win = 3, draw = 1, loss = 0.</li>
+        <li>DraftKings/ESPN spreads are locked before each knockout round.</li>
+        <li>Spreads are regulation-time only.</li>
+        <li>If a favorite wins but does not cover, the underdog owner inherits the advancing team.</li>
+        <li>If a favorite advances in extra time or penalties, the underdog owner inherits the advancing team.</li>
+      </ul>
+    </div>
+  </section>
 </div>
-
-<section id="tab-dashboard" class="tab active">
-<div class="toolbar"><button onclick="refreshFromEspn()">Refresh ESPN Results</button><button class="secondary" onclick="toggleBracketMode()">Toggle Bracket View</button><button class="red" onclick="resetLocal()">Reset Local</button><span id="status" class="small">Ready.</span></div>
-<div id="dashboard" class="dashboard-grid"></div><div id="summary" class="summary"></div>
-</section>
-<section id="tab-bracket" class="tab"><div class="panel"><b>March Madness Bracket</b><p class="small">Round of 32 is preloaded from your pool sheet. Future rounds populate from winners and inherited owners.</p><button class="secondary" onclick="toggleBracketMode()">Toggle Phone / Wide</button></div><div class="bracket-scroll"><div id="bracket" class="bracket"></div></div></section>
-<section id="tab-matchcenter" class="tab"><div class="panel"><b>Match Center</b><p class="small">Upcoming match cards show locked spreads and takeover outcomes.</p></div><div id="matchCenter"></div></section>
-<section id="tab-control" class="tab"><div class="panel"><b>Pool Control Center</b><p class="small">ESPN status, locked lines, completed matches, takeovers, and manual spread override status.</p></div><div id="controlCenter"></div><div id="matchCards"></div></section>
-<section id="tab-owners" class="tab"><div class="panel"><b>Owners</b><p class="small">Alive teams, eliminated teams, inherited teams, points, and probability view.</p></div><div id="ownersView"></div></section>
-<section id="tab-simulator" class="tab"><div class="panel"><b>Simulator</b><p class="small">Scenario view for each matchup: favorite covers, favorite does not cover, or underdog wins.</p></div><div id="simulatorView"></div></section>
-<section id="tab-rules" class="tab rules"><div class="panel"><h2>Pool Structure</h2><ul><li>Each owner starts with 3 teams.</li><li>Owner score follows the current owner of the advancing slot.</li></ul><h2>Group Stage Scoring</h2><ul><li>Win = 3 points.</li><li>Draw = 1 point.</li><li>Loss = 0 points.</li></ul><h2>Knockout Spread Rule</h2><ul><li>DraftKings/ESPN lines are locked before each round.</li><li>All lines are for regulation time only.</li><li>If a favorite advances in extra time or penalties, the underdog owner takes over the advancing team.</li><li>If the favorite wins in regulation but does not cover, the underdog owner takes over the advancing team.</li><li>Once lines are locked, they do not change.</li></ul><h2>Prize Structure</h2><ul><li>Winner: $1,120</li><li>Runner-up: $480</li></ul><a class="admin-link" href="admin.html">Open password-protected spread admin</a></div></section>
-<div class="note">GitHub Pages pool dashboard · manual spread overrides only affect this browser.</div>
-
-<script type="module">
-import { POOL_OWNERS, TEAM_CONTRIB, OWNER_ODDS, norm, ownerOriginal, rank } from './data.js';
-import { R32, ESPN_URL, fmtLine, oppLine } from './lines.js';
-import { runPoolSimulation } from './montecarlo.js';
-import { renderBracket as drawBracket } from './bracket.js';
-
-let bracketMode=localStorage.getItem('wc_bracket_mode')||'bracket';
-let completedMatches=load('wc_completed',[]);
-let fixtures=load('wc_fixtures',[]);
-let lines=load('wc_lines',Object.fromEntries(R32.map(m=>[m.id,m.line])));
-let lastRefresh=localStorage.getItem('wc_last_refresh')||'Never';
-function save(k,v){localStorage.setItem(k,JSON.stringify(v));}
-function load(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}}
-function showTab(name){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+name).classList.add('active');[...document.querySelectorAll('.tab-btn')].find(b=>b.textContent.toLowerCase().replace(' ','').includes(name))?.classList.add('active');renderAll();}
-function resetLocal(){if(confirm('Clear ESPN results and local spread overrides?')){localStorage.removeItem('wc_completed');localStorage.removeItem('wc_fixtures');localStorage.removeItem('wc_lines');location.reload();}}
-async function refreshFromEspn(){const s=document.getElementById('status');s.textContent='Calling ESPN...';try{const r=await fetch(ESPN_URL);if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();fixtures=parseEspn(d);completedMatches=fixtures.filter(f=>f.completed).map(f=>[f.home,f.homeScore,f.away,f.awayScore,f.round,f.status]);save('wc_fixtures',fixtures);save('wc_completed',completedMatches);lastRefresh=new Date().toLocaleString();localStorage.setItem('wc_last_refresh',lastRefresh);s.textContent=`ESPN updated ${fixtures.length} fixtures / ${completedMatches.length} finals · ${lastRefresh}`;renderAll();}catch(e){s.textContent='ESPN failed: '+e.message;renderAll();}}
-function parseEspn(data){return(data.events||[]).map(ev=>{const comp=ev.competitions?.[0];const cs=comp?.competitors||[];if(cs.length<2)return null;const home=cs.find(c=>c.homeAway==='home')||cs[0],away=cs.find(c=>c.homeAway==='away')||cs[1];const hs=Number(home.score),as=Number(away.score),status=String(ev.status?.type?.name||'');return{home:norm(home.team?.displayName||home.team?.name||''),away:norm(away.team?.displayName||away.team?.name||''),homeScore:Number.isFinite(hs)?hs:null,awayScore:Number.isFinite(as)?as:null,completed:ev.status?.type?.completed===true||status.toUpperCase().includes('FINAL'),status,date:ev.date||'',round:detectRound(ev)}}).filter(Boolean)}
-function detectRound(ev){const s=[ev.name,ev.shortName,ev.season?.slug,ev.group?.name].filter(Boolean).join(' ').toLowerCase();if(s.includes('round of 32'))return'Round of 32';if(s.includes('round of 16'))return'Round of 16';if(s.includes('quarter'))return'Quarterfinals';if(s.includes('semi'))return'Semifinals';if(s.includes('final'))return'Final';const y=ev.date?new Date(ev.date).toISOString().slice(0,10):'';if(y>='2026-06-28'&&y<='2026-07-03')return'Round of 32';if(y>='2026-07-04'&&y<='2026-07-07')return'Round of 16';if(y>='2026-07-09'&&y<='2026-07-11')return'Quarterfinals';if(y>='2026-07-14'&&y<='2026-07-15')return'Semifinals';if(y==='2026-07-19')return'Final';return'Group'}
-function getFixture(a,b){return fixtures.find(f=>(norm(f.home)===norm(a)&&norm(f.away)===norm(b))||(norm(f.home)===norm(b)&&norm(f.away)===norm(a)))}
-function getResult(a,b){const f=getFixture(a,b);return f&&f.completed?{home:f.home,away:f.away,homeScore:f.homeScore,awayScore:f.awayScore,status:f.status,method:'REG'}:null}
-function gameWinner(res){if(!res)return null;if(Number(res.homeScore)>Number(res.awayScore))return norm(res.home);if(Number(res.awayScore)>Number(res.homeScore))return norm(res.away);return norm(res.winner||'')}
-function teamPts(t){return completedMatches.reduce((s,m)=>s+((norm(m[0])===norm(t)||norm(m[2])===norm(t))?(m[1]===m[3]?1:(norm(m[0])===norm(t)?(m[1]>m[3]?3:0):(m[3]>m[1]?3:0))):0),0)}
-function takeoverOwner(match,res,current){const line=lines[match.id],fav=line===null||line===undefined?null:match.home,dog=line===null||line===undefined?null:match.away,winner=gameWinner(res);if(!winner)return null;const winnerOwner=current[winner]||ownerOriginal(winner);if(line===null||line===undefined)return winnerOwner;if(norm(winner)!==norm(fav))return current[winner]||ownerOriginal(winner);const fs=norm(res.home)===norm(fav)?Number(res.homeScore):Number(res.awayScore),ds=norm(res.home)===norm(dog)?Number(res.homeScore):Number(res.awayScore),covered=(fs+Number(line))>ds,method=String(res.method||'REG').toUpperCase();if(method==='ET'||method==='PK'||!covered)return current[norm(dog)]||ownerOriginal(dog);return winnerOwner}
-function buildState(){const current={},ownerPts={},active={},log=[];for(const p of POOL_OWNERS){ownerPts[p.owner]=0;for(const t of p.teams)current[norm(t)]=p.owner}for(const m of R32){const h=norm(m.home),a=norm(m.away);current[h]=m.homeOwner||current[h]||ownerOriginal(h);current[a]=m.awayOwner||current[a]||ownerOriginal(a);active[h]=current[h];active[a]=current[a]}for(const m of completedMatches){const[h,hs,a,as]=m,ho=current[norm(h)]||ownerOriginal(h),ao=current[norm(a)]||ownerOriginal(a);if(ho)ownerPts[ho]+=hs===as?1:(hs>as?3:0);if(ao)ownerPts[ao]+=hs===as?1:(as>hs?3:0)}for(const match of R32){const res=getResult(match.home,match.away);if(!res)continue;const winner=gameWinner(res);if(!winner)continue;const loser=norm(winner)===norm(match.home)?match.away:match.home;delete active[norm(loser)];const prev=current[norm(winner)]||ownerOriginal(winner),newOwner=takeoverOwner(match,res,current);current[norm(winner)]=newOwner;active[norm(winner)]=newOwner;if(newOwner!==prev)log.push(`${newOwner} takes over ${winner} from ${prev}`)}return{current,active,log,ownerPts}}
-function nextUpcomingMatch(){const now=new Date();const c=R32.map(m=>{if(getResult(m.home,m.away))return null;const fx=getFixture(m.home,m.away);return{...m,date:fx?.date||m.date||''}}).filter(Boolean).filter(m=>m.date).sort((a,b)=>new Date(a.date)-new Date(b.date));return c.find(m=>new Date(m.date)>=now)||c[0]||null}
-function biggestTakeoverSpots(){return R32.filter(m=>lines[m.id]!==null&&lines[m.id]!==undefined).map(m=>({match:m,abs:Math.abs(Number(lines[m.id]))})).sort((a,b)=>b.abs-a.abs).slice(0,3)}
-function ownerStatus(st){return POOL_OWNERS.map(p=>{const all=p.teams.map(norm),alive=all.filter(t=>Object.prototype.hasOwnProperty.call(st.active,t)),eliminated=all.filter(t=>!Object.prototype.hasOwnProperty.call(st.active,t)),inherited=Object.entries(st.active).filter(([team,owner])=>owner===p.owner&&!all.includes(team)).map(([team])=>team);return{owner:p.owner,pts:st.ownerPts[p.owner]||0,alive,eliminated,inherited,activeCount:alive.length+inherited.length,odds:OWNER_ODDS[p.owner]||'0.0%'}}).sort((a,b)=>b.pts-a.pts||b.activeCount-a.activeCount||parseFloat(b.odds)-parseFloat(a.odds))}
-function renderDashboard(){const st=buildState(),os=ownerStatus(st),sim=runPoolSimulation({iterations:3000,lines,getResult,gameWinner,takeoverOwner}),leader=os[0],simLeader=sim[0]||{owner:'TBD',winPct:0},next=nextUpcomingMatch(),alerts=biggestTakeoverSpots();document.getElementById('dashboard').innerHTML=`<div class="dash-card"><div class="dash-title">Current Leader</div><div class="dash-main">${leader.owner}</div><div class="dash-sub">${leader.pts} pts · ${leader.activeCount} alive/inherited</div></div><div class="dash-card"><div class="dash-title">Projected Pool Favorite</div><div class="dash-main">${simLeader.owner}</div><div class="dash-sub">${simLeader.winPct.toFixed(1)}% simulated chance</div><div class="prob-bar-wrap"><div class="prob-bar" style="width:${Math.min(100,simLeader.winPct)}%"></div></div></div><div class="dash-card"><div class="dash-title">Next Match</div><div class="dash-main">${next?`${next.home} vs ${next.away}`:'No upcoming match'}</div><div class="dash-sub">${next&&next.date?new Date(next.date).toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'Time TBD'}</div></div><div class="dash-card alert"><div class="dash-title">Biggest Takeover Spot</div><div class="dash-main">${alerts.length?`${alerts[0].match.home} ${fmtLine(lines[alerts[0].match.id])}`:'None'}</div><div class="dash-sub">${alerts.map(a=>`${a.match.home} ${fmtLine(lines[a.match.id])} vs ${a.match.away} ${fmtLine(oppLine(lines[a.match.id]))}`).join('<br>')}</div></div><div class="dash-card" style="grid-column:1/-1"><div class="dash-title">Pool Win Probability</div><table class="sim-table"><thead><tr><th>Owner</th><th>Win %</th><th>EV</th></tr></thead><tbody>${sim.map(o=>`<tr><td>${o.owner}</td><td>${o.winPct.toFixed(1)}%</td><td>${o.ev.toFixed(1)}</td></tr>`).join('')}</tbody></table><div class="sim-note">Simulation uses ESPN results, locked spreads, team rankings, and takeover rules.</div></div>`;document.getElementById('summary').innerHTML=`<b>Last ESPN Refresh:</b> ${lastRefresh}<br><b>Locked Lines:</b> ${Object.values(lines).filter(v=>v!==null&&v!==undefined).length} / 16<br><b>Completed Matches:</b> ${completedMatches.length}<br><b>Takeovers:</b> ${st.log.length}${st.log.length?'<br><br><b>Latest:</b><br>'+st.log.slice(-4).join('<br>'):''}`}
-function renderOwners(){const st=buildState(),os=ownerStatus(st);document.getElementById('ownersView').innerHTML=os.map((o,i)=>`<div class="owner-card"><div class="owner-header"><span>#${i+1} ${o.owner}</span><span>${o.activeCount} alive</span></div><div class="owner-meta">Pool Pts: ${o.pts} · ${o.odds}</div><div class="alive-list"><b>Alive:</b> ${[...o.alive,...o.inherited.map(t=>`${t} (inherited)`)].join(', ')||'None'}</div><div class="elim-list"><b>Eliminated:</b> ${o.eliminated.join(', ')||'None'}</div><div class="team-header"><span>Team</span><span>Rank</span><span>Pts</span><span>Contrib</span></div>${POOL_OWNERS.find(p=>p.owner===o.owner).teams.map(t=>`<div class="team-row"><span>${t}</span><span>${rank(t)}</span><span>${teamPts(t)}</span><span>${TEAM_CONTRIB[t]||'0.0%'}</span></div>`).join('')}</div>`).join('')}
-function renderControl(){const st=buildState(),overrides=localStorage.getItem('wc_lines')?'Enabled':'None';document.getElementById('controlCenter').innerHTML=`<div class="dashboard-grid"><div class="dash-card"><div class="dash-title">ESPN</div><div class="dash-main">${fixtures.length?'Connected':'Ready'}</div><div class="dash-sub">Last refresh: ${lastRefresh}</div></div><div class="dash-card"><div class="dash-title">Lines</div><div class="dash-main">${Object.values(lines).filter(v=>v!==null&&v!==undefined).length}/16 Locked</div><div class="dash-sub">Manual overrides: ${overrides}</div></div><div class="dash-card"><div class="dash-title">Results</div><div class="dash-main">${completedMatches.length}</div><div class="dash-sub">Completed matches loaded</div></div><div class="dash-card"><div class="dash-title">Admin</div><div class="dash-main">Spread Only</div><div class="dash-sub"><a class="admin-link" href="admin.html">Open spread admin</a></div></div></div>`;document.getElementById('matchCards').innerHTML=R32.map(m=>matchCard(m,st)).join('')}
-function matchCard(m,st){const line=lines[m.id],res=getResult(m.home,m.away),winner=gameWinner(res),newOwner=res?takeoverOwner(m,res,st.current):null;return`<div class="match-card"><div><span class="status-pill ${line!==null&&line!==undefined?'locked':'pending'}">${line!==null&&line!==undefined?'LINE LOCKED':'LINE TBD'}</span><span class="status-pill">${m.date?new Date(m.date).toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'Time TBD'}</span></div><div class="match-grid"><div class="team-box"><div class="team-name">${rank(m.home)} ${m.home}</div><div class="owner">Owner: ${st.current[m.home]||m.homeOwner}</div><div>${fmtLine(line)}</div></div><div class="line">vs</div><div class="team-box"><div class="team-name">${rank(m.away)} ${m.away}</div><div class="owner">Owner: ${st.current[m.away]||m.awayOwner}</div><div>${line!==null&&line!==undefined?fmtLine(oppLine(line)):'TBD'}</div></div></div><label>Line for ${m.home}</label><input type="number" step="0.5" value="${line??''}" onchange="setLine('${m.id}',this.value)"><div class="result-panel">${res?`Winner: <b>${winner}</b><br>Advancing owner: <b>${newOwner}</b><br>Score: ${res.home} ${res.homeScore} - ${res.awayScore} ${res.away}`:'No completed result yet.'}</div></div>`}
-function renderMatchCenter(){const st=buildState();document.getElementById('matchCenter').innerHTML=`<div class="match-center-grid">${R32.map(m=>{const line=lines[m.id],ho=st.current[m.home]||m.homeOwner,ao=st.current[m.away]||m.awayOwner;return`<div class="match-card"><div class="owner-header"><span>${m.home} vs ${m.away}</span><span>${fmtLine(line)}</span></div><div class="result-panel"><b>Takeover outcomes</b><br>${m.home} covers: ${ho} keeps ${m.home}<br>${m.home} wins but does not cover: ${ao} inherits ${m.home}<br>${m.away} wins: ${ao} advances with ${m.away}</div></div>`}).join('')}</div>`}
-function renderSimulator(){const st=buildState();document.getElementById('simulatorView').innerHTML=R32.map(m=>{const line=lines[m.id],ho=st.current[m.home]||m.homeOwner,ao=st.current[m.away]||m.awayOwner;return`<div class="match-card"><div class="owner-header"><span>${m.home} vs ${m.away}</span><span>${fmtLine(line)}</span></div><div class="scenario-grid"><div class="scenario-card"><div class="scenario-title">Favorite covers</div><div>${ho} controls ${m.home}</div></div><div class="scenario-card"><div class="scenario-title">Favorite wins, no cover</div><div>${ao} inherits ${m.home}</div></div><div class="scenario-card"><div class="scenario-title">Underdog wins</div><div>${ao} controls ${m.away}</div></div></div></div>`}).join('')}
-function teamLine(t,res,w){let score='';if(res)score=norm(res.home)===norm(t)?res.homeScore:(norm(res.away)===norm(t)?res.awayScore:'');return`<div class="game-team ${norm(w)===norm(t)?'winner':''}"><span class="name">${rank(t)} ${t}</span><span>${score}</span></div>`}
-function renderAll(){const st=buildState();renderDashboard();renderOwners();renderControl();renderMatchCenter();renderSimulator();drawBracket({box:document.getElementById('bracket'),bracketMode,state:st,getResult,gameWinner,teamLine,lines})}
-function toggleBracketMode(){bracketMode=bracketMode==='stack'?'bracket':'stack';localStorage.setItem('wc_bracket_mode',bracketMode);renderAll()}
-function setLine(id,val){lines[id]=val===''?null:Number(val);save('wc_lines',lines);renderAll()}
-window.showTab=showTab;window.refreshFromEspn=refreshFromEspn;window.resetLocal=resetLocal;window.toggleBracketMode=toggleBracketMode;window.setLine=setLine;renderAll();
+<script>
+function showTab(name){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+name).classList.add('active');[...document.querySelectorAll('.tab-btn')].find(b=>b.textContent.toLowerCase().replaceAll(' ','').includes(name))?.classList.add('active');}
 </script>
 </body>
 </html>
