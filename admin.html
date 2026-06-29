@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>World Cup Pool Admin Override</title>
+<link rel="stylesheet" href="styles.css" />
+<style>
+.admin-wrap{max-width:900px;margin:0 auto}.admin-card{background:#0d1524;border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hidden{display:none}.ok{color:#86efac}.warn{color:#fdba74}.admin-table{width:100%;border-collapse:collapse;font-size:13px}.admin-table th,.admin-table td{border-bottom:1px solid #1e293b;padding:6px;text-align:left}@media(max-width:700px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="admin-wrap">
+<h1>Manual Override Admin</h1>
+<div class="sub">Password-protected local override page for lines and results.</div>
+
+<div id="login" class="admin-card">
+  <p class="small">Default password is <b>pool2026</b>. Change it after login. This is client-side protection for your GitHub Pages app, not bank-level security.</p>
+  <label>Password</label>
+  <input id="pw" type="password" placeholder="Enter admin password" />
+  <br><br>
+  <button onclick="login()">Unlock Overrides</button>
+  <div id="loginMsg" class="small"></div>
+</div>
+
+<div id="admin" class="hidden">
+  <div class="admin-card">
+    <h2>Change Admin Password</h2>
+    <div class="grid">
+      <div><label>New Password</label><input id="newPw" type="password" /></div>
+      <div><label>Confirm</label><input id="newPw2" type="password" /></div>
+    </div>
+    <br><button onclick="changePassword()">Save Password</button>
+    <div id="pwMsg" class="small"></div>
+  </div>
+
+  <div class="admin-card">
+    <h2>Manual Result Override</h2>
+    <div class="grid">
+      <div><label>Home Team</label><input id="home" placeholder="Germany" /></div>
+      <div><label>Away Team</label><input id="away" placeholder="Paraguay" /></div>
+      <div><label>Home Score</label><input id="homeScore" type="number" /></div>
+      <div><label>Away Score</label><input id="awayScore" type="number" /></div>
+      <div><label>Winner</label><input id="winner" placeholder="Germany" /></div>
+      <div><label>Method</label><select id="method"><option value="REG">REG</option><option value="ET">ET</option><option value="PK">PK</option></select></div>
+    </div>
+    <br><button onclick="saveResult()">Save Result Override</button>
+    <button class="secondary" onclick="clearResultForm()">Clear Form</button>
+    <div id="resultMsg" class="small"></div>
+  </div>
+
+  <div class="admin-card">
+    <h2>Manual Line Override</h2>
+    <div class="grid">
+      <div><label>Match ID</label><input id="lineId" placeholder="r32-1" /></div>
+      <div><label>Line for Home Team</label><input id="lineValue" type="number" step="0.5" placeholder="-1.5" /></div>
+    </div>
+    <br><button onclick="saveLine()">Save Line Override</button>
+    <div id="lineMsg" class="small"></div>
+  </div>
+
+  <div class="admin-card">
+    <h2>Saved Overrides</h2>
+    <button onclick="renderOverrides()">Refresh List</button>
+    <button class="red" onclick="clearOverrides()">Clear All Manual Overrides</button>
+    <div id="overrideList"></div>
+  </div>
+
+  <div class="admin-card">
+    <a href="index.html">Back to Pool App</a>
+  </div>
+</div>
+</div>
+
+<script>
+const DEFAULT_HASH='f4517265fe553309352a662083f9f4875af50097c386b896c0119df21ae2c58d'; // pool2026
+async function sha256(text){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');}
+function getHash(){return localStorage.getItem('wc_admin_pw_hash')||DEFAULT_HASH;}
+async function login(){const h=await sha256(document.getElementById('pw').value);if(h===getHash()){sessionStorage.setItem('wc_admin_unlocked','1');document.getElementById('login').classList.add('hidden');document.getElementById('admin').classList.remove('hidden');renderOverrides();}else{document.getElementById('loginMsg').innerHTML='<span class="warn">Incorrect password.</span>';}}
+async function changePassword(){const a=document.getElementById('newPw').value,b=document.getElementById('newPw2').value;if(!a||a!==b){document.getElementById('pwMsg').textContent='Passwords do not match.';return;}localStorage.setItem('wc_admin_pw_hash',await sha256(a));document.getElementById('pwMsg').innerHTML='<span class="ok">Password changed.</span>';}
+function keyFor(h,a){return `${h.trim().toLowerCase()}__${a.trim().toLowerCase()}`;}
+function saveResult(){const h=home.value.trim(),a=away.value.trim();if(!h||!a){resultMsg.textContent='Home and away teams required.';return;}const obj={home:h,away:a,homeScore:Number(homeScore.value),awayScore:Number(awayScore.value),winner:winner.value.trim(),method:method.value,manual:true,timestamp:new Date().toISOString()};const all=JSON.parse(localStorage.getItem('wc_manual_results')||'{}');all[keyFor(h,a)]=obj;localStorage.setItem('wc_manual_results',JSON.stringify(all));resultMsg.innerHTML='<span class="ok">Result override saved.</span>';renderOverrides();}
+function clearResultForm(){['home','away','homeScore','awayScore','winner'].forEach(id=>document.getElementById(id).value='');method.value='REG';}
+function saveLine(){const id=lineId.value.trim();if(!id){lineMsg.textContent='Match ID required.';return;}const all=JSON.parse(localStorage.getItem('wc_manual_lines')||'{}');all[id]=Number(lineValue.value);localStorage.setItem('wc_manual_lines',JSON.stringify(all));const current=JSON.parse(localStorage.getItem('wc_lines')||'{}');current[id]=Number(lineValue.value);localStorage.setItem('wc_lines',JSON.stringify(current));lineMsg.innerHTML='<span class="ok">Line override saved.</span>';renderOverrides();}
+function renderOverrides(){const results=JSON.parse(localStorage.getItem('wc_manual_results')||'{}');const lines=JSON.parse(localStorage.getItem('wc_manual_lines')||'{}');overrideList.innerHTML=`<h3>Result Overrides</h3><pre>${JSON.stringify(results,null,2)}</pre><h3>Line Overrides</h3><pre>${JSON.stringify(lines,null,2)}</pre>`;}
+function clearOverrides(){if(!confirm('Clear manual result and line overrides?'))return;localStorage.removeItem('wc_manual_results');localStorage.removeItem('wc_manual_lines');renderOverrides();}
+if(sessionStorage.getItem('wc_admin_unlocked')==='1'){login.classList.add('hidden');admin.classList.remove('hidden');renderOverrides();}
+</script>
+</body>
+</html>
