@@ -3,95 +3,68 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>World Cup 2026 Takeover Pool</title>
+<title>World Cup 2026 Pool</title>
 <link rel="stylesheet" href="styles.css" />
 <style>
-.hub-wrap{max-width:1200px;margin:0 auto}.hero{background:#0d1524;border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px}.hub-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.hub-card{background:#111827;border:1px solid var(--border);border-radius:14px;padding:14px;line-height:1.45}.hub-card h2{margin:0 0 6px;font-size:20px}.hub-card a{color:#93c5fd;font-weight:900;text-decoration:none}.status-line{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.pill{display:inline-block;border:1px solid var(--border);border-radius:999px;padding:5px 10px;color:#cbd5e1;background:#1e293b;font-size:12px;font-weight:800}.primary-link{display:inline-block;background:var(--blue);color:white!important;border-radius:10px;padding:10px 14px;margin-top:8px;text-decoration:none}.tab-note{color:var(--muted);font-size:13px;margin-top:6px}.today{border-color:#7c2d12;background:#1c1917}.today h2{color:#fdba74}@media(max-width:700px){.hub-grid{grid-template-columns:1fr}}
+body{max-width:1200px;margin:0 auto}.clean-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.owner-odds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.odds-row{background:#0b1220;border:1px solid #263653;border-radius:12px;padding:10px}.odds-head{display:flex;justify-content:space-between;font-weight:900}.bar-wrap{height:8px;background:#1e293b;border-radius:999px;margin-top:8px;overflow:hidden}.bar{height:100%;background:#22c55e}.quick-link{display:inline-block;background:var(--blue);color:white;text-decoration:none;border-radius:10px;padding:10px 14px;font-weight:900;margin-top:8px}.today-card{border-color:#7c2d12;background:#1c1917}.today-card .dash-main{color:#fdba74}.mini-table{width:100%;border-collapse:collapse;font-size:13px}.mini-table th,.mini-table td{border-bottom:1px solid #1e293b;padding:7px;text-align:left}.mini-table th{color:var(--muted);text-transform:uppercase;font-size:12px}.iframe-wrap{height:78vh;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:#07101f}.iframe-wrap iframe{width:100%;height:100%;border:0}@media(max-width:700px){body{padding:10px}.clean-grid,.owner-odds{grid-template-columns:1fr}.iframe-wrap{height:80vh}}
 </style>
 </head>
 <body>
-<div class="hub-wrap">
-  <h1>World Cup 2026 Takeover Pool</h1>
-  <div class="sub">World Cup-specific pool hub · ESPN schedule/results · locked spreads · takeover scenarios</div>
+<h1>World Cup 2026 Pool</h1>
+<div class="sub">Original clean dashboard · ESPN refresh · locked spreads · takeover scenarios</div>
 
-  <div class="tabs">
-    <button class="tab-btn active" onclick="showTab('dashboard')">Dashboard</button>
-    <button class="tab-btn" onclick="showTab('simulator')">Simulator</button>
-    <button class="tab-btn" onclick="showTab('bracket')">Bracket</button>
-    <button class="tab-btn" onclick="showTab('owners')">Owners</button>
-    <button class="tab-btn" onclick="showTab('control')">Pool Control</button>
-    <button class="tab-btn" onclick="showTab('rules')">Rules</button>
-    <button class="tab-btn" onclick="location.href='admin.html'">Admin</button>
-  </div>
-
-  <section id="tab-dashboard" class="tab active">
-    <div class="hero">
-      <h2>Pool Dashboard</h2>
-      <p class="small">Use this page as the main launcher while the full v2 app is being wired into the modular files. The Simulator is now the central place for schedule, scenarios, and pool impact.</p>
-      <div class="status-line">
-        <span class="pill">ESPN schedule/results</span>
-        <span class="pill">Locked spreads</span>
-        <span class="pill">Takeover logic</span>
-        <span class="pill">Manual spread admin</span>
-      </div>
-    </div>
-    <div class="hub-grid">
-      <div class="hub-card today">
-        <h2>Game of the Day</h2>
-        <p><b>Brazil vs Japan</b></p>
-        <p class="small">Japan is today. This is a high-impact Larry vs Gal matchup.</p>
-        <a class="primary-link" href="simulator.html#d-2026-06-29">Open Today in Simulator</a>
-      </div>
-      <div class="hub-card">
-        <h2>Spread Admin</h2>
-        <p>Password-protected manual spread edits only. Results remain ESPN-driven.</p>
-        <a href="admin.html">Open Admin</a>
-      </div>
-      <div class="hub-card">
-        <h2>Upgrade Preview</h2>
-        <p>Roadmap for the larger dashboard features we are staging.</p>
-        <a href="upgrade.html">Open Upgrade Preview</a>
-      </div>
-      <div class="hub-card">
-        <h2>Current Simulator</h2>
-        <p>Date grouped games, kickoff time, location, locked spread, owners, and takeover scenarios.</p>
-        <a href="simulator.html">Open Simulator</a>
-      </div>
-    </div>
-  </section>
-
-  <section id="tab-simulator" class="tab">
-    <div class="panel"><b>Simulator</b><p class="small">The standalone Match Center was removed. Schedule and scenarios now live in Simulator.</p><a class="primary-link" href="simulator.html">Open Simulator</a></div>
-  </section>
-
-  <section id="tab-bracket" class="tab">
-    <div class="panel"><b>Bracket</b><p class="small">Bracket rendering remains staged in the existing bracket module while v2 is wired into the main app.</p><a class="primary-link" href="upgrade.html">Open Upgrade Preview</a></div>
-  </section>
-
-  <section id="tab-owners" class="tab">
-    <div class="panel"><b>Owners</b><p class="small">Owner standings, alive teams, eliminated teams, and inherited teams remain part of the v2 scope.</p></div>
-  </section>
-
-  <section id="tab-control" class="tab">
-    <div class="panel"><b>Pool Control</b><p class="small">Use Admin for manual spread overrides. ESPN schedule/results and line locking are staged for the next integrated release.</p><a class="primary-link" href="admin.html">Open Spread Admin</a></div>
-  </section>
-
-  <section id="tab-rules" class="tab rules">
-    <div class="panel">
-      <h2>World Cup Pool Rules</h2>
-      <ul>
-        <li>Each owner starts with 3 teams.</li>
-        <li>Group-stage scoring: win = 3, draw = 1, loss = 0.</li>
-        <li>DraftKings/ESPN spreads are locked before each knockout round.</li>
-        <li>Spreads are regulation-time only.</li>
-        <li>If a favorite wins but does not cover, the underdog owner inherits the advancing team.</li>
-        <li>If a favorite advances in extra time or penalties, the underdog owner inherits the advancing team.</li>
-      </ul>
-    </div>
-  </section>
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab('dashboard')">Dashboard</button>
+  <button class="tab-btn" onclick="showTab('standings')">Standings</button>
+  <button class="tab-btn" onclick="showTab('simulator')">Simulator</button>
+  <button class="tab-btn" onclick="showTab('control')">Pool Control</button>
+  <button class="tab-btn" onclick="showTab('rules')">Rules</button>
+  <button class="tab-btn" onclick="location.href='admin.html'">Admin</button>
 </div>
+
+<section id="tab-dashboard" class="tab active">
+  <div class="toolbar">
+    <button onclick="refreshFromEspn()">Refresh ESPN Results</button>
+    <button class="secondary" onclick="location.href='simulator.html'">Open Simulator Full Page</button>
+    <button class="secondary" onclick="location.href='admin.html'">Spread Admin</button>
+    <span id="status" class="small">Ready.</span>
+  </div>
+  <div class="clean-grid">
+    <div class="dash-card today-card"><div class="dash-title">Game of the Day</div><div class="dash-main">Brazil vs Japan</div><div class="dash-sub">1:00 PM EDT · Houston Stadium · Brazil -0.5<br>Larry can advance with Japan or inherit Brazil if Brazil wins but does not cover.</div><a class="quick-link" href="simulator.html#d-2026-06-29">Open Today</a></div>
+    <div class="dash-card"><div class="dash-title">ESPN Status</div><div class="dash-main" id="espnState">Ready</div><div class="dash-sub" id="espnSub">Click Refresh ESPN Results to load scores/status.</div></div>
+    <div class="dash-card"><div class="dash-title">Locked Lines</div><div class="dash-main">16 / 16</div><div class="dash-sub">Round of 32 spreads are locked. Manual overrides are available in Admin.</div></div>
+    <div class="dash-card"><div class="dash-title">Pool Control</div><div class="dash-main">Takeover Rules Active</div><div class="dash-sub">Favorite must cover in regulation. No-cover, extra time, or penalties transfers to underdog owner.</div></div>
+  </div>
+  <div class="panel"><b>Owner Odds Dashboard</b><p class="small">Clean pool odds view. This stays separate from the schedule simulator.</p><div id="ownerOdds" class="owner-odds"></div></div>
+</section>
+
+<section id="tab-standings" class="tab">
+  <div class="panel"><b>Alive Team Counts / Eliminations</b><p class="small">Current Round of 32 view based on the locked pool sheet.</p><div id="standingsView"></div></div>
+</section>
+
+<section id="tab-simulator" class="tab">
+  <div class="panel"><b>Simulator</b><p class="small">Schedule grouped by date with kickoff time, location, spreads, owners, and scenarios.</p></div>
+  <div class="iframe-wrap"><iframe src="simulator.html" title="Simulator"></iframe></div>
+</section>
+
+<section id="tab-control" class="tab">
+  <div class="panel"><b>Pool Control</b><p class="small">Use this for quick links. Results come from ESPN; manual edits are spread-only.</p><a class="quick-link" href="admin.html">Open Spread Admin</a><a class="quick-link" style="margin-left:8px" href="simulator.html">Open Simulator</a></div>
+  <div class="panel"><b>Today's Matches</b><table class="mini-table"><thead><tr><th>Time</th><th>Match</th><th>Line</th><th>Impact</th></tr></thead><tbody><tr><td>1:00 PM</td><td>Brazil vs Japan</td><td>Brazil -0.5</td><td>Larry/Gal swing</td></tr><tr><td>4:30 PM</td><td>Germany vs Paraguay</td><td>Germany -1.5</td><td>Whelan inheritance risk</td></tr><tr><td>9:00 PM</td><td>Netherlands vs Morocco</td><td>Netherlands -0.5</td><td>Nixon/Nolan swing</td></tr></tbody></table></div>
+</section>
+
+<section id="tab-rules" class="tab rules">
+  <div class="panel"><h2>Pool Rules</h2><ul><li>Each owner starts with 3 teams.</li><li>Group stage scoring: win = 3, draw = 1, loss = 0.</li><li>Knockout spreads are locked before each round.</li><li>All spreads are regulation-time only.</li><li>If favorite wins but does not cover, underdog owner inherits the advancing team.</li><li>If favorite advances in extra time or penalties, underdog owner inherits the advancing team.</li></ul></div>
+</section>
+
 <script>
-function showTab(name){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+name).classList.add('active');[...document.querySelectorAll('.tab-btn')].find(b=>b.textContent.toLowerCase().replaceAll(' ','').includes(name))?.classList.add('active');}
+const ownerOdds={McCartney:'12.7%',Knox:'11.8%',Gal:'10.3%',Whelan:'10.0%',Joe:'9.3%',Roynan:'8.0%',Nixon:'7.1%',Larry:'6.5%',Tonrey:'5.9%',Nolan:'5.0%',Merc:'4.4%','J. Schwartz':'4.2%',Baxter:'3.4%',Madden:'3.0%','E. Schwartz':'2.5%',Dolan:'2.0%'};
+const owners={Baxter:['Colombia','Canada','Ghana'],Dolan:['Senegal','Czech Republic','Saudi Arabia'],'E. Schwartz':['Switzerland','Austria','Haiti'],Gal:['Brazil','South Korea','New Zealand'],'J. Schwartz':['Belgium','Croatia','Cape Verde'],Joe:['England','Egypt','South Africa'],Knox:['France','Norway','Iraq'],Larry:['Japan','Ivory Coast','Jordan'],Madden:['Germany','Algeria','Tunisia'],McCartney:['Argentina','Türkiye','DR Congo'],Merc:['United States','Mexico','Curaçao'],Nixon:['Netherlands','Australia','Panama'],Nolan:['Morocco','Scotland','Bosnia & Herzegovina'],Roynan:['Portugal','Ecuador','Uzbekistan'],Tonrey:['Uruguay','Iran','Qatar'],Whelan:['Spain','Sweden','Paraguay']};
+const alive=['Germany','Paraguay','France','Sweden','Canada','South Africa','Netherlands','Morocco','Portugal','Croatia','Spain','Austria','United States','Bosnia & Herzegovina','Belgium','Senegal','Brazil','Japan','Norway','Ivory Coast','Mexico','Ecuador','England','DR Congo','Argentina','Cape Verde','Australia','Egypt','Switzerland','Algeria','Colombia','Ghana'];
+function showTab(name){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+name).classList.add('active');[...document.querySelectorAll('.tab-btn')].find(b=>b.textContent.toLowerCase().includes(name))?.classList.add('active');}
+function renderOdds(){document.getElementById('ownerOdds').innerHTML=Object.entries(ownerOdds).sort((a,b)=>parseFloat(b[1])-parseFloat(a[1])).map(([o,p])=>`<div class="odds-row"><div class="odds-head"><span>${o}</span><span>${p}</span></div><div class="bar-wrap"><div class="bar" style="width:${parseFloat(p)*4}%"></div></div></div>`).join('');}
+function renderStandings(){document.getElementById('standingsView').innerHTML=Object.entries(owners).map(([o,teams])=>{const a=teams.filter(t=>alive.includes(t));const e=teams.filter(t=>!alive.includes(t));return `<div class="owner-status-row"><div class="owner-status-head"><span>${o}</span><span>${a.length} alive · ${e.length} eliminated</span></div><div class="alive-list"><b>Alive:</b> ${a.join(', ')||'None'}</div><div class="elim-list"><b>Eliminated:</b> ${e.join(', ')||'None'}</div></div>`}).join('');}
+async function refreshFromEspn(){const s=document.getElementById('status');s.textContent='Calling ESPN...';try{const r=await fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=20260611-20260719&limit=500');if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();const events=d.events||[];const completed=events.filter(e=>e.status?.type?.completed).length;document.getElementById('espnState').textContent='Connected';document.getElementById('espnSub').textContent=`Loaded ${events.length} fixtures / ${completed} completed · ${new Date().toLocaleString()}`;s.textContent='ESPN refresh complete.'}catch(e){document.getElementById('espnState').textContent='Error';document.getElementById('espnSub').textContent=e.message;s.textContent='ESPN failed: '+e.message}}
+renderOdds();renderStandings();
 </script>
 </body>
 </html>
