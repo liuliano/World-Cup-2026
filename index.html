@@ -3,68 +3,44 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>World Cup 2026 Pool</title>
+<title>World Cup 2026 Takeover Pool</title>
 <link rel="stylesheet" href="styles.css" />
 <style>
-body{max-width:1200px;margin:0 auto}.clean-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.owner-odds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.odds-row{background:#0b1220;border:1px solid #263653;border-radius:12px;padding:10px}.odds-head{display:flex;justify-content:space-between;font-weight:900}.bar-wrap{height:8px;background:#1e293b;border-radius:999px;margin-top:8px;overflow:hidden}.bar{height:100%;background:#22c55e}.quick-link{display:inline-block;background:var(--blue);color:white;text-decoration:none;border-radius:10px;padding:10px 14px;font-weight:900;margin-top:8px}.today-card{border-color:#7c2d12;background:#1c1917}.today-card .dash-main{color:#fdba74}.mini-table{width:100%;border-collapse:collapse;font-size:13px}.mini-table th,.mini-table td{border-bottom:1px solid #1e293b;padding:7px;text-align:left}.mini-table th{color:var(--muted);text-transform:uppercase;font-size:12px}.iframe-wrap{height:78vh;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:#07101f}.iframe-wrap iframe{width:100%;height:100%;border:0}@media(max-width:700px){body{padding:10px}.clean-grid,.owner-odds{grid-template-columns:1fr}.iframe-wrap{height:80vh}}
+body{max-width:1200px;margin:0 auto}.bracket-grid{display:grid;grid-template-columns:repeat(4,minmax(260px,1fr));gap:12px;overflow-x:auto}.game-card{background:#0d1524;border:1px solid var(--border);border-radius:14px;padding:12px;min-height:170px}.game-title{font-weight:900;color:#fff}.game-meta{color:#94a3b8;font-size:12px;margin:5px 0}.team-line{display:flex;justify-content:space-between;border-top:1px solid #1e293b;padding:7px 0}.scenario-note{font-size:12px;color:#cbd5e1;background:#0b1220;border:1px solid #263653;border-radius:10px;padding:8px;margin-top:8px}.sim-frame{height:78vh;border:1px solid var(--border);border-radius:14px;overflow:hidden}.sim-frame iframe{width:100%;height:100%;border:0}.admin-link{color:#93c5fd;font-weight:900;text-decoration:none}@media(max-width:700px){.bracket-grid{display:block}.game-card{margin-bottom:12px}.sim-frame{height:82vh}}
 </style>
 </head>
 <body>
-<h1>World Cup 2026 Pool</h1>
-<div class="sub">Original clean dashboard · ESPN refresh · locked spreads · takeover scenarios</div>
-
+<h1>World Cup 2026 Takeover Pool</h1>
+<div class="sub">Round of 32 full odds locked · live pool dashboard · inherited ownership</div>
 <div class="tabs">
-  <button class="tab-btn active" onclick="showTab('dashboard')">Dashboard</button>
-  <button class="tab-btn" onclick="showTab('standings')">Standings</button>
-  <button class="tab-btn" onclick="showTab('simulator')">Simulator</button>
-  <button class="tab-btn" onclick="showTab('control')">Pool Control</button>
-  <button class="tab-btn" onclick="showTab('rules')">Rules</button>
-  <button class="tab-btn" onclick="location.href='admin.html'">Admin</button>
+<button class="tab-btn active" onclick="showTab('dashboard')">Dashboard</button>
+<button class="tab-btn" onclick="showTab('bracket')">Bracket</button>
+<button class="tab-btn" onclick="showTab('control')">Pool Control</button>
+<button class="tab-btn" onclick="showTab('owners')">Owners</button>
+<button class="tab-btn" onclick="showTab('simulator')">Simulator</button>
+<button class="tab-btn" onclick="showTab('rules')">Rules</button>
+<button class="tab-btn" onclick="location.href='admin.html'">Admin</button>
 </div>
-
-<section id="tab-dashboard" class="tab active">
-  <div class="toolbar">
-    <button onclick="refreshFromEspn()">Refresh ESPN Results</button>
-    <button class="secondary" onclick="location.href='simulator.html'">Open Simulator Full Page</button>
-    <button class="secondary" onclick="location.href='admin.html'">Spread Admin</button>
-    <span id="status" class="small">Ready.</span>
-  </div>
-  <div class="clean-grid">
-    <div class="dash-card today-card"><div class="dash-title">Game of the Day</div><div class="dash-main">Brazil vs Japan</div><div class="dash-sub">1:00 PM EDT · Houston Stadium · Brazil -0.5<br>Larry can advance with Japan or inherit Brazil if Brazil wins but does not cover.</div><a class="quick-link" href="simulator.html#d-2026-06-29">Open Today</a></div>
-    <div class="dash-card"><div class="dash-title">ESPN Status</div><div class="dash-main" id="espnState">Ready</div><div class="dash-sub" id="espnSub">Click Refresh ESPN Results to load scores/status.</div></div>
-    <div class="dash-card"><div class="dash-title">Locked Lines</div><div class="dash-main">16 / 16</div><div class="dash-sub">Round of 32 spreads are locked. Manual overrides are available in Admin.</div></div>
-    <div class="dash-card"><div class="dash-title">Pool Control</div><div class="dash-main">Takeover Rules Active</div><div class="dash-sub">Favorite must cover in regulation. No-cover, extra time, or penalties transfers to underdog owner.</div></div>
-  </div>
-  <div class="panel"><b>Owner Odds Dashboard</b><p class="small">Clean pool odds view. This stays separate from the schedule simulator.</p><div id="ownerOdds" class="owner-odds"></div></div>
-</section>
-
-<section id="tab-standings" class="tab">
-  <div class="panel"><b>Alive Team Counts / Eliminations</b><p class="small">Current Round of 32 view based on the locked pool sheet.</p><div id="standingsView"></div></div>
-</section>
-
-<section id="tab-simulator" class="tab">
-  <div class="panel"><b>Simulator</b><p class="small">Schedule grouped by date with kickoff time, location, spreads, owners, and scenarios.</p></div>
-  <div class="iframe-wrap"><iframe src="simulator.html" title="Simulator"></iframe></div>
-</section>
-
-<section id="tab-control" class="tab">
-  <div class="panel"><b>Pool Control</b><p class="small">Use this for quick links. Results come from ESPN; manual edits are spread-only.</p><a class="quick-link" href="admin.html">Open Spread Admin</a><a class="quick-link" style="margin-left:8px" href="simulator.html">Open Simulator</a></div>
-  <div class="panel"><b>Today's Matches</b><table class="mini-table"><thead><tr><th>Time</th><th>Match</th><th>Line</th><th>Impact</th></tr></thead><tbody><tr><td>1:00 PM</td><td>Brazil vs Japan</td><td>Brazil -0.5</td><td>Larry/Gal swing</td></tr><tr><td>4:30 PM</td><td>Germany vs Paraguay</td><td>Germany -1.5</td><td>Whelan inheritance risk</td></tr><tr><td>9:00 PM</td><td>Netherlands vs Morocco</td><td>Netherlands -0.5</td><td>Nixon/Nolan swing</td></tr></tbody></table></div>
-</section>
-
-<section id="tab-rules" class="tab rules">
-  <div class="panel"><h2>Pool Rules</h2><ul><li>Each owner starts with 3 teams.</li><li>Group stage scoring: win = 3, draw = 1, loss = 0.</li><li>Knockout spreads are locked before each round.</li><li>All spreads are regulation-time only.</li><li>If favorite wins but does not cover, underdog owner inherits the advancing team.</li><li>If favorite advances in extra time or penalties, underdog owner inherits the advancing team.</li></ul></div>
-</section>
-
+<section id="tab-dashboard" class="tab active"><div class="toolbar"><button onclick="refreshFromEspn()">Refresh ESPN Results</button><button class="secondary" onclick="showTab('simulator')">Open Simulator</button><span id="status" class="small">Ready.</span></div><div id="dashboard" class="dashboard-grid"></div><div id="summary" class="summary"></div></section>
+<section id="tab-bracket" class="tab"><div class="panel"><b>Bracket</b><p class="small">Kickoff time, location, owner, locked spread, and scenario notes are shown in each game card.</p></div><div id="bracket" class="bracket-grid"></div></section>
+<section id="tab-control" class="tab"><div class="panel"><b>Pool Control</b><p class="small">ESPN results refresh is on the Dashboard. Manual spread edits are spread-only.</p><a class="admin-link" href="admin.html">Open Spread Admin</a></div><div id="matchCards"></div></section>
+<section id="tab-owners" class="tab"><div class="panel"><b>Owners</b><p class="small">Alive teams and eliminated teams.</p></div><div id="ownersView"></div></section>
+<section id="tab-simulator" class="tab"><div class="panel"><b>Simulator</b><p class="small">Schedule by date with game scenarios.</p></div><div class="sim-frame"><iframe src="simulator.html"></iframe></div></section>
+<section id="tab-rules" class="tab rules"><div class="panel"><h2>Rules</h2><ul><li>Win = 3, draw = 1, loss = 0.</li><li>Locked spread belongs to the left-side team.</li><li>A -0.5 favorite covers with any regulation win.</li><li>A -1.5 favorite must win by 2+ in regulation.</li><li>If a favorite advances without covering, the other owner gets the advancing team.</li><li>Extra time and penalties do not help the favorite cover the regulation spread.</li></ul></div></section>
 <script>
-const ownerOdds={McCartney:'12.7%',Knox:'11.8%',Gal:'10.3%',Whelan:'10.0%',Joe:'9.3%',Roynan:'8.0%',Nixon:'7.1%',Larry:'6.5%',Tonrey:'5.9%',Nolan:'5.0%',Merc:'4.4%','J. Schwartz':'4.2%',Baxter:'3.4%',Madden:'3.0%','E. Schwartz':'2.5%',Dolan:'2.0%'};
+const games=[['2026-06-29','1:00 PM EDT','Houston Stadium — Houston, TX','Brazil','Japan',-0.5,'Gal','Larry'],['2026-06-29','4:30 PM EDT','Boston Stadium — Foxborough, MA','Germany','Paraguay',-1.5,'Madden','Whelan'],['2026-06-29','9:00 PM EDT','Estadio Monterrey — Guadalupe, Mexico','Netherlands','Morocco',-0.5,'Nixon','Nolan'],['2026-06-30','1:00 PM EDT','TBD','Ivory Coast','Norway',0.5,'Larry','Knox'],['2026-06-30','5:00 PM EDT','TBD','France','Sweden',-1.5,'Knox','Whelan'],['2026-06-30','9:00 PM EDT','TBD','Mexico','Ecuador',-0.5,'Merc','Roynan'],['2026-07-01','12:00 PM EDT','TBD','England','DR Congo',-1.5,'Joe','McCartney'],['2026-07-01','4:00 PM EDT','TBD','Belgium','Senegal',-0.5,'J. Schwartz','Dolan'],['2026-07-01','8:00 PM EDT','TBD','United States','Bosnia & Herzegovina',-1.5,'Merc','Nolan'],['2026-07-02','3:00 PM EDT','TBD','Spain','Austria',-1.5,'Whelan','E. Schwartz'],['2026-07-02','7:00 PM EDT','TBD','Portugal','Croatia',-0.5,'Roynan','J. Schwartz'],['2026-07-02','11:00 PM EDT','TBD','Switzerland','Algeria',-0.5,'E. Schwartz','Madden'],['2026-07-03','2:00 PM EDT','TBD','Australia','Egypt',0,'Nixon','Joe'],['2026-07-03','6:00 PM EDT','TBD','Argentina','Cape Verde',-2.5,'McCartney','J. Schwartz'],['2026-07-03','9:30 PM EDT','TBD','Colombia','Ghana',-0.5,'Baxter','Baxter']];
+const odds={McCartney:12.7,Knox:11.8,Gal:10.3,Whelan:10.0,Joe:9.3,Roynan:8.0,Nixon:7.1,Larry:6.5,Tonrey:5.9,Nolan:5.0,Merc:4.4,'J. Schwartz':4.2,Baxter:3.4,Madden:3.0,'E. Schwartz':2.5,Dolan:2.0};
 const owners={Baxter:['Colombia','Canada','Ghana'],Dolan:['Senegal','Czech Republic','Saudi Arabia'],'E. Schwartz':['Switzerland','Austria','Haiti'],Gal:['Brazil','South Korea','New Zealand'],'J. Schwartz':['Belgium','Croatia','Cape Verde'],Joe:['England','Egypt','South Africa'],Knox:['France','Norway','Iraq'],Larry:['Japan','Ivory Coast','Jordan'],Madden:['Germany','Algeria','Tunisia'],McCartney:['Argentina','Türkiye','DR Congo'],Merc:['United States','Mexico','Curaçao'],Nixon:['Netherlands','Australia','Panama'],Nolan:['Morocco','Scotland','Bosnia & Herzegovina'],Roynan:['Portugal','Ecuador','Uzbekistan'],Tonrey:['Uruguay','Iran','Qatar'],Whelan:['Spain','Sweden','Paraguay']};
-const alive=['Germany','Paraguay','France','Sweden','Canada','South Africa','Netherlands','Morocco','Portugal','Croatia','Spain','Austria','United States','Bosnia & Herzegovina','Belgium','Senegal','Brazil','Japan','Norway','Ivory Coast','Mexico','Ecuador','England','DR Congo','Argentina','Cape Verde','Australia','Egypt','Switzerland','Algeria','Colombia','Ghana'];
-function showTab(name){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+name).classList.add('active');[...document.querySelectorAll('.tab-btn')].find(b=>b.textContent.toLowerCase().includes(name))?.classList.add('active');}
-function renderOdds(){document.getElementById('ownerOdds').innerHTML=Object.entries(ownerOdds).sort((a,b)=>parseFloat(b[1])-parseFloat(a[1])).map(([o,p])=>`<div class="odds-row"><div class="odds-head"><span>${o}</span><span>${p}</span></div><div class="bar-wrap"><div class="bar" style="width:${parseFloat(p)*4}%"></div></div></div>`).join('');}
-function renderStandings(){document.getElementById('standingsView').innerHTML=Object.entries(owners).map(([o,teams])=>{const a=teams.filter(t=>alive.includes(t));const e=teams.filter(t=>!alive.includes(t));return `<div class="owner-status-row"><div class="owner-status-head"><span>${o}</span><span>${a.length} alive · ${e.length} eliminated</span></div><div class="alive-list"><b>Alive:</b> ${a.join(', ')||'None'}</div><div class="elim-list"><b>Eliminated:</b> ${e.join(', ')||'None'}</div></div>`}).join('');}
-async function refreshFromEspn(){const s=document.getElementById('status');s.textContent='Calling ESPN...';try{const r=await fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=20260611-20260719&limit=500');if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();const events=d.events||[];const completed=events.filter(e=>e.status?.type?.completed).length;document.getElementById('espnState').textContent='Connected';document.getElementById('espnSub').textContent=`Loaded ${events.length} fixtures / ${completed} completed · ${new Date().toLocaleString()}`;s.textContent='ESPN refresh complete.'}catch(e){document.getElementById('espnState').textContent='Error';document.getElementById('espnSub').textContent=e.message;s.textContent='ESPN failed: '+e.message}}
-renderOdds();renderStandings();
+const alive=new Set(games.flatMap(g=>[g[3],g[4]]));
+function fmt(n){return n===0?'PK':(n>0?'+'+n:n)}
+function scenario(g){const [,,_,h,a,line,ho,ao]=g,abs=Math.abs(line);if(line===0)return`PK: winner keeps current owner.`;if(line<0){if(abs===0.5)return`${h} regulation win → ${ho} keeps ${h}. Draw/ET/PK advance → ${ao} inherits ${h}. ${a} win → ${ao} keeps ${a}.`;return`${h} by ${abs+.5}+ → ${ho} keeps ${h}. ${h} advances but no cover → ${ao} inherits ${h}. ${a} win → ${ao} keeps ${a}.`;}return`${h} covers with win/draw in regulation. ${a} regulation win → ${ao} keeps ${a}.`}
+function showTab(n){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+n).classList.add('active');[...document.querySelectorAll('.tab-btn')].find(b=>b.textContent.toLowerCase().includes(n))?.classList.add('active')}
+function renderDashboard(){let sorted=Object.entries(odds).sort((a,b)=>b[1]-a[1]);dashboard.innerHTML=`<div class='dash-card'><div class='dash-title'>Current Leader</div><div class='dash-main'>${sorted[0][0]}</div><div class='dash-sub'>Projected odds leader</div></div><div class='dash-card'><div class='dash-title'>Projected Pool Favorite</div><div class='dash-main'>${sorted[0][0]}</div><div class='dash-sub'>${sorted[0][1].toFixed(1)}% simulated chance</div><div class='prob-bar-wrap'><div class='prob-bar' style='width:${sorted[0][1]}%'></div></div></div><div class='dash-card'><div class='dash-title'>Next Match</div><div class='dash-main'>Brazil vs Japan</div><div class='dash-sub'>1:00 PM EDT · Houston Stadium</div></div><div class='dash-card alert'><div class='dash-title'>Biggest Takeover Spot</div><div class='dash-main'>Argentina -2.5</div><div class='dash-sub'>Large spread creates no-cover inheritance risk.</div></div><div class='dash-card' style='grid-column:1/-1'><div class='dash-title'>Pool Win Probability</div><table class='sim-table'><thead><tr><th>Owner</th><th>Win %</th></tr></thead><tbody>${sorted.map(o=>`<tr><td>${o[0]}</td><td>${o[1].toFixed(1)}%</td></tr>`).join('')}</tbody></table></div>`;summary.innerHTML='<b>Locked Lines:</b> 16 / 16<br><b>ESPN Refresh:</b> Ready<br><b>Bracket:</b> Restored with kickoff time and location.'}
+function renderBracket(){bracket.innerHTML=games.map(g=>`<div class='game-card'><div class='game-title'>${g[3]} vs ${g[4]}</div><div class='game-meta'>${g[1]} · ${g[0]}<br>📍 ${g[2]}</div><div class='team-line'><span>${g[3]} · ${g[6]}</span><b>${fmt(g[5])}</b></div><div class='team-line'><span>${g[4]} · ${g[7]}</span><b>${fmt(-g[5])}</b></div><div class='scenario-note'>${scenario(g)}</div></div>`).join('')}
+function renderOwners(){ownersView.innerHTML=Object.entries(owners).map(([o,t])=>{let a=t.filter(x=>alive.has(x)),e=t.filter(x=>!alive.has(x));return`<div class='owner-status-row'><div class='owner-status-head'><span>${o}</span><span>${a.length} alive · ${e.length} eliminated</span></div><div class='alive-list'><b>Alive:</b> ${a.join(', ')||'None'}</div><div class='elim-list'><b>Eliminated:</b> ${e.join(', ')||'None'}</div></div>`}).join('')}
+function renderControl(){matchCards.innerHTML=games.map(g=>`<div class='match-card'><b>${g[3]} vs ${g[4]}</b><p class='small'>${g[1]} · ${g[2]} · ${g[3]} ${fmt(g[5])}</p><div class='result-panel'>${scenario(g)}</div></div>`).join('')}
+async function refreshFromEspn(){status.textContent='Calling ESPN...';try{let r=await fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=20260611-20260719&limit=500');if(!r.ok)throw new Error('HTTP '+r.status);let d=await r.json();status.textContent=`ESPN updated ${d.events?.length||0} fixtures · ${new Date().toLocaleString()}`}catch(e){status.textContent='ESPN failed: '+e.message}}
+renderDashboard();renderBracket();renderOwners();renderControl();
 </script>
 </body>
 </html>
