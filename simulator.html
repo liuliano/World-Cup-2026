@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>World Cup 2026 Simulator</title>
+<link rel="stylesheet" href="styles.css" />
+<style>
+.day-nav{display:flex;gap:8px;overflow-x:auto;margin:12px 0 16px;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:20}.day-nav a{background:#1e293b;color:#cbd5e1;border:1px solid var(--border);border-radius:999px;padding:9px 13px;font-weight:800;white-space:nowrap;text-decoration:none}.day-block{margin-bottom:22px}.day-title{font-size:22px;font-weight:900;margin:12px 0}.venue{color:#cbd5e1;font-size:13px;margin-top:4px}.scenario-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px}.scenario{background:#0b1220;border:1px solid #263653;border-radius:12px;padding:10px}.scenario b{display:block;color:#fff;margin-bottom:5px}.impact{color:#fdba74;font-weight:900}.back{display:inline-block;color:#93c5fd;font-weight:900;text-decoration:none;margin-top:10px}@media(max-width:700px){.scenario-grid{grid-template-columns:1fr}.day-title{font-size:19px}}
+</style>
+</head>
+<body>
+<h1>Simulator</h1>
+<div class="sub">Schedule by date · kickoff time · location · locked spread · takeover scenarios</div>
+<a class="back" href="index.html">← Back to Pool App</a>
+<div class="day-nav" id="dayNav"></div>
+<div id="content"></div>
+<script>
+const MATCHES=[
+{date:'2026-06-29',label:'Today — Monday, June 29',time:'1:00 PM EDT',home:'Brazil',away:'Japan',line:-0.5,homeOwner:'Gal',awayOwner:'Larry',venue:'Houston Stadium — Houston, TX',impact:'High-impact game. Larry can knock out one of the favorites.'},
+{date:'2026-06-29',label:'Today — Monday, June 29',time:'4:30 PM EDT',home:'Germany',away:'Paraguay',line:-1.5,homeOwner:'Madden',awayOwner:'Whelan',venue:'Boston Stadium — Foxborough, MA',impact:'Big takeover spot because Germany must win by 2+ to cover.'},
+{date:'2026-06-29',label:'Today — Monday, June 29',time:'9:00 PM EDT',home:'Netherlands',away:'Morocco',line:-0.5,homeOwner:'Nixon',awayOwner:'Nolan',venue:'Estadio Monterrey — Guadalupe, Mexico',impact:'Straight win-and-advance ownership game.'},
+{date:'2026-06-30',label:'Tuesday, June 30',time:'1:00 PM EDT',home:'Ivory Coast',away:'Norway',line:0.5,homeOwner:'Larry',awayOwner:'Knox',venue:'TBD',impact:'Larry vs Knox ownership swing.'},
+{date:'2026-06-30',label:'Tuesday, June 30',time:'5:00 PM EDT',home:'France',away:'Sweden',line:-1.5,homeOwner:'Knox',awayOwner:'Whelan',venue:'TBD',impact:'Major favorite with takeover risk if France wins by only one.'},
+{date:'2026-06-30',label:'Tuesday, June 30',time:'9:00 PM EDT',home:'Mexico',away:'Ecuador',line:-0.5,homeOwner:'Merc',awayOwner:'Roynan',venue:'TBD',impact:'Winner owner advances.'},
+{date:'2026-07-01',label:'Wednesday, July 1',time:'12:00 PM EDT',home:'England',away:'DR Congo',line:-1.5,homeOwner:'Joe',awayOwner:'McCartney',venue:'TBD',impact:'England must cover to stay with Joe.'},
+{date:'2026-07-01',label:'Wednesday, July 1',time:'4:00 PM EDT',home:'Belgium',away:'Senegal',line:-0.5,homeOwner:'J. Schwartz',awayOwner:'Dolan',venue:'TBD',impact:'Winner owner advances.'},
+{date:'2026-07-01',label:'Wednesday, July 1',time:'8:00 PM EDT',home:'United States',away:'Bosnia & Herzegovina',line:-1.5,homeOwner:'Merc',awayOwner:'Nolan',venue:'TBD',impact:'US must cover to stay with Merc.'},
+{date:'2026-07-02',label:'Thursday, July 2',time:'3:00 PM EDT',home:'Spain',away:'Austria',line:-1.5,homeOwner:'Whelan',awayOwner:'E. Schwartz',venue:'TBD',impact:'Spain is valuable but has non-cover takeover risk.'},
+{date:'2026-07-02',label:'Thursday, July 2',time:'7:00 PM EDT',home:'Portugal',away:'Croatia',line:-0.5,homeOwner:'Roynan',awayOwner:'J. Schwartz',venue:'TBD',impact:'Winner owner advances.'},
+{date:'2026-07-02',label:'Thursday, July 2',time:'11:00 PM EDT',home:'Switzerland',away:'Algeria',line:-0.5,homeOwner:'E. Schwartz',awayOwner:'Madden',venue:'TBD',impact:'Winner owner advances.'},
+{date:'2026-07-03',label:'Friday, July 3',time:'2:00 PM EDT',home:'Australia',away:'Egypt',line:0,homeOwner:'Nixon',awayOwner:'Joe',venue:'TBD',impact:'PK line. Winner owner advances.'},
+{date:'2026-07-03',label:'Friday, July 3',time:'6:00 PM EDT',home:'Argentina',away:'Cape Verde',line:-2.5,homeOwner:'McCartney',awayOwner:'J. Schwartz',venue:'TBD',impact:'Huge favorite with large spread takeover risk.'},
+{date:'2026-07-03',label:'Friday, July 3',time:'9:30 PM EDT',home:'Colombia',away:'Ghana',line:-0.5,homeOwner:'Baxter',awayOwner:'Baxter',venue:'TBD',impact:'Same owner controls both teams.'}
+];
+function fmtLine(n){if(n===0)return 'PK';return n>0?'+'+n:String(n)}
+function render(){const grouped={};for(const m of MATCHES){if(!grouped[m.date])grouped[m.date]=[];grouped[m.date].push(m)}const dates=Object.keys(grouped).sort();document.getElementById('dayNav').innerHTML=dates.map(d=>`<a href="#d-${d}">${grouped[d][0].label.replace('Today — ','')}</a>`).join('');document.getElementById('content').innerHTML=dates.map(d=>`<section class="day-block" id="d-${d}"><div class="day-title">📅 ${grouped[d][0].label}</div>${grouped[d].map(card).join('')}</section>`).join('')}
+function card(m){const isPk=Number(m.line)===0;return `<div class="match-card"><div><span class="status-pill locked">LINE LOCKED</span><span class="status-pill">${m.time}</span></div><div class="match-grid"><div class="team-box"><div class="team-name">${m.home}</div><div class="owner">Owner: ${m.homeOwner}</div><div>${fmtLine(m.line)}</div></div><div class="line">vs</div><div class="team-box"><div class="team-name">${m.away}</div><div class="owner">Owner: ${m.awayOwner}</div><div>${isPk?'PK':fmtLine(-m.line)}</div></div></div><div class="venue">📍 ${m.venue}</div><div class="scenario-grid">${isPk?`<div class="scenario"><b>${m.home} wins</b>${m.homeOwner} advances with ${m.home}</div><div class="scenario"><b>${m.away} wins</b>${m.awayOwner} advances with ${m.away}</div><div class="scenario"><b>Pool impact</b>${m.impact}</div>`:`<div class="scenario"><b>${m.home} covers</b>${m.homeOwner} keeps ${m.home}</div><div class="scenario"><b>${m.home} wins, no cover</b>${m.awayOwner} inherits ${m.home}</div><div class="scenario"><b>${m.away} wins</b>${m.awayOwner} advances with ${m.away}</div>`}</div><div class="result-panel"><span class="impact">Pool Impact:</span> ${m.impact}</div></div>`}
+render();
+</script>
+</body>
+</html>
