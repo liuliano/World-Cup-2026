@@ -3,88 +3,76 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>World Cup Pool Admin Override</title>
+<title>World Cup Pool Spread Admin</title>
 <link rel="stylesheet" href="styles.css" />
 <style>
-.admin-wrap{max-width:900px;margin:0 auto}.admin-card{background:#0d1524;border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hidden{display:none}.ok{color:#86efac}.warn{color:#fdba74}.admin-table{width:100%;border-collapse:collapse;font-size:13px}.admin-table th,.admin-table td{border-bottom:1px solid #1e293b;padding:6px;text-align:left}@media(max-width:700px){.grid{grid-template-columns:1fr}}
+.admin-wrap{max-width:900px;margin:0 auto}.admin-card{background:#0d1524;border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px}.hidden{display:none}.ok{color:#86efac}.warn{color:#fdba74}.spread-row{display:grid;grid-template-columns:1.3fr .6fr .6fr;gap:8px;align-items:center;border-bottom:1px solid #1e293b;padding:8px 0}.spread-head{color:var(--muted);font-size:12px;font-weight:800;text-transform:uppercase}.match-title{font-weight:800}.help{font-size:12px;color:var(--muted);line-height:1.4}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}@media(max-width:700px){.spread-row{grid-template-columns:1fr}.spread-head{display:none}}
 </style>
 </head>
 <body>
 <div class="admin-wrap">
-<h1>Manual Override Admin</h1>
-<div class="sub">Password-protected local override page for lines and results.</div>
+  <h1>Spread Admin</h1>
+  <div class="sub">Password-protected manual spread edits only. Results stay controlled by ESPN.</div>
 
-<div id="login" class="admin-card">
-  <p class="small">Default password is <b>pool2026</b>. Change it after login. This is client-side protection for your GitHub Pages app, not bank-level security.</p>
-  <label>Password</label>
-  <input id="pw" type="password" placeholder="Enter admin password" />
-  <br><br>
-  <button onclick="login()">Unlock Overrides</button>
-  <div id="loginMsg" class="small"></div>
-</div>
+  <div id="login" class="admin-card">
+    <p class="help">Default password: <b>pool2026</b>. This is client-side protection for casual use on GitHub Pages.</p>
+    <label>Password</label>
+    <input id="pw" type="password" placeholder="Enter admin password" />
+    <div class="actions"><button onclick="login()">Unlock Spread Edits</button></div>
+    <div id="loginMsg" class="help"></div>
+  </div>
 
-<div id="admin" class="hidden">
-  <div class="admin-card">
-    <h2>Change Admin Password</h2>
-    <div class="grid">
-      <div><label>New Password</label><input id="newPw" type="password" /></div>
-      <div><label>Confirm</label><input id="newPw2" type="password" /></div>
+  <div id="admin" class="hidden">
+    <div class="admin-card">
+      <h2>Manual Spread Overrides</h2>
+      <p class="help">Enter the favorite line for the team shown on the left. Examples: <b>-1.5</b>, <b>-0.5</b>, <b>0</b> for PK. These save to this browser's local storage as <b>wc_lines</b>, which the live app already reads.</p>
+      <div class="spread-row spread-head"><div>Match</div><div>Current Line</div><div>Edit Line</div></div>
+      <div id="rows"></div>
+      <div class="actions">
+        <button onclick="saveLines()">Save Spread Overrides</button>
+        <button class="secondary" onclick="resetLines()">Reset to Built-in Lines</button>
+        <button class="secondary" onclick="location.href='index.html'">Back to Pool App</button>
+      </div>
+      <div id="saveMsg" class="help"></div>
     </div>
-    <br><button onclick="changePassword()">Save Password</button>
-    <div id="pwMsg" class="small"></div>
-  </div>
 
-  <div class="admin-card">
-    <h2>Manual Result Override</h2>
-    <div class="grid">
-      <div><label>Home Team</label><input id="home" placeholder="Germany" /></div>
-      <div><label>Away Team</label><input id="away" placeholder="Paraguay" /></div>
-      <div><label>Home Score</label><input id="homeScore" type="number" /></div>
-      <div><label>Away Score</label><input id="awayScore" type="number" /></div>
-      <div><label>Winner</label><input id="winner" placeholder="Germany" /></div>
-      <div><label>Method</label><select id="method"><option value="REG">REG</option><option value="ET">ET</option><option value="PK">PK</option></select></div>
+    <div class="admin-card">
+      <h2>Change Admin Password</h2>
+      <label>New Password</label>
+      <input id="newPw" type="password" />
+      <div class="actions"><button onclick="changePassword()">Save Password</button></div>
+      <div id="pwMsg" class="help"></div>
     </div>
-    <br><button onclick="saveResult()">Save Result Override</button>
-    <button class="secondary" onclick="clearResultForm()">Clear Form</button>
-    <div id="resultMsg" class="small"></div>
   </div>
-
-  <div class="admin-card">
-    <h2>Manual Line Override</h2>
-    <div class="grid">
-      <div><label>Match ID</label><input id="lineId" placeholder="r32-1" /></div>
-      <div><label>Line for Home Team</label><input id="lineValue" type="number" step="0.5" placeholder="-1.5" /></div>
-    </div>
-    <br><button onclick="saveLine()">Save Line Override</button>
-    <div id="lineMsg" class="small"></div>
-  </div>
-
-  <div class="admin-card">
-    <h2>Saved Overrides</h2>
-    <button onclick="renderOverrides()">Refresh List</button>
-    <button class="red" onclick="clearOverrides()">Clear All Manual Overrides</button>
-    <div id="overrideList"></div>
-  </div>
-
-  <div class="admin-card">
-    <a href="index.html">Back to Pool App</a>
-  </div>
-</div>
 </div>
 
 <script>
-const DEFAULT_HASH='f4517265fe553309352a662083f9f4875af50097c386b896c0119df21ae2c58d'; // pool2026
-async function sha256(text){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');}
-function getHash(){return localStorage.getItem('wc_admin_pw_hash')||DEFAULT_HASH;}
-async function login(){const h=await sha256(document.getElementById('pw').value);if(h===getHash()){sessionStorage.setItem('wc_admin_unlocked','1');document.getElementById('login').classList.add('hidden');document.getElementById('admin').classList.remove('hidden');renderOverrides();}else{document.getElementById('loginMsg').innerHTML='<span class="warn">Incorrect password.</span>';}}
-async function changePassword(){const a=document.getElementById('newPw').value,b=document.getElementById('newPw2').value;if(!a||a!==b){document.getElementById('pwMsg').textContent='Passwords do not match.';return;}localStorage.setItem('wc_admin_pw_hash',await sha256(a));document.getElementById('pwMsg').innerHTML='<span class="ok">Password changed.</span>';}
-function keyFor(h,a){return `${h.trim().toLowerCase()}__${a.trim().toLowerCase()}`;}
-function saveResult(){const h=home.value.trim(),a=away.value.trim();if(!h||!a){resultMsg.textContent='Home and away teams required.';return;}const obj={home:h,away:a,homeScore:Number(homeScore.value),awayScore:Number(awayScore.value),winner:winner.value.trim(),method:method.value,manual:true,timestamp:new Date().toISOString()};const all=JSON.parse(localStorage.getItem('wc_manual_results')||'{}');all[keyFor(h,a)]=obj;localStorage.setItem('wc_manual_results',JSON.stringify(all));resultMsg.innerHTML='<span class="ok">Result override saved.</span>';renderOverrides();}
-function clearResultForm(){['home','away','homeScore','awayScore','winner'].forEach(id=>document.getElementById(id).value='');method.value='REG';}
-function saveLine(){const id=lineId.value.trim();if(!id){lineMsg.textContent='Match ID required.';return;}const all=JSON.parse(localStorage.getItem('wc_manual_lines')||'{}');all[id]=Number(lineValue.value);localStorage.setItem('wc_manual_lines',JSON.stringify(all));const current=JSON.parse(localStorage.getItem('wc_lines')||'{}');current[id]=Number(lineValue.value);localStorage.setItem('wc_lines',JSON.stringify(current));lineMsg.innerHTML='<span class="ok">Line override saved.</span>';renderOverrides();}
-function renderOverrides(){const results=JSON.parse(localStorage.getItem('wc_manual_results')||'{}');const lines=JSON.parse(localStorage.getItem('wc_manual_lines')||'{}');overrideList.innerHTML=`<h3>Result Overrides</h3><pre>${JSON.stringify(results,null,2)}</pre><h3>Line Overrides</h3><pre>${JSON.stringify(lines,null,2)}</pre>`;}
-function clearOverrides(){if(!confirm('Clear manual result and line overrides?'))return;localStorage.removeItem('wc_manual_results');localStorage.removeItem('wc_manual_lines');renderOverrides();}
-if(sessionStorage.getItem('wc_admin_unlocked')==='1'){login.classList.add('hidden');admin.classList.remove('hidden');renderOverrides();}
+const R32=[
+{id:'r32-1',home:'Germany',line:-1.5,away:'Paraguay'},
+{id:'r32-2',home:'France',line:-1.5,away:'Sweden'},
+{id:'r32-3',home:'Canada',line:-0.5,away:'South Africa'},
+{id:'r32-4',home:'Netherlands',line:-0.5,away:'Morocco'},
+{id:'r32-5',home:'Portugal',line:-0.5,away:'Croatia'},
+{id:'r32-6',home:'Spain',line:-1.5,away:'Austria'},
+{id:'r32-7',home:'United States',line:-1.5,away:'Bosnia & Herzegovina'},
+{id:'r32-8',home:'Belgium',line:-0.5,away:'Senegal'},
+{id:'r32-9',home:'Brazil',line:-0.5,away:'Japan'},
+{id:'r32-10',home:'Norway',line:-0.5,away:'Ivory Coast'},
+{id:'r32-11',home:'Mexico',line:-0.5,away:'Ecuador'},
+{id:'r32-12',home:'England',line:-1.5,away:'DR Congo'},
+{id:'r32-13',home:'Argentina',line:-2.5,away:'Cape Verde'},
+{id:'r32-14',home:'Australia',line:0,away:'Egypt'},
+{id:'r32-15',home:'Switzerland',line:-0.5,away:'Algeria'},
+{id:'r32-16',home:'Colombia',line:-0.5,away:'Ghana'}
+];
+function getPassword(){return localStorage.getItem('wc_admin_pw')||'pool2026';}
+function login(){const ok=document.getElementById('pw').value===getPassword();document.getElementById('loginMsg').textContent=ok?'Unlocked.':'Wrong password.';document.getElementById('loginMsg').className=ok?'ok':'warn';if(ok){document.getElementById('login').classList.add('hidden');document.getElementById('admin').classList.remove('hidden');renderRows();}}
+function fmt(n){if(n===null||n===undefined||n==='')return'TBD';const x=Number(n);return x===0?'PK':String(x);}
+function loadLines(){try{return JSON.parse(localStorage.getItem('wc_lines'))||Object.fromEntries(R32.map(m=>[m.id,m.line]));}catch{return Object.fromEntries(R32.map(m=>[m.id,m.line]));}}
+function renderRows(){const lines=loadLines();document.getElementById('rows').innerHTML=R32.map(m=>`<div class="spread-row"><div><div class="match-title">${m.home} vs ${m.away}</div><div class="help">Line entered is for ${m.home}</div></div><div>${fmt(lines[m.id])}</div><div><input id="line-${m.id}" type="number" step="0.5" value="${lines[m.id]??''}" /></div></div>`).join('');}
+function saveLines(){const lines=loadLines();for(const m of R32){const v=document.getElementById('line-'+m.id).value;lines[m.id]=v===''?null:Number(v);}localStorage.setItem('wc_lines',JSON.stringify(lines));document.getElementById('saveMsg').textContent='Spread overrides saved. Return to the pool app and refresh.';document.getElementById('saveMsg').className='ok';renderRows();}
+function resetLines(){if(confirm('Reset manual spread overrides back to built-in lines?')){localStorage.removeItem('wc_lines');document.getElementById('saveMsg').textContent='Manual spread overrides reset.';document.getElementById('saveMsg').className='ok';renderRows();}}
+function changePassword(){const v=document.getElementById('newPw').value.trim();if(v.length<4){document.getElementById('pwMsg').textContent='Use at least 4 characters.';document.getElementById('pwMsg').className='warn';return;}localStorage.setItem('wc_admin_pw',v);document.getElementById('pwMsg').textContent='Password changed on this browser.';document.getElementById('pwMsg').className='ok';}
 </script>
 </body>
 </html>
