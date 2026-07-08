@@ -22,14 +22,13 @@ WC.scenarioBadge = function scenarioBadge(item) {
   return `<span class="badge">${item.team}<span class="owner">${item.owner}</span></span>`;
 };
 
-WC.semifinalScenarioCard = function semifinalScenarioCard(title, leftGame, rightGame) {
+WC.semifinalScenarioBlock = function semifinalScenarioBlock(leftGame, rightGame) {
   const left = WC.getPossibleWinners(leftGame);
   const right = WC.getPossibleWinners(rightGame);
 
   return `
-    <div class="card">
-      <div class="muted">${title}</div>
-      <b>Possible owner / team matchups</b>
+    <div style="border-top:1px solid #1e293b;margin-top:12px;padding-top:10px">
+      <div class="muted">Possible owner / team scenarios</div>
       <div style="margin-top:8px">
         <div class="muted">Slot 1</div>
         ${left.map(WC.scenarioBadge).join('')}
@@ -42,15 +41,32 @@ WC.semifinalScenarioCard = function semifinalScenarioCard(title, leftGame, right
   `;
 };
 
+WC.semifinalCard = function semifinalCard(game, leftGame, rightGame) {
+  const result = WC.resolveGame(game);
+  return `
+    <div class="card">
+      <div class="muted">${game.date} · ${WC.isFinal(game) ? 'Final' : 'Scheduled'}<br>📍 ${game.venue}</div>
+      <b>${game.h} vs ${game.a}</b>
+      <div class="team">
+        <span>${game.h} ${WC.rankBadge(game.h)}<span class="owner">${game.ho}</span></span>
+        <span><b>${game.hs ?? 0}</b> <span class="${WC.spreadClass(game.line)}">${WC.spreadText(game.line)}</span></span>
+      </div>
+      <div class="team">
+        <span>${game.a} ${WC.rankBadge(game.a)}<span class="owner">${game.ao}</span></span>
+        <span><b>${game.as ?? 0}</b> <span class="${WC.spreadClass(-game.line)}">${WC.spreadText(-game.line)}</span></span>
+      </div>
+      ${result ? `<div class="muted">Winner advances: <b>${result.team}</b> · Owner now: <b>${result.owner}</b></div>` : ''}
+      ${WC.semifinalScenarioBlock(leftGame, rightGame)}
+    </div>
+  `;
+};
+
 WC.renderSemifinals = function renderSemifinals() {
   const games = WC.getSemifinalGames();
-  const cards = games.map(WC.gameCard).join('');
-  const scenarios = [
-    WC.semifinalScenarioCard('Semifinal 1 scenarios', WC.qfGames[0], WC.qfGames[1]),
-    WC.semifinalScenarioCard('Semifinal 2 scenarios', WC.qfGames[2], WC.qfGames[3])
+  WC.$('sf').innerHTML = [
+    WC.semifinalCard(games[0], WC.qfGames[0], WC.qfGames[1]),
+    WC.semifinalCard(games[1], WC.qfGames[2], WC.qfGames[3])
   ].join('');
-
-  WC.$('sf').innerHTML = cards + scenarios;
 };
 
 WC.renderFinal = function renderFinal() {
