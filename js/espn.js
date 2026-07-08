@@ -1,0 +1,44 @@
+window.WC = window.WC || {};
+
+WC.refreshFromEspn = async function refreshFromEspn() {
+  const status = WC.$('status');
+  status.textContent = 'Refreshing ESPN and recalculating...';
+
+  try {
+    const response = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=20260709-20260711&limit=100&_=${Date.now()}`);
+    const data = await response.json();
+    let matched = 0;
+
+    (data.events || []).forEach((event) => {
+      const competition = event.competitions?.[0];
+      const competitors = competition?.competitors || [];
+      if (competitors.length < 2) return;
+
+      const home = competitors.find((team) => team.homeAway === 'home') || competitors[0];
+      const away = competitors.find((team) => team.homeAway === 'away') || competitors[1];
+
+      WC.qfGames.forEach((game) => {
+        const direct = WC.norm(game.h) === WC.norm(home.team.displayName) && WC.norm(game.a) === WC.norm(away.team.displayName);
+        const reverse = WC.norm(game.h) === WC.norm(away.team.displayName) && WC.norm(game.a) === WC.norm(home.team.displayName);
+        if (!direct && !reverse) return;
+
+        const gameHome = direct ? home : away;
+        const gameAway = direct ? away : home;
+        game.hs = gameHome.score === '' ? null : Number(gameHome.score);
+        game.as = gameAway.score === '' ? null : Number(gameAway.score);
+        matched += 1;
+      });
+    });
+
+    WC.state.lastRefresh = `${new Date().toLocaleString()} (${matched} QF games matched)`;
+    localStorage.wc_last_espn = WC.state.lastRefresh;
+
+    WC.state.previousOdds = WC.simulateTournament();
+    localStorage.wc_previous_odds = JSON.stringify(WC.state.previousOdds);
+
+    WC.renderDashboard();
+    status.textContent = 'ESPN refresh complete.';
+  } catch (error) {
+    status.textContent = `ESPN failed: ${error.message}`;
+  }
+};
