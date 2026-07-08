@@ -17,7 +17,7 @@ WC.spreadClass = function spreadClass(line) {
 };
 
 WC.isFinal = function isFinal(game) {
-  return game.hs !== null && game.as !== null;
+  return game.final === true || game.status === 'Final';
 };
 
 WC.ownerAtKick = function ownerAtKick(game, team) {
@@ -26,6 +26,7 @@ WC.ownerAtKick = function ownerAtKick(game, team) {
 
 WC.resolveGame = function resolveGame(game) {
   if (!WC.isFinal(game)) return null;
+  if (game.hs === null || game.as === null) return null;
 
   const winner = game.hs > game.as ? game.h : game.a;
   const loser = winner === game.h ? game.a : game.h;
