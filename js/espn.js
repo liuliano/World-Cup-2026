@@ -16,6 +16,11 @@ WC.refreshFromEspn = async function refreshFromEspn() {
 
       const home = competitors.find((team) => team.homeAway === 'home') || competitors[0];
       const away = competitors.find((team) => team.homeAway === 'away') || competitors[1];
+      const eventStatus = competition?.status || event.status || {};
+      const statusType = eventStatus.type || {};
+      const isComplete = statusType.completed === true;
+      const isInProgress = statusType.state === 'in' || statusType.name === 'STATUS_IN_PROGRESS';
+      const displayStatus = statusType.shortDetail || statusType.detail || statusType.description || (isComplete ? 'Final' : isInProgress ? 'Live' : 'Scheduled');
 
       WC.qfGames.forEach((game) => {
         const direct = WC.norm(game.h) === WC.norm(home.team.displayName) && WC.norm(game.a) === WC.norm(away.team.displayName);
@@ -24,8 +29,18 @@ WC.refreshFromEspn = async function refreshFromEspn() {
 
         const gameHome = direct ? home : away;
         const gameAway = direct ? away : home;
-        game.hs = gameHome.score === '' ? null : Number(gameHome.score);
-        game.as = gameAway.score === '' ? null : Number(gameAway.score);
+
+        game.status = isComplete ? 'Final' : displayStatus;
+        game.final = isComplete;
+
+        if (isComplete || isInProgress) {
+          game.hs = gameHome.score === '' ? null : Number(gameHome.score);
+          game.as = gameAway.score === '' ? null : Number(gameAway.score);
+        } else {
+          game.hs = null;
+          game.as = null;
+        }
+
         matched += 1;
       });
     });
