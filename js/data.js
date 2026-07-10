@@ -19,18 +19,10 @@ WC.baseTakeovers = [
 ];
 
 WC.ownerHistory = {
-  Baxter: ['Canada', 'Colombia'],
-  Nolan: ['Morocco'],
-  Whelan: ['Paraguay', 'Spain', 'France'],
-  Knox: ['France', 'Norway'],
-  Gal: ['Brazil'],
-  Merc: ['Mexico', 'United States'],
-  McCartney: ['England'],
-  Roynan: ['Portugal'],
-  Dolan: ['Belgium'],
-  'J. Schwartz': ['Argentina'],
-  Joe: ['Egypt', 'Argentina'],
-  'E. Schwartz': ['Switzerland']
+  Baxter: ['Canada', 'Colombia'], Nolan: ['Morocco'], Whelan: ['Paraguay', 'Spain', 'France'],
+  Knox: ['France', 'Norway'], Gal: ['Brazil'], Merc: ['Mexico', 'United States'],
+  McCartney: ['England'], Roynan: ['Portugal'], Dolan: ['Belgium'],
+  'J. Schwartz': ['Argentina'], Joe: ['Egypt', 'Argentina'], 'E. Schwartz': ['Switzerland']
 };
 
 WC.round16Games = [
@@ -44,12 +36,29 @@ WC.round16Games = [
   { h: 'Switzerland', ho: 'E. Schwartz', a: 'Colombia', ao: 'Baxter', line: 0.5, hs: 3, as: 1, date: 'Jul 7, 4:00 PM', venue: 'BC Place — Vancouver' }
 ];
 
-WC.qfGames = [
+const defaultQfGames = [
   { h: 'France', ho: 'Whelan', a: 'Morocco', ao: 'Nolan', line: -0.5, hs: null, as: null, date: 'Jul 9, 4:00 PM', venue: 'NRG Stadium — Houston, Texas' },
-  { h: 'Spain', ho: 'Whelan', a: 'Belgium', ao: 'Dolan', line: -0.5, hs: null, as: null, date: 'Jul 10, 3:00 PM', venue: 'Lincoln Financial Field — Philadelphia, Pennsylvania' },
+  { h: 'Spain', ho: 'Whelan', a: 'Belgium', ao: 'Dolan', line: -0.5, hs: null, as: null, date: 'Jul 10, 3:00 PM', venue: 'Los Angeles Stadium — Inglewood, California' },
   { h: 'England', ho: 'McCartney', a: 'Norway', ao: 'Knox', line: -0.5, hs: null, as: null, date: 'Jul 11, 5:00 PM', venue: 'MetLife Stadium — East Rutherford, New Jersey' },
   { h: 'Argentina', ho: 'Joe', a: 'Switzerland', ao: 'E. Schwartz', line: -0.5, hs: null, as: null, date: 'Jul 11, 9:00 PM', venue: 'TBD' }
 ];
+
+WC.qfGames = defaultQfGames.map((game) => ({ ...game }));
+
+try {
+  const saved = JSON.parse(localStorage.wc_qf_games || 'null');
+  if (Array.isArray(saved) && saved.length === defaultQfGames.length) {
+    WC.qfGames = defaultQfGames.map((base, index) => ({
+      ...base,
+      hs: saved[index]?.hs ?? null,
+      as: saved[index]?.as ?? null,
+      status: saved[index]?.status || 'Scheduled',
+      final: saved[index]?.final === true
+    }));
+  }
+} catch (error) {
+  console.warn('Ignoring invalid saved quarterfinal state.', error);
+}
 
 WC.state = {
   lastRefresh: localStorage.wc_last_espn || 'Never',
