@@ -6,6 +6,8 @@ WC.refreshFromEspn = async function refreshFromEspn() {
 
   try {
     const response = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=20260709-20260711&limit=100&_=${Date.now()}`);
+    if (!response.ok) throw new Error(`ESPN returned ${response.status}`);
+
     const data = await response.json();
     let matched = 0;
 
@@ -46,13 +48,19 @@ WC.refreshFromEspn = async function refreshFromEspn() {
     });
 
     WC.state.lastRefresh = `${new Date().toLocaleString()} (${matched} QF games matched)`;
-    localStorage.wc_last_espn = WC.state.lastRefresh;
-
     WC.state.previousOdds = WC.simulateTournament();
+
+    localStorage.wc_last_espn = WC.state.lastRefresh;
     localStorage.wc_previous_odds = JSON.stringify(WC.state.previousOdds);
+    localStorage.wc_qf_games = JSON.stringify(WC.qfGames.map((game) => ({
+      hs: game.hs,
+      as: game.as,
+      status: game.status || 'Scheduled',
+      final: game.final === true
+    })));
 
     WC.renderDashboard();
-    status.textContent = 'ESPN refresh complete.';
+    status.textContent = 'ESPN refresh complete. Results saved.';
   } catch (error) {
     status.textContent = `ESPN failed: ${error.message}`;
   }
