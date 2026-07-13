@@ -13,14 +13,14 @@
 <body>
 <div class="wrap">
 <div class="stitches"></div>
-<section class="hero"><div class="title-row"><svg class="ball-logo" viewBox="0 0 100 100" aria-label="Baseball icon" role="img"><circle cx="50" cy="50" r="46" fill="#fff" stroke="#d8d3c7" stroke-width="5"/><path d="M22 25c17 10 24 40 19 55M78 25C61 35 54 65 59 80" fill="none" stroke="#c62828" stroke-width="5" stroke-dasharray="7 5"/></svg><div><div class="eyebrow">2026 HOME RUN DERBY</div><h1>HR Dinger Pool</h1></div></div><div class="sub">Live pool board with modular ESPN refresh and manual fallback.</div><div class="controls"><button onclick="launchBall();refreshFromEspn()">⚾ Refresh ESPN</button><button class="secondary" onclick="toggleAdmin()">Edit pool</button><button class="secondary" onclick="shareApp()">Share</button></div><div id="apiStatus"><span class="live-dot"></span><span>ESPN refreshes automatically every minute while this page is open.</span></div></section>
+<section class="hero"><div class="title-row"><svg class="ball-logo" viewBox="0 0 100 100" aria-label="Baseball icon" role="img"><circle cx="50" cy="50" r="46" fill="#fff" stroke="#d8d3c7" stroke-width="5"/><path d="M22 25c17 10 24 40 19 55M78 25C61 35 54 65 59 80" fill="none" stroke="#c62828" stroke-width="5" stroke-dasharray="7 5"/></svg><div><div class="eyebrow">2026 HOME RUN DERBY</div><h1>HR Dinger Pool</h1></div></div><div class="sub">Live pool board powered by MLB StatsAPI with manual fallback.</div><div class="controls"><button onclick="launchBall();refreshFromMlb()">⚾ Refresh MLB</button><button class="secondary" onclick="toggleAdmin()">Edit pool</button><button class="secondary" onclick="shareApp()">Share</button></div><div id="apiStatus"><span class="live-dot"></span><span>MLB StatsAPI refreshes automatically every minute while this page is open.</span></div></section>
 <div class="grid"><section class="card"><h2>Leaderboard</h2><div id="leaderboard"></div></section><section class="card"><h2>Bracket projection</h2><div class="pill">Top 4 advance</div><div id="bracket"></div></section></div>
 <section class="card" style="margin-top:14px"><h2>Pool status</h2><div id="status"></div></section>
-<section id="admin" class="card hidden" style="margin-top:14px"><h2>Edit players, owners and home runs</h2><div class="sub">Manual changes save on this device and remain available if ESPN has not published Derby totals.</div><div id="editor"></div><div class="controls"><button onclick="saveEdits()">Save changes</button><button class="danger" onclick="restoreDefaults()">Restore defaults</button></div></section>
-<div class="footer">⚾ HR Dinger Pool 2026 · ESPN module + manual fallback</div>
+<section id="admin" class="card hidden" style="margin-top:14px"><h2>Edit players, owners and home runs</h2><div class="sub">Manual changes save on this device and remain available until MLB publishes Derby totals.</div><div id="editor"></div><div class="controls"><button onclick="saveEdits()">Save changes</button><button class="danger" onclick="restoreDefaults()">Restore defaults</button></div></section>
+<div class="footer">⚾ HR Dinger Pool 2026 · MLB StatsAPI + manual fallback</div>
 </div>
-<script src="js/data.js?v=3" defer></script>
-<script src="js/espn.js?v=3" defer></script>
-<script src="js/app.js?v=3" defer></script>
+<script src="js/data.js?v=4" defer></script>
+<script src="js/mlb.js?v=4" defer></script>
+<script src="js/app.js?v=4" defer></script>
 </body>
 </html>
