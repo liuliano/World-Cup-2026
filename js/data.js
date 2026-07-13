@@ -52,12 +52,21 @@ try {
       ...base,
       hs: saved[index]?.hs ?? null,
       as: saved[index]?.as ?? null,
+      date: saved[index]?.date || base.date,
+      venue: saved[index]?.venue || base.venue,
       status: saved[index]?.status || 'Scheduled',
       final: saved[index]?.final === true
     }));
   }
 } catch (error) {
   console.warn('Ignoring invalid saved quarterfinal state.', error);
+}
+
+try {
+  WC.espnKnockoutEvents = JSON.parse(localStorage.wc_espn_knockout_events || '[]');
+  if (!Array.isArray(WC.espnKnockoutEvents)) WC.espnKnockoutEvents = [];
+} catch (error) {
+  WC.espnKnockoutEvents = [];
 }
 
 WC.state = {
