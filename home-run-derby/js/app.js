@@ -6,6 +6,12 @@ window.HRD=window.HRD||{};
  const slot=(p,seed)=>`<div class="slot"><span><span class="seed">#${seed}</span> ${p?p.name:'TBD'}<br><span class="owner">${p&&p.owner?p.owner:'Unassigned'}</span></span><strong>${p?p.hr:0}</strong></div>`;
  const statLine=(label,value)=>`<div class="stat-line"><span>${label}</span><strong>${value}</strong></div>`;
  function playerStats(p){const s=p.stats||HRD.emptyStats();return `<div class="stat-grid">${statLine('Max distance',s.maxDistance==null?'—':`${fmt(s.maxDistance)} ft`)}${statLine('Avg distance',s.avgDistance==null?'—':`${fmt(s.avgDistance)} ft`)}${statLine('Max exit velo',s.maxExitVelocity==null?'—':`${fmt(s.maxExitVelocity,1)} mph`)}${statLine('Avg exit velo',s.avgExitVelocity==null?'—':`${fmt(s.avgExitVelocity,1)} mph`)}${statLine(`Bonus HRs (${HRD.config.bonusDistance}+ ft)`,s.bonusHomers||0)}${statLine('Tracked HRs',s.trackedHomers||0)}${statLine('Last distance',s.lastDistance==null?'—':`${fmt(s.lastDistance)} ft`)}${statLine('Last exit velo',s.lastExitVelocity==null?'—':`${fmt(s.lastExitVelocity,1)} mph`)}</div>`}
+ function moveOddsToTop(){
+  const simulation=document.getElementById('simulation');
+  const hero=document.querySelector('.hero');
+  const card=simulation?.closest('.card');
+  if(card&&hero&&hero.nextElementSibling!==card)hero.insertAdjacentElement('afterend',card);
+ }
  function renderSticky(leader){
   const root=document.getElementById('stickyLive');if(!root)return;
   const detail=[HRD.state.currentHitter&&`Hitting: ${HRD.state.currentHitter}`,HRD.state.timeRemaining&&`Time: ${HRD.state.timeRemaining}`,HRD.state.outsRemaining!=null&&`Outs: ${HRD.state.outsRemaining}`].filter(Boolean).join(' · ');
@@ -29,5 +35,5 @@ window.HRD=window.HRD||{};
  window.launchBall=function(){const ball=document.createElement('div');ball.className='flying-ball';ball.textContent='⚾';document.body.appendChild(ball);setTimeout(()=>ball.remove(),1400)};
  window.shareApp=async function(){try{await navigator.share({title:'HR Dinger Pool 2026',url:location.href})}catch(e){await navigator.clipboard.writeText(location.href);alert('Link copied')}};
  window.refreshFromMlb=()=>HRD.refreshFromMlb();
- HRD.render();HRD.startAutoRefresh();
+ moveOddsToTop();HRD.render();HRD.startAutoRefresh();
 })();
