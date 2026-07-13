@@ -4,9 +4,10 @@ HRD.defaults=[
  {name:'Jac Caglianone',owner:'',hr:0},{name:'Bryce Harper',owner:'',hr:0},{name:'Ben Rice',owner:'',hr:0},{name:'Willson Contreras',owner:'',hr:0}
 ];
 HRD.config={
- scoreboard:'https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard',
- summary:'https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/summary',
- dates:'20260713-20260714',
+ schedule:'https://statsapi.mlb.com/api/v1/schedule',
+ liveFeed:'https://statsapi.mlb.com/api/v1.1/game',
+ startDate:'2026-07-13',
+ endDate:'2026-07-14',
  refreshMs:60000
 };
 HRD.players=JSON.parse(localStorage.getItem('hrDerby2026Players')||'null')||structuredClone(HRD.defaults);
