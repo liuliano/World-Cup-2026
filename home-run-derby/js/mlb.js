@@ -57,6 +57,19 @@ window.HRD=window.HRD||{};
   }
   return {totals,metrics};
  }
+ function extractLiveContext(feed){
+  const current=feed?.liveData?.plays?.currentPlay||{};
+  const linescore=feed?.liveData?.linescore||{};
+  const batter=current?.matchup?.batter?.fullName||current?.matchup?.batter?.name||'';
+  const candidates=[
+   current?.about?.remainingTime,current?.about?.timeRemaining,current?.count?.timeRemaining,
+   linescore?.timeRemaining,feed?.gameData?.status?.timeRemaining
+  ];
+  const time=candidates.find(v=>v!==undefined&&v!==null&&String(v).trim()!=='');
+  const outsCandidates=[current?.count?.outsRemaining,current?.about?.outsRemaining,linescore?.outsRemaining,linescore?.outs];
+  const outs=outsCandidates.map(number).find(v=>v!==null);
+  return {batter,time:time==null?'':String(time),outs};
+ }
  async function getJson(url){const response=await fetch(`${url}${url.includes('?')?'&':'?'}_=${Date.now()}`,{cache:'no-store'});if(!response.ok)throw new Error(`${response.status} ${response.statusText}`);return response.json();}
  function setTimer(ms){clearTimeout(HRD._timer);HRD._timer=setTimeout(HRD.refreshFromMlb,ms);}
  HRD.refreshFromMlb=async function(){
@@ -74,6 +87,10 @@ window.HRD=window.HRD||{};
    if(derby?.gamePk){try{payload=await getJson(`${HRD.config.liveFeed}/${derby.gamePk}/feed/live`);source=`MLB live feed ${derby.gamePk}`;}catch(error){source=`MLB schedule (${derby.gamePk})`;}}
    const summaryScores=extractSummaryScores(payload);
    const playData=extractPlayByPlay(payload);
+   const context=extractLiveContext(payload);
+   HRD.state.currentHitter=context.batter;
+   HRD.state.timeRemaining=context.time;
+   HRD.state.outsRemaining=context.outs;
    const changed=[];
    let matched=0,metricMatches=0;
    HRD.players.forEach(player=>{
@@ -88,6 +105,10 @@ window.HRD=window.HRD||{};
      metricMatches++;
     }
    });
+   const withDistance=HRD.players.filter(p=>p.stats?.maxDistance!=null).sort((a,b)=>b.stats.maxDistance-a.stats.maxDistance);
+   const withVelo=HRD.players.filter(p=>p.stats?.maxExitVelocity!=null).sort((a,b)=>b.stats.maxExitVelocity-a.stats.maxExitVelocity);
+   HRD.state.biggestHomer=withDistance[0]?{name:withDistance[0].name,owner:withDistance[0].owner,value:withDistance[0].stats.maxDistance}:null;
+   HRD.state.hardestHit=withVelo[0]?{name:withVelo[0].name,owner:withVelo[0].owner,value:withVelo[0].stats.maxExitVelocity}:null;
    HRD.state.changedPlayers=changed;
    HRD.state.lastRefresh=new Date().toLocaleTimeString();HRD.state.source=source;HRD.persist();HRD.render();
    if(changed.length&&window.launchBall)changed.forEach((_,i)=>setTimeout(window.launchBall,i*250));
