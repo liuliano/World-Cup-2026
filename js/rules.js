@@ -45,19 +45,39 @@ WC.resolveGame = function resolveGame(game) {
 WC.getAdvancementScenarios = function getAdvancementScenarios(game) {
   const resolved = WC.resolveGame(game);
   if (resolved) return [{ team: resolved.team, owner: resolved.owner, reason: 'Confirmed' }];
-
   const scenarios = [];
   const add = (team, owner, reason) => {
     if (!scenarios.some((item) => item.team === team && item.owner === owner)) scenarios.push({ team, owner, reason });
   };
-
   add(game.h, game.ho, game.line < 0 ? `${game.h} wins and covers` : `${game.h} wins`);
   add(game.a, game.ao, game.line > 0 ? `${game.a} wins and covers` : `${game.a} wins`);
-
   if (game.line < 0 && game.ao && game.ao !== game.ho) add(game.h, game.ao, `${game.h} wins; ${game.a} covers`);
   if (game.line > 0 && game.ho && game.ho !== game.ao) add(game.a, game.ho, `${game.a} wins; ${game.h} covers`);
-
   return scenarios;
+};
+
+WC.findEspnEvent = function findEspnEvent(team1, team2, datePrefix) {
+  const events = WC.espnKnockoutEvents || [];
+  const direct = events.find((event) => {
+    const teams = [WC.norm(event.home), WC.norm(event.away)];
+    return teams.includes(WC.norm(team1)) && teams.includes(WC.norm(team2));
+  });
+  if (direct) return direct;
+  return events.find((event) => event.dateIso?.startsWith(datePrefix)) || null;
+};
+
+WC.applyEspnEvent = function applyEspnEvent(game, event) {
+  if (!event) return game;
+  const direct = WC.norm(game.h) === WC.norm(event.home);
+  return {
+    ...game,
+    date: event.date || game.date,
+    venue: event.venue || game.venue,
+    status: event.status || game.status,
+    final: event.final === true,
+    hs: direct ? event.hs : event.as,
+    as: direct ? event.as : event.hs
+  };
 };
 
 WC.getSemifinalGames = function getSemifinalGames() {
@@ -65,14 +85,38 @@ WC.getSemifinalGames = function getSemifinalGames() {
   const b = WC.resolveGame(WC.qfGames[1]);
   const c = WC.resolveGame(WC.qfGames[2]);
   const d = WC.resolveGame(WC.qfGames[3]);
+
+  const sf1 = {
+    h: a?.team || 'Winner France/Morocco', ho: a?.owner || '',
+    a: b?.team || 'Winner Spain/Belgium', ao: b?.owner || '',
+    line: 0, hs: null, as: null, status: 'Scheduled', final: false,
+    date: 'Jul 14, 3:00 PM EDT', venue: 'AT&T Stadium — Arlington, Texas'
+  };
+
+  const sf2 = {
+    h: c?.team || 'Winner England/Norway', ho: c?.owner || '',
+    a: d?.team || 'Winner Argentina/Switzerland', ao: d?.owner || '',
+    line: 0, hs: null, as: null, status: 'Scheduled', final: false,
+    date: 'Jul 15, 3:00 PM EDT', venue: 'Mercedes-Benz Stadium — Atlanta, Georgia'
+  };
+
   return [
-    { h: a?.team || 'Winner France/Morocco', ho: a?.owner || '', a: b?.team || 'Winner Spain/Belgium', ao: b?.owner || '', line: 0, hs: null, as: null, date: 'Semifinal', venue: 'TBD' },
-    { h: c?.team || 'Winner England/Norway', ho: c?.owner || '', a: d?.team || 'Winner Argentina/Switzerland', ao: d?.owner || '', line: 0, hs: null, as: null, date: 'Semifinal', venue: 'TBD' }
+    WC.applyEspnEvent(sf1, WC.findEspnEvent(sf1.h, sf1.a, '2026-07-14')),
+    WC.applyEspnEvent(sf2, WC.findEspnEvent(sf2.h, sf2.a, '2026-07-15'))
   ];
 };
 
 WC.getFinalGame = function getFinalGame() {
-  return { h: 'Winner SF1', ho: '', a: 'Winner SF2', ao: '', line: 0, hs: null, as: null, date: 'Final', venue: 'TBD' };
+  const semifinals = WC.getSemifinalGames();
+  const first = WC.resolveGame(semifinals[0]);
+  const second = WC.resolveGame(semifinals[1]);
+  const game = {
+    h: first?.team || 'Winner SF1', ho: first?.owner || '',
+    a: second?.team || 'Winner SF2', ao: second?.owner || '',
+    line: 0, hs: null, as: null, status: 'Scheduled', final: false,
+    date: 'Jul 19, 3:00 PM EDT', venue: 'MetLife Stadium — East Rutherford, New Jersey'
+  };
+  return WC.applyEspnEvent(game, WC.findEspnEvent(game.h, game.a, '2026-07-19'));
 };
 
 WC.getAlive = function getAlive() {
