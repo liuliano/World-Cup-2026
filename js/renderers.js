@@ -14,7 +14,7 @@ WC.scenarioBlock = function scenarioBlock(title, first, second) {
 WC.semifinalCard = function semifinalCard(game, leftGame, rightGame) {
   const confirmed = WC.resolveGame(leftGame) && WC.resolveGame(rightGame);
   const scenarios = confirmed ? '' : WC.scenarioBlock('Possible owner / team outcomes', WC.getAdvancementScenarios(leftGame), WC.getAdvancementScenarios(rightGame));
-  return `<div class="card match-card soccer-card"><div class="match-kicker">🥅 ${game.date} · ${WC.isFinal(game) ? 'Final' : 'Scheduled'}</div><div class="venue">📍 ${game.venue}</div><div class="match-title">${game.h} <span>vs</span> ${game.a}</div><div class="team"><span>${game.h} ${WC.rankBadge(game.h)}<span class="owner">${game.ho}</span></span><span><b>${game.hs ?? 0}</b> <span class="${WC.spreadClass(game.line)}">${WC.spreadText(game.line)}</span></span></div><div class="team"><span>${game.a} ${WC.rankBadge(game.a)}<span class="owner">${game.ao}</span></span><span><b>${game.as ?? 0}</b> <span class="${WC.spreadClass(-game.line)}">${WC.spreadText(-game.line)}</span></span></div>${scenarios}</div>`;
+  return `<div class="card match-card soccer-card"><div class="match-kicker">🥅 ${game.date} · ${WC.isFinal(game) ? 'Final' : (game.status || 'Scheduled')}</div><div class="venue">📍 ${game.venue}</div><div class="match-title">${game.h} <span>vs</span> ${game.a}</div><div class="team"><span>${game.h} ${WC.rankBadge(game.h)}<span class="owner">${game.ho}</span></span><span><b>${game.hs ?? 0}</b> <span class="${WC.spreadClass(game.line)}">${WC.spreadText(game.line)}</span></span></div><div class="team"><span>${game.a} ${WC.rankBadge(game.a)}<span class="owner">${game.ao}</span></span><span><b>${game.as ?? 0}</b> <span class="${WC.spreadClass(-game.line)}">${WC.spreadText(-game.line)}</span></span></div>${scenarios}</div>`;
 };
 
 WC.renderSemifinals = function renderSemifinals() {
@@ -24,8 +24,9 @@ WC.renderSemifinals = function renderSemifinals() {
 
 WC.renderFinal = function renderFinal() {
   const semifinalGames = WC.getSemifinalGames();
+  const game = WC.getFinalGame();
   const finalScenarios = WC.scenarioBlock('Possible Final owner / team outcomes', WC.getAdvancementScenarios(semifinalGames[0]), WC.getAdvancementScenarios(semifinalGames[1]));
-  WC.$('finals').innerHTML = `<div class="card match-card final-card"><div class="match-kicker">🏆 Final · Scheduled</div><div class="venue">📍 TBD</div><div class="match-title">Winner SF1 <span>vs</span> Winner SF2</div>${finalScenarios}</div>`;
+  WC.$('finals').innerHTML = `<div class="card match-card final-card"><div class="match-kicker">🏆 ${game.date} · ${WC.isFinal(game) ? 'Final' : (game.status || 'Scheduled')}</div><div class="venue">📍 ${game.venue}</div><div class="match-title">${game.h} <span>vs</span> ${game.a}</div>${finalScenarios}</div>`;
 };
 
 WC.renderTakeoverHistory = function renderTakeoverHistory(takeovers) {
