@@ -7,88 +7,22 @@ window.HRD=window.HRD||{};
  const isDerby=n=>/home\s*run\s*derby|homerun\s*derby|hr\s*derby/.test(text(n));
  const isHomer=(p,e)=>/home run|homered|homer/i.test(String(e?.details?.description||e?.details?.event||p?.result?.event||p?.result?.description||''));
  async function getJson(url){const r=await fetch(`${url}${url.includes('?')?'&':'?'}_=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error(`${r.status} ${r.statusText}`);return r.json()}
- function hrValue(n){
-  if(!n||typeof n!=='object')return null;
-  const label=[n.name,n.label,n.displayName,n.stat?.name,n.type,n.description].filter(Boolean).join(' ');
-  for(const k of ['homeRuns','homeRunCount','homeruns','home_runs','hr','totalHomeRuns','score','value'])if(Object.hasOwn(n,k)){const v=number(n[k]);if(v!==null&&(k!=='score'&&k!=='value'||/home.?runs?|\bhr\b|derby/i.test(label)))return v}
-  for(const c of [n.stats,n.statistics,n.splits,n.results])if(Array.isArray(c))for(const x of c){const l=[x?.stat?.name,x?.name,x?.label,x?.displayName,x?.abbreviation,x?.type].filter(Boolean).join(' ');if(/home.?runs?|^hr$/i.test(l)){const v=number(x?.stat?.value??x?.value??x?.displayValue??x?.total);if(v!==null)return v}}
-  return null;
- }
- function extractSummary(root){
-  const found=new Map(),seen=new Set();
-  function walk(n){if(!n||typeof n!=='object'||seen.has(n))return;seen.add(n);for(const name of names(n)){const p=HRD.players.find(x=>HRD.norm(x.name)===HRD.norm(name));if(p){const v=hrValue(n);if(v!==null)found.set(HRD.norm(p.name),Math.max(found.get(HRD.norm(p.name))??0,v))}}if(Array.isArray(n))n.forEach(walk);else Object.values(n).forEach(walk)}
-  walk(root);return found;
- }
- function extractPlays(feed){
-  const totals=new Map(),metrics=new Map();
-  for(const play of feed?.liveData?.plays?.allPlays||[]){
-   const batter=play?.matchup?.batter?.fullName||play?.matchup?.batter?.name;
-   const p=HRD.players.find(x=>HRD.norm(x.name)===HRD.norm(batter));if(!p)continue;
-   const key=HRD.norm(p.name);if(!metrics.has(key))metrics.set(key,{distances:[],velocities:[],lastDistance:null,lastExitVelocity:null,lastDescription:''});
-   const b=metrics.get(key);let homer=false;
-   for(const e of play.playEvents||[]){const h=isHomer(play,e);if(h)homer=true;const hit=e?.hitData;if(!hit)continue;const d=number(hit.totalDistance??hit.total_distance),v=number(hit.launchSpeed??hit.exitVelocity??hit.exit_velocity);if(h&&d!==null){b.distances.push(d);b.lastDistance=d}if(h&&v!==null){b.velocities.push(v);b.lastExitVelocity=v}if(h)b.lastDescription=e?.details?.description||play?.result?.description||''}
-   if(!homer&&/home run|homered|homer/i.test(String(play?.result?.event||play?.result?.description||'')))homer=true;
-   if(homer)totals.set(key,(totals.get(key)||0)+1);
-  }
-  return {totals,metrics};
- }
+ function hrValue(n){if(!n||typeof n!=='object')return null;const label=[n.name,n.label,n.displayName,n.stat?.name,n.type,n.description].filter(Boolean).join(' ');for(const k of ['homeRuns','homeRunCount','homeruns','home_runs','hr','totalHomeRuns','score','value'])if(Object.hasOwn(n,k)){const v=number(n[k]);if(v!==null&&(k!=='score'&&k!=='value'||/home.?runs?|\bhr\b|derby/i.test(label)))return v}for(const c of [n.stats,n.statistics,n.splits,n.results])if(Array.isArray(c))for(const x of c){const l=[x?.stat?.name,x?.name,x?.label,x?.displayName,x?.abbreviation,x?.type].filter(Boolean).join(' ');if(/home.?runs?|^hr$/i.test(l)){const v=number(x?.stat?.value??x?.value??x?.displayValue??x?.total);if(v!==null)return v}}return null}
+ function extractSummary(root){const found=new Map(),seen=new Set();function walk(n){if(!n||typeof n!=='object'||seen.has(n))return;seen.add(n);for(const name of names(n)){const p=HRD.players.find(x=>HRD.norm(x.name)===HRD.norm(name));if(p){const v=hrValue(n);if(v!==null)found.set(HRD.norm(p.name),Math.max(found.get(HRD.norm(p.name))??0,v))}}if(Array.isArray(n))n.forEach(walk);else Object.values(n).forEach(walk)}walk(root);return found}
+ function extractPlays(feed){const totals=new Map(),metrics=new Map();for(const play of feed?.liveData?.plays?.allPlays||[]){const batter=play?.matchup?.batter?.fullName||play?.matchup?.batter?.name;const p=HRD.players.find(x=>HRD.norm(x.name)===HRD.norm(batter));if(!p)continue;const key=HRD.norm(p.name);if(!metrics.has(key))metrics.set(key,{distances:[],velocities:[],lastDistance:null,lastExitVelocity:null,lastDescription:''});const b=metrics.get(key);let homer=false;for(const e of play.playEvents||[]){const h=isHomer(play,e);if(h)homer=true;const hit=e?.hitData;if(!hit)continue;const d=number(hit.totalDistance??hit.total_distance),v=number(hit.launchSpeed??hit.exitVelocity??hit.exit_velocity);if(h&&d!==null){b.distances.push(d);b.lastDistance=d}if(h&&v!==null){b.velocities.push(v);b.lastExitVelocity=v}if(h)b.lastDescription=e?.details?.description||play?.result?.description||''}if(!homer&&/home run|homered|homer/i.test(String(play?.result?.event||play?.result?.description||'')))homer=true;if(homer)totals.set(key,(totals.get(key)||0)+1)}return {totals,metrics}}
  function context(feed){const c=feed?.liveData?.plays?.currentPlay||{},l=feed?.liveData?.linescore||{};const t=[c?.about?.remainingTime,c?.about?.timeRemaining,c?.count?.timeRemaining,l?.timeRemaining,feed?.gameData?.status?.timeRemaining].find(v=>v!=null&&String(v).trim());const o=[c?.count?.outsRemaining,c?.about?.outsRemaining,l?.outsRemaining,l?.outs].map(number).find(v=>v!==null);return {batter:c?.matchup?.batter?.fullName||c?.matchup?.batter?.name||'',time:t==null?'':String(t),outs:o}}
  function gamesFrom(s){return (s?.dates||[]).flatMap(d=>d.games||[])}
- async function discoverDerby(){
-  const base={startDate:HRD.config.startDate,endDate:HRD.config.endDate,hydrate:'game(content(summary)),linescore,metadata'};
-  const variants=[{...base},{...base,sportId:'1'},{...base,sportId:'51'},{...base,sportId:'1,51'},{...base,gameTypes:'E,A,S'},{...base,sportId:'1',gameTypes:'E,A,S'}];
-  const responses=[];
-  for(const v of variants){try{const q=new URLSearchParams(v),data=await getJson(`${HRD.config.schedule}?${q}`);responses.push(data);const derby=gamesFrom(data).find(isDerby);if(derby)return {derby,schedule:data}}catch(e){}}
-  const allGames=responses.flatMap(gamesFrom),likely=allGames.find(g=>/derby|home run/.test(text(g)));
-  return {derby:likely||null,schedule:responses[0]||{dates:[]}};
- }
- function applyDynamicFeed(feed){
-  if(!feed||!feed.players||typeof feed.players!=='object')return {matched:0,changed:[]};
-  const changed=[];let matched=0;
-  for(const p of HRD.players){
-   const live=feed.players[p.name]||feed.players[HRD.norm(p.name)];
-   if(!live)continue;
-   const old=p.hr,total=number(live.hr);
-   if(total!==null){p.hr=total;matched++;if(total>old)changed.push(p.name)}
-   const maxDistance=number(live.maxDistance);
-   if(maxDistance!==null){p.stats={...HRD.emptyStats(),...(p.stats||{}),maxDistance,trackedHomers:Math.max(Number(p.stats?.trackedHomers)||0,total||0),bonusHomers:maxDistance>=HRD.config.bonusDistance?Math.max(1,Number(p.stats?.bonusHomers)||0):Number(p.stats?.bonusHomers)||0}}
-  }
-  HRD.state.currentHitter=feed.currentHitter||HRD.state.currentHitter||'';
-  HRD.state.isLive=feed.status==='live'||matched>0;
-  HRD.state.eventStatus=feed.status==='live'?'Round in progress':feed.status==='complete'?'Complete':'Waiting for MLB.com results';
-  HRD.state.source='MLB.com dynamic JSON API';
-  HRD.state.lastRefresh=feed.updatedAt?new Date(feed.updatedAt).toLocaleTimeString():new Date().toLocaleTimeString();
-  return {matched,changed};
- }
- function updateHighlights(){
-  const d=HRD.players.filter(p=>p.stats?.maxDistance!=null).sort((a,b)=>b.stats.maxDistance-a.stats.maxDistance),v=HRD.players.filter(p=>p.stats?.maxExitVelocity!=null).sort((a,b)=>b.stats.maxExitVelocity-a.stats.maxExitVelocity);
-  HRD.state.biggestHomer=d[0]?{name:d[0].name,owner:d[0].owner,value:d[0].stats.maxDistance}:null;
-  HRD.state.hardestHit=v[0]?{name:v[0].name,owner:v[0].owner,value:v[0].stats.maxExitVelocity}:null;
- }
+ async function discoverDerby(){const base={startDate:HRD.config.startDate,endDate:HRD.config.endDate,hydrate:'game(content(summary)),linescore,metadata'};const variants=[{...base},{...base,sportId:'1'},{...base,sportId:'51'},{...base,sportId:'1,51'},{...base,gameTypes:'E,A,S'},{...base,sportId:'1',gameTypes:'E,A,S'}];const responses=[];for(const v of variants){try{const q=new URLSearchParams(v),data=await getJson(`${HRD.config.schedule}?${q}`);responses.push(data);const derby=gamesFrom(data).find(isDerby);if(derby)return {derby,schedule:data}}catch(e){}}const allGames=responses.flatMap(gamesFrom),likely=allGames.find(g=>/derby|home run/.test(text(g)));return {derby:likely||null,schedule:responses[0]||{dates:[]}}}
+ function updateHighlights(){const d=HRD.players.filter(p=>p.stats?.maxDistance!=null).sort((a,b)=>b.stats.maxDistance-a.stats.maxDistance),v=HRD.players.filter(p=>p.stats?.maxExitVelocity!=null).sort((a,b)=>b.stats.maxExitVelocity-a.stats.maxExitVelocity);HRD.state.biggestHomer=d[0]?{name:d[0].name,owner:d[0].owner,value:d[0].stats.maxDistance}:null;HRD.state.hardestHit=v[0]?{name:v[0].name,owner:v[0].owner,value:v[0].stats.maxExitVelocity}:null}
+ function applyDynamicFeed(feed){if(!feed||!feed.players||typeof feed.players!=='object')return {matched:0,changed:[]};HRD.players=structuredClone(HRD.defaults);const changed=[];let matched=0;for(const p of HRD.players){const live=feed.players[p.name]||feed.players[HRD.norm(p.name)];if(!live)continue;const total=number(live.hr);if(total!==null){p.hr=total;matched++;if(total>0)changed.push(p.name)}const maxDistance=number(live.maxDistance),avgDistance=number(live.avgDistance),maxExitVelocity=number(live.maxExitVelocity),avgExitVelocity=number(live.avgExitVelocity);p.stats={...HRD.emptyStats(),maxDistance,avgDistance,maxExitVelocity,avgExitVelocity,trackedHomers:number(live.trackedHomers)??(total||0),bonusHomers:number(live.bonusHomers)??(maxDistance>=HRD.config.bonusDistance?1:0),lastDistance:number(live.lastDistance),lastExitVelocity:number(live.lastExitVelocity)}}if(!matched)return {matched:0,changed:[]};HRD.state.officialDataReady=true;HRD.state.currentHitter=feed.currentHitter||'';HRD.state.isLive=feed.status==='live';HRD.state.eventStatus=feed.status==='complete'?'Complete':feed.status==='live'?'Round in progress':'Official results available';HRD.state.source='MLB.com dynamic API';HRD.state.lastRefresh=feed.updatedAt?new Date(feed.updatedAt).toLocaleTimeString():new Date().toLocaleTimeString();HRD.state.lastPlay=feed.lastPlay||'';return {matched,changed}}
  function setTimer(ms){clearTimeout(HRD._timer);HRD._timer=setTimeout(HRD.refreshFromMlb,ms)}
- HRD.refreshFromMlb=async function(){
-  const status=document.getElementById('apiStatus');if(status)status.innerHTML='<span class="live-dot"></span><span>Refreshing MLB.com dynamic API…</span>';
-  try{
-   let dynamic=null;
-   try{dynamic=await getJson(HRD.config.dynamicFeed)}catch(e){}
-   if(dynamic&&dynamic.players&&Object.keys(dynamic.players).length){
-    const result=applyDynamicFeed(dynamic);HRD.state.changedPlayers=result.changed;updateHighlights();HRD.persist();HRD.render();if(result.changed.length&&window.launchBall)result.changed.forEach((_,i)=>setTimeout(window.launchBall,i*250));
-    const cadence=HRD.state.isLive?HRD.config.liveRefreshMs:HRD.config.idleRefreshMs;
-    if(status)status.innerHTML=`<span class="live-dot ${HRD.state.isLive?'':'idle'}"></span><span>${HRD.state.isLive?'LIVE · ':''}Updated ${result.matched}/8 hitters from MLB.com. Next check in ${Math.round(cadence/1000)}s.</span>`;
-    setTimer(cadence);return;
-   }
-   const found=await discoverDerby(),derby=found.derby;
-   if(!derby){HRD.state.isLive=false;HRD.state.eventStatus='Waiting for MLB.com live data';HRD.state.source='MLB.com dynamic API';HRD.state.lastRefresh=new Date().toLocaleTimeString();HRD.render();if(status)status.innerHTML='<span class="live-dot idle"></span><span>Dynamic MLB.com feed is waiting for published results. Retrying every 60 seconds.</span>';setTimer(HRD.config.idleRefreshMs);return}
-   const state=derby?.status?.abstractGameState||derby?.status?.codedGameState||'Preview';
-   HRD.state.isLive=/live|in progress/i.test(String(state))||['I','M'].includes(String(derby?.status?.codedGameState));HRD.state.eventStatus=derby?.status?.detailedState||state;
-   let payload=found.schedule,source='MLB StatsAPI schedule';
-   if(derby.gamePk){try{payload=await getJson(`${HRD.config.liveFeed}/${derby.gamePk}/feed/live`);source=`MLB live feed ${derby.gamePk}`}catch(e){source=`MLB schedule (${derby.gamePk})`}}
-   const summary=extractSummary(payload),plays=extractPlays(payload),ctx=context(payload);HRD.state.currentHitter=ctx.batter;HRD.state.timeRemaining=ctx.time;HRD.state.outsRemaining=ctx.outs;
-   const changed=[];let matched=0,metricMatches=0;
-   for(const p of HRD.players){const key=HRD.norm(p.name),old=p.hr,pt=plays.totals.get(key),st=summary.get(key),total=pt!==undefined?Math.max(pt,st??0):st;if(total!==undefined){p.hr=total;matched++;if(total>old)changed.push(p.name)}const b=plays.metrics.get(key);if(b&&(b.distances.length||b.velocities.length)){p.stats={...HRD.emptyStats(),...(p.stats||{}),maxDistance:b.distances.length?Math.max(...b.distances):p.stats?.maxDistance??null,avgDistance:average(b.distances),maxExitVelocity:b.velocities.length?Math.max(...b.velocities):p.stats?.maxExitVelocity??null,avgExitVelocity:average(b.velocities),bonusHomers:b.distances.filter(d=>d>=HRD.config.bonusDistance).length,trackedHomers:b.distances.length,lastDistance:b.lastDistance,lastExitVelocity:b.lastExitVelocity};if(b.lastDescription)HRD.state.lastPlay=`${p.name}: ${b.lastDescription}`;metricMatches++}}
-   HRD.state.changedPlayers=changed;HRD.state.lastRefresh=new Date().toLocaleTimeString();HRD.state.source=source;updateHighlights();HRD.persist();HRD.render();if(changed.length&&window.launchBall)changed.forEach((_,i)=>setTimeout(window.launchBall,i*250));
-   const cadence=HRD.state.isLive?HRD.config.liveRefreshMs:HRD.config.idleRefreshMs;if(status)status.innerHTML=`<span class="live-dot ${HRD.state.isLive?'':'idle'}"></span><span>${HRD.state.isLive?'LIVE · ':''}${matched||metricMatches?`Updated ${matched}/8 totals and ${metricMatches}/8 Statcast profiles.`:'Official feed found, but hitter totals are not published yet.'} Next check in ${Math.round(cadence/1000)}s.</span>`;setTimer(cadence);
-  }catch(e){if(status)status.innerHTML=`<span class="live-dot idle"></span><span>MLB refresh failed: ${e.message}. Retrying in 60 seconds.</span>`;setTimer(HRD.config.idleRefreshMs)}
- };
+ function showWaiting(status,message){HRD.resetOfficialData();HRD.state.lastRefresh=new Date().toLocaleTimeString();HRD.render();if(status)status.innerHTML=`<span class="live-dot idle"></span><span>${message}</span>`;setTimer(HRD.config.idleRefreshMs)}
+ HRD.refreshFromMlb=async function(){const status=document.getElementById('apiStatus');if(status)status.innerHTML='<span class="live-dot"></span><span>Refreshing official MLB data…</span>';try{let dynamic=null;try{dynamic=await getJson(HRD.config.dynamicFeed)}catch(e){}if(dynamic){const result=applyDynamicFeed(dynamic);if(result.matched){HRD.state.changedPlayers=result.changed;updateHighlights();HRD.render();if(result.changed.length&&window.launchBall)result.changed.forEach((_,i)=>setTimeout(window.launchBall,i*250));const cadence=HRD.state.isLive?HRD.config.liveRefreshMs:HRD.config.idleRefreshMs;if(status)status.innerHTML=`<span class="live-dot ${HRD.state.isLive?'':'idle'}"></span><span>${HRD.state.isLive?'LIVE · ':''}Updated ${result.matched}/8 hitters from MLB.com. Next check in ${Math.round(cadence/1000)}s.</span>`;setTimer(cadence);return}}
+ const found=await discoverDerby(),derby=found.derby;if(!derby){showWaiting(status,'Waiting for official MLB Derby data. Retrying every 60 seconds.');return}
+ const state=derby?.status?.abstractGameState||derby?.status?.codedGameState||'Preview';let payload=found.schedule,source='MLB StatsAPI schedule';if(derby.gamePk){try{payload=await getJson(`${HRD.config.liveFeed}/${derby.gamePk}/feed/live`);source=`MLB live feed ${derby.gamePk}`}catch(e){}}
+ HRD.players=structuredClone(HRD.defaults);const summary=extractSummary(payload),plays=extractPlays(payload),ctx=context(payload);const changed=[];let matched=0,metricMatches=0;for(const p of HRD.players){const key=HRD.norm(p.name),pt=plays.totals.get(key),st=summary.get(key),total=pt!==undefined?Math.max(pt,st??0):st;if(total!==undefined){p.hr=total;matched++;if(total>0)changed.push(p.name)}const b=plays.metrics.get(key);if(b&&(b.distances.length||b.velocities.length)){p.stats={...HRD.emptyStats(),maxDistance:b.distances.length?Math.max(...b.distances):null,avgDistance:average(b.distances),maxExitVelocity:b.velocities.length?Math.max(...b.velocities):null,avgExitVelocity:average(b.velocities),bonusHomers:b.distances.filter(d=>d>=HRD.config.bonusDistance).length,trackedHomers:b.distances.length,lastDistance:b.lastDistance,lastExitVelocity:b.lastExitVelocity};if(b.lastDescription)HRD.state.lastPlay=`${p.name}: ${b.lastDescription}`;metricMatches++}}
+ if(!matched&&!metricMatches){showWaiting(status,'Official Derby feed found, but hitter totals are not published yet. Retrying every 60 seconds.');return}
+ HRD.state.officialDataReady=true;HRD.state.isLive=/live|in progress/i.test(String(state))||['I','M'].includes(String(derby?.status?.codedGameState));HRD.state.eventStatus=derby?.status?.detailedState||state;HRD.state.currentHitter=ctx.batter;HRD.state.timeRemaining=ctx.time;HRD.state.outsRemaining=ctx.outs;HRD.state.changedPlayers=changed;HRD.state.lastRefresh=new Date().toLocaleTimeString();HRD.state.source=source;updateHighlights();HRD.render();const cadence=HRD.state.isLive?HRD.config.liveRefreshMs:HRD.config.idleRefreshMs;if(status)status.innerHTML=`<span class="live-dot ${HRD.state.isLive?'':'idle'}"></span><span>${HRD.state.isLive?'LIVE · ':''}Updated ${matched}/8 totals and ${metricMatches}/8 Statcast profiles. Next check in ${Math.round(cadence/1000)}s.</span>`;setTimer(cadence)
+ }catch(e){showWaiting(status,`Official MLB refresh failed: ${e.message}. Retrying in 60 seconds.`)}};
  HRD.startAutoRefresh=function(){clearTimeout(HRD._timer);HRD.refreshFromMlb()};
 })();
