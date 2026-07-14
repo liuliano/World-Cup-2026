@@ -4,6 +4,10 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "*/5 * * * *"
+  push:
+    paths:
+      - "scripts/update_hr_derby.py"
+      - ".github/workflows/update-hr-derby.yml"
 
 permissions:
   contents: write
