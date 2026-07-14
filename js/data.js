@@ -15,14 +15,15 @@ WC.strength = {
 WC.baseTakeovers = [
   ['England', 'Joe', 'McCartney', 'England -1.5 | DR Congo +1.5', 'England 2-1', 'DR Congo covered. McCartney took over England.'],
   ['Belgium', 'J. Schwartz', 'Dolan', 'Belgium -0.5 | Senegal +0.5', 'Belgium 3-2 AET', 'Senegal covered. Dolan took over Belgium.'],
-  ['Argentina', 'McCartney', 'J. Schwartz', 'Argentina -2.5 | Cape Verde +2.5', 'Argentina 3-2', 'Cape Verde covered. J. Schwartz took over Argentina.']
+  ['Argentina', 'McCartney', 'J. Schwartz', 'Argentina -2.5 | Cape Verde +2.5', 'Argentina 3-2', 'Cape Verde covered. J. Schwartz took over Argentina.'],
+  ['Argentina', 'J. Schwartz', 'E. Schwartz', 'Extra-time ownership rule', 'Argentina advanced', 'E. Schwartz took over Argentina under the extra-time rule.']
 ];
 
 WC.ownerHistory = {
   Baxter: ['Canada', 'Colombia'], Nolan: ['Morocco'], Whelan: ['Paraguay', 'Spain', 'France'],
   Knox: ['France', 'Norway'], Gal: ['Brazil'], Merc: ['Mexico', 'United States'],
   McCartney: ['England'], Roynan: ['Portugal'], Dolan: ['Belgium'],
-  'J. Schwartz': ['Argentina'], Joe: ['Egypt', 'Argentina'], 'E. Schwartz': ['Switzerland']
+  'J. Schwartz': [], Joe: ['Egypt'], 'E. Schwartz': ['Switzerland', 'Argentina']
 };
 
 WC.round16Games = [
@@ -40,7 +41,7 @@ const defaultQfGames = [
   { h: 'France', ho: 'Whelan', a: 'Morocco', ao: 'Nolan', line: -0.5, hs: null, as: null, date: 'Jul 9, 4:00 PM', venue: 'NRG Stadium — Houston, Texas' },
   { h: 'Spain', ho: 'Whelan', a: 'Belgium', ao: 'Dolan', line: -0.5, hs: null, as: null, date: 'Jul 10, 3:00 PM', venue: 'Los Angeles Stadium — Inglewood, California' },
   { h: 'England', ho: 'McCartney', a: 'Norway', ao: 'Knox', line: -0.5, hs: null, as: null, date: 'Jul 11, 5:00 PM', venue: 'MetLife Stadium — East Rutherford, New Jersey' },
-  { h: 'Argentina', ho: 'Joe', a: 'Switzerland', ao: 'E. Schwartz', line: -0.5, hs: null, as: null, date: 'Jul 11, 9:00 PM', venue: 'TBD' }
+  { h: 'Argentina', ho: 'E. Schwartz', a: 'Switzerland', ao: 'E. Schwartz', line: -0.5, hs: null, as: null, date: 'Jul 11, 9:00 PM', venue: 'TBD' }
 ];
 
 WC.qfGames = defaultQfGames.map((game) => ({ ...game }));
