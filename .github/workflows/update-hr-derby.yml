@@ -19,14 +19,17 @@ concurrency:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install requests beautifulsoup4
-      - name: Poll official MLB.com pages
+      - name: Install browser scraper
+        run: |
+          pip install playwright
+          playwright install --with-deps chromium
+      - name: Poll rendered official MLB.com pages
         run: python scripts/update_hr_derby.py --watch 250 --interval 20
       - name: Publish changed JSON
         run: |
