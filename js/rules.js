@@ -120,18 +120,36 @@ WC.getFinalGame = function getFinalGame() {
 };
 
 WC.getAlive = function getAlive() {
-  const alive = [];
+  const qfAlive = [];
   WC.qfGames.forEach((game) => {
     const result = WC.resolveGame(game);
-    if (result) alive.push([result.team, result.owner]);
-    else { alive.push([game.h, game.ho]); alive.push([game.a, game.ao]); }
+    if (result) qfAlive.push([result.team, result.owner]);
+    else {
+      qfAlive.push([game.h, game.ho]);
+      qfAlive.push([game.a, game.ao]);
+    }
   });
+
+  const semifinals = WC.getSemifinalGames();
+  const anySemifinalStarted = semifinals.some((game) => WC.isFinal(game) || (game.status && game.status !== 'Scheduled'));
+  if (!anySemifinalStarted) return qfAlive;
+
+  const alive = [];
+  semifinals.forEach((game) => {
+    const result = WC.resolveGame(game);
+    if (result) alive.push([result.team, result.owner]);
+    else {
+      if (game.h && !game.h.startsWith('Winner ')) alive.push([game.h, game.ho]);
+      if (game.a && !game.a.startsWith('Winner ')) alive.push([game.a, game.ao]);
+    }
+  });
+
   return alive;
 };
 
 WC.getTakeovers = function getTakeovers() {
   const takeovers = WC.baseTakeovers.slice();
-  WC.round16Games.concat(WC.qfGames).forEach((game) => {
+  WC.round16Games.concat(WC.qfGames, WC.getSemifinalGames(), [WC.getFinalGame()]).forEach((game) => {
     const result = WC.resolveGame(game);
     if (result?.event) takeovers.push(result.event);
   });
