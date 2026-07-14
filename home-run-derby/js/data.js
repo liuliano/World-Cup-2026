@@ -10,6 +10,7 @@ HRD.defaults=[
 ].map(player=>({...player,stats:HRD.emptyStats()}));
 HRD.config={schedule:'https://statsapi.mlb.com/api/v1/schedule',liveFeed:'https://statsapi.mlb.com/api/v1.1/game',dynamicFeed:'data/live.json',startDate:'2026-07-13',endDate:'2026-07-14',bonusDistance:440,liveRefreshMs:12000,idleRefreshMs:60000};
 HRD.players=structuredClone(HRD.defaults);
-HRD.state={lastRefresh:'',source:'MLB.com dynamic API',isLive:false,eventStatus:'Waiting for MLB event data',lastPlay:'',changedPlayers:[],currentHitter:'',timeRemaining:'',outsRemaining:null,biggestHomer:null,hardestHit:null,oddsHistory:[]};
-HRD.persist=function(){localStorage.setItem('hrDerby2026MlbCache',JSON.stringify({players:HRD.players,lastRefresh:HRD.state.lastRefresh,source:HRD.state.source,savedAt:Date.now()}));};
+HRD.state={lastRefresh:'',source:'Official MLB live data',officialDataReady:false,isLive:false,eventStatus:'Waiting for official MLB Derby data…',lastPlay:'',changedPlayers:[],currentHitter:'',timeRemaining:'',outsRemaining:null,biggestHomer:null,hardestHit:null,oddsHistory:[]};
+HRD.resetOfficialData=function(){HRD.players=structuredClone(HRD.defaults);Object.assign(HRD.state,{officialDataReady:false,isLive:false,eventStatus:'Waiting for official MLB Derby data…',lastPlay:'',changedPlayers:[],currentHitter:'',timeRemaining:'',outsRemaining:null,biggestHomer:null,hardestHit:null,source:'Official MLB live data'});localStorage.removeItem('hrDerby2026MlbCache')};
+HRD.persist=function(){};
 HRD.norm=function(v){return String(v||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'')};
