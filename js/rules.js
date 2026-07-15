@@ -39,7 +39,7 @@ WC.resolveGame = function resolveGame(game) {
         `${underdog} covered. ${owner} takes over ${favorite}.`];
     }
   }
-  return { team: winner, owner, loser, event };
+  return { team: winner, owner, loser, loserOwner: WC.ownerAtKick(game, loser), event };
 };
 
 WC.getAdvancementScenarios = function getAdvancementScenarios(game) {
@@ -54,6 +54,15 @@ WC.getAdvancementScenarios = function getAdvancementScenarios(game) {
   if (game.line < 0 && game.ao && game.ao !== game.ho) add(game.h, game.ao, `${game.h} wins; ${game.a} covers`);
   if (game.line > 0 && game.ho && game.ho !== game.ao) add(game.a, game.ho, `${game.a} wins; ${game.h} covers`);
   return scenarios;
+};
+
+WC.getLoserScenarios = function getLoserScenarios(game) {
+  const resolved = WC.resolveGame(game);
+  if (resolved) return [{ team: resolved.loser, owner: resolved.loserOwner, reason: 'Confirmed' }];
+  return [
+    { team: game.h, owner: game.ho, reason: `${game.h} loses semifinal` },
+    { team: game.a, owner: game.ao, reason: `${game.a} loses semifinal` }
+  ].filter((item) => item.team && !item.team.startsWith('Winner '));
 };
 
 WC.findEspnEvent = function findEspnEvent(team1, team2, datePrefix) {
@@ -117,6 +126,19 @@ WC.getFinalGame = function getFinalGame() {
     date: 'Jul 19, 3:00 PM EDT', venue: 'MetLife Stadium — East Rutherford, New Jersey'
   };
   return WC.applyEspnEvent(game, WC.findEspnEvent(game.h, game.a, '2026-07-19'));
+};
+
+WC.getBronzeGame = function getBronzeGame() {
+  const semifinals = WC.getSemifinalGames();
+  const first = WC.resolveGame(semifinals[0]);
+  const second = WC.resolveGame(semifinals[1]);
+  const game = {
+    h: first?.loser || 'Loser SF1', ho: first?.loserOwner || '',
+    a: second?.loser || 'Loser SF2', ao: second?.loserOwner || '',
+    line: 0, hs: null, as: null, status: 'Scheduled', final: false,
+    date: 'Jul 18, 5:00 PM EDT', venue: 'Hard Rock Stadium — Miami, Florida'
+  };
+  return WC.applyEspnEvent(game, WC.findEspnEvent(game.h, game.a, '2026-07-18'));
 };
 
 WC.getAlive = function getAlive() {
