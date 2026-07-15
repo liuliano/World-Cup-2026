@@ -22,11 +22,22 @@ WC.renderSemifinals = function renderSemifinals() {
   WC.$('sf').innerHTML = [WC.semifinalCard(games[0], WC.qfGames[0], WC.qfGames[1]), WC.semifinalCard(games[1], WC.qfGames[2], WC.qfGames[3])].join('');
 };
 
+WC.medalMatchCard = function medalMatchCard(game, icon, scenarioTitle, firstScenarios, secondScenarios) {
+  const result = WC.resolveGame(game);
+  const scenarios = result ? '' : WC.scenarioBlock(scenarioTitle, firstScenarios, secondScenarios);
+  return `<div class="card match-card final-card"><div class="match-kicker">${icon} ${game.date} · ${WC.isFinal(game) ? 'Final' : (game.status || 'Scheduled')}</div><div class="venue">📍 ${game.venue}</div><div class="match-title">${game.h} <span>vs</span> ${game.a}</div><div class="team"><span>${game.h} ${WC.rankBadge(game.h)}<span class="owner">${game.ho}</span></span><span><b>${game.hs ?? 0}</b> <span class="${WC.spreadClass(game.line)}">${WC.spreadText(game.line)}</span></span></div><div class="team"><span>${game.a} ${WC.rankBadge(game.a)}<span class="owner">${game.ao}</span></span><span><b>${game.as ?? 0}</b> <span class="${WC.spreadClass(-game.line)}">${WC.spreadText(-game.line)}</span></span></div>${result ? `<div class="muted">Winner: <b>${result.team}</b> · Owner: <b>${result.owner}</b></div>` : scenarios}</div>`;
+};
+
 WC.renderFinal = function renderFinal() {
   const semifinalGames = WC.getSemifinalGames();
   const game = WC.getFinalGame();
-  const finalScenarios = WC.scenarioBlock('Possible Final owner / team outcomes', WC.getAdvancementScenarios(semifinalGames[0]), WC.getAdvancementScenarios(semifinalGames[1]));
-  WC.$('finals').innerHTML = `<div class="card match-card final-card"><div class="match-kicker">🏆 ${game.date} · ${WC.isFinal(game) ? 'Final' : (game.status || 'Scheduled')}</div><div class="venue">📍 ${game.venue}</div><div class="match-title">${game.h} <span>vs</span> ${game.a}</div>${finalScenarios}</div>`;
+  WC.$('finals').innerHTML = WC.medalMatchCard(game, '👑', 'Possible Final owner / team outcomes', WC.getAdvancementScenarios(semifinalGames[0]), WC.getAdvancementScenarios(semifinalGames[1]));
+};
+
+WC.renderBronze = function renderBronze() {
+  const semifinalGames = WC.getSemifinalGames();
+  const game = WC.getBronzeGame();
+  WC.$('bronze').innerHTML = WC.medalMatchCard(game, '🥉', 'Possible Bronze Match owner / team outcomes', WC.getLoserScenarios(semifinalGames[0]), WC.getLoserScenarios(semifinalGames[1]));
 };
 
 WC.renderTakeoverHistory = function renderTakeoverHistory(takeovers) {
@@ -43,7 +54,9 @@ WC.renderOwnerCards = function renderOwnerCards(cards, takeovers) {
 
 WC.currentRoundRecap = function currentRoundRecap() {
   const qfDone = WC.qfGames.filter(WC.isFinal).length;
-  if (qfDone === 4) return 'Semifinals: 0 of 2 Finals';
+  const sfDone = WC.getSemifinalGames().filter(WC.isFinal).length;
+  if (sfDone === 2) return 'Final and Bronze Match scheduled';
+  if (qfDone === 4) return `Semifinals: ${sfDone} of 2 Finals`;
   return `Quarterfinals: ${qfDone} of 4 Finals`;
 };
 
@@ -54,7 +67,8 @@ WC.renderDashboard = function renderDashboard() {
   const eliminatedCount = Object.values(cards).reduce((total, card) => total + card.out.length, 0);
   const leader = rows[0];
   const qfDone = WC.qfGames.filter(WC.isFinal).length;
-  const roundName = qfDone === 4 ? 'Semifinals' : 'Quarterfinals';
+  const sfDone = WC.getSemifinalGames().filter(WC.isFinal).length;
+  const roundName = sfDone === 2 ? 'Finals' : qfDone === 4 ? 'Semifinals' : 'Quarterfinals';
 
   WC.$('stamp').textContent = WC.state.lastRefresh === 'Never' ? 'World Cup: not refreshed yet' : `World Cup updated: ${WC.state.lastRefresh}`;
   WC.$('recap').innerHTML = `✅ ${WC.currentRoundRecap()}<br>🔁 Takeovers: ${takeovers.length}<br>👥 Teams Remaining: ${WC.getAlive().length}<br>🏆 Leader: <b>${leader.o}</b> ${leader.p.toFixed(1)}%`;
@@ -67,4 +81,5 @@ WC.renderDashboard = function renderDashboard() {
   WC.renderQuarterfinals();
   WC.renderSemifinals();
   WC.renderFinal();
+  WC.renderBronze();
 };
