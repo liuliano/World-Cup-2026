@@ -1,7 +1,7 @@
 window.WC = window.WC || {};
 
-WC.FIRST_PRIZE = 1120;
-WC.SECOND_PRIZE = 480;
+WC.FIRST_PRIZE = 1020;
+WC.SECOND_PRIZE = 320;
 
 WC.renderRound16 = function renderRound16() { WC.$('r16').innerHTML = WC.round16Games.map(WC.gameCard).join(''); };
 WC.renderQuarterfinals = function renderQuarterfinals() { WC.$('qf').innerHTML = WC.qfGames.map(WC.gameCard).join(''); };
@@ -33,7 +33,7 @@ WC.medalMatchCard = function medalMatchCard(game, icon, scenarioTitle, firstScen
 
 WC.finalPayoutScenarios = function finalPayoutScenarios(game) {
   if (!game.ho || !game.ao || game.h.startsWith('Winner ') || game.a.startsWith('Winner ')) return '';
-  return `<div class="scenario-block"><div class="scenario-title">💰 Win / Lose Payouts</div><div class="team"><span>If <b>${game.h}</b> wins<br><span class="owner">${game.ho}</span></span><span>🥇 <b>$${WC.FIRST_PRIZE.toLocaleString()}</b><br>${game.ao}: $${WC.SECOND_PRIZE.toLocaleString()}</span></div><div class="team"><span>If <b>${game.a}</b> wins<br><span class="owner">${game.ao}</span></span><span>🥇 <b>$${WC.FIRST_PRIZE.toLocaleString()}</b><br>${game.ho}: $${WC.SECOND_PRIZE.toLocaleString()}</span></div></div>`;
+  return `<div class="scenario-block"><div class="scenario-title">💰 Final Match Payouts</div><div class="team"><span>If <b>${game.h}</b> wins<br><span class="owner">${game.ho}</span></span><span>🥇 <b>$${WC.FIRST_PRIZE.toLocaleString()}</b><br>🥈 ${game.ao}: $${WC.SECOND_PRIZE.toLocaleString()}</span></div><div class="team"><span>If <b>${game.a}</b> wins<br><span class="owner">${game.ao}</span></span><span>🥇 <b>$${WC.FIRST_PRIZE.toLocaleString()}</b><br>🥈 ${game.ho}: $${WC.SECOND_PRIZE.toLocaleString()}</span></div><div class="muted" style="margin-top:10px">These payouts apply to the Final only. The Bronze Match has no prize payout.</div></div>`;
 };
 
 WC.renderFinal = function renderFinal() {
@@ -57,7 +57,7 @@ WC.renderChampionshipProbability = function renderChampionshipProbability(rows, 
   const finalConfirmed = finalGame.ho && finalGame.ao && !finalGame.h.startsWith('Winner ') && !finalGame.a.startsWith('Winner ');
 
   if (finalConfirmed) {
-    WC.$('odds').innerHTML = `<div class="scenario-title">💰 Final Prize Outcomes</div><table><tr><th>Team</th><th>Owner</th><th>If Win</th><th>If Lose</th></tr><tr class="leader-row"><td><b>${finalGame.h}</b></td><td><b>${finalGame.ho}</b></td><td>🥇 <b>$${WC.FIRST_PRIZE.toLocaleString()}</b></td><td>🥈 $${WC.SECOND_PRIZE.toLocaleString()}</td></tr><tr><td><b>${finalGame.a}</b></td><td><b>${finalGame.ao}</b></td><td>🥇 <b>$${WC.FIRST_PRIZE.toLocaleString()}</b></td><td>🥈 $${WC.SECOND_PRIZE.toLocaleString()}</td></tr></table>`;
+    WC.$('odds').innerHTML = `<div class="scenario-title">💰 Final Prize Outcomes</div><table><tr><th>Team</th><th>Owner</th><th>If Win</th><th>If Lose</th></tr><tr class="leader-row"><td><b>${finalGame.h}</b></td><td><b>${finalGame.ho}</b></td><td>🥇 <b>$${WC.FIRST_PRIZE.toLocaleString()}</b></td><td>🥈 $${WC.SECOND_PRIZE.toLocaleString()}</td></tr><tr><td><b>${finalGame.a}</b></td><td><b>${finalGame.ao}</b></td><td>🥇 <b>$${WC.FIRST_PRIZE.toLocaleString()}</b></td><td>🥈 $${WC.SECOND_PRIZE.toLocaleString()}</td></tr></table><div class="muted" style="margin-top:10px">Final match only. No Bronze Match payout.</div>`;
     return;
   }
 
