@@ -122,7 +122,8 @@ WC.getFinalGame = function getFinalGame() {
   const game = {
     h: first?.team || 'Winner SF1', ho: first?.owner || '',
     a: second?.team || 'Winner SF2', ao: second?.owner || '',
-    line: 0, hs: null, as: null, status: 'Scheduled', final: false,
+    line: first?.team === 'Spain' ? -0.5 : second?.team === 'Spain' ? 0.5 : 0,
+    hs: null, as: null, status: 'Scheduled', final: false,
     date: 'Jul 19, 3:00 PM EDT', venue: 'MetLife Stadium — East Rutherford, New Jersey'
   };
   return WC.applyEspnEvent(game, WC.findEspnEvent(game.h, game.a, '2026-07-19'));
