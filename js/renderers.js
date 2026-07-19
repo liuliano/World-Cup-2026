@@ -31,25 +31,15 @@ WC.medalMatchCard = function medalMatchCard(game, icon, scenarioTitle, firstScen
   return `<div class="card match-card final-card"><div class="match-kicker">${icon} ${game.date} · ${WC.isFinal(game) ? 'Final' : (game.status || 'Scheduled')}</div><div class="venue">📍 ${game.venue}</div><div class="match-title">${game.h} <span>vs</span> ${game.a}</div><div class="team"><span>${game.h} ${WC.rankBadge(game.h)}<span class="owner">${game.ho}</span></span><span><b>${game.hs ?? 0}</b> <span class="${WC.spreadClass(game.line)}">${WC.spreadText(game.line)}</span></span></div><div class="team"><span>${game.a} ${WC.rankBadge(game.a)}<span class="owner">${game.ao}</span></span><span><b>${game.as ?? 0}</b> <span class="${WC.spreadClass(-game.line)}">${WC.spreadText(-game.line)}</span></span></div>${result ? `<div class="muted">Winner: <b>${result.team}</b> · Owner: <b>${result.owner}</b></div>` : scenarios}${extraContent}</div>`;
 };
 
-WC.prizeOutlook = function prizeOutlook(rows) {
-  if (!rows || rows.length !== 2) return '';
-  return `<div class="scenario-block"><div class="scenario-title">💰 Prize Outlook</div>${rows.map((row) => {
-    const expected = (row.p / 100) * WC.FIRST_PRIZE + (1 - row.p / 100) * WC.SECOND_PRIZE;
-    return `<div class="team"><span><b>${row.o}</b><span class="owner">${row.teams.join(', ')}</span></span><span><b>${row.p.toFixed(1)}%</b><span class="owner">Expected: $${expected.toFixed(2)}</span></span></div>`;
-  }).join('')}<div class="muted" style="margin-top:10px">🥇 First: $${WC.FIRST_PRIZE.toLocaleString()} · 🥈 Second: $${WC.SECOND_PRIZE.toLocaleString()}</div></div>`;
-};
-
 WC.finalPayoutScenarios = function finalPayoutScenarios(game) {
   if (!game.ho || !game.ao || game.h.startsWith('Winner ') || game.a.startsWith('Winner ')) return '';
-  return `<div class="scenario-block"><div class="scenario-title">🏆 Final Payout Scenarios</div><div class="team"><span>If <b>${game.h}</b> wins</span><span>🥇 ${game.ho}: $${WC.FIRST_PRIZE.toLocaleString()}<br>🥈 ${game.ao}: $${WC.SECOND_PRIZE.toLocaleString()}</span></div><div class="team"><span>If <b>${game.a}</b> wins</span><span>🥇 ${game.ao}: $${WC.FIRST_PRIZE.toLocaleString()}<br>🥈 ${game.ho}: $${WC.SECOND_PRIZE.toLocaleString()}</span></div></div>`;
+  return `<div class="scenario-block"><div class="scenario-title">💰 Win / Lose Payouts</div><div class="team"><span>If <b>${game.h}</b> wins<br><span class="owner">${game.ho}</span></span><span>🥇 <b>$${WC.FIRST_PRIZE.toLocaleString()}</b><br>${game.ao}: $${WC.SECOND_PRIZE.toLocaleString()}</span></div><div class="team"><span>If <b>${game.a}</b> wins<br><span class="owner">${game.ao}</span></span><span>🥇 <b>$${WC.FIRST_PRIZE.toLocaleString()}</b><br>${game.ho}: $${WC.SECOND_PRIZE.toLocaleString()}</span></div></div>`;
 };
 
 WC.renderFinal = function renderFinal() {
   const semifinalGames = WC.getSemifinalGames();
   const game = WC.getFinalGame();
-  const rows = WC.simulateTournament();
-  const extra = WC.prizeOutlook(rows) + WC.finalPayoutScenarios(game);
-  WC.$('finals').innerHTML = WC.medalMatchCard(game, '👑', 'Possible Final owner / team outcomes', WC.getAdvancementScenarios(semifinalGames[0]), WC.getAdvancementScenarios(semifinalGames[1]), extra);
+  WC.$('finals').innerHTML = WC.medalMatchCard(game, '👑', 'Possible Final owner / team outcomes', WC.getAdvancementScenarios(semifinalGames[0]), WC.getAdvancementScenarios(semifinalGames[1]), WC.finalPayoutScenarios(game));
 };
 
 WC.renderBronze = function renderBronze() {
@@ -63,11 +53,15 @@ WC.renderTakeoverHistory = function renderTakeoverHistory(takeovers) {
 };
 
 WC.renderChampionshipProbability = function renderChampionshipProbability(rows, takeovers) {
-  const showExpected = rows.length === 2;
-  WC.$('odds').innerHTML = `<table><tr><th>Rank</th><th>Owner</th><th>Odds</th>${showExpected ? '<th>Expected Prize</th>' : ''}<th>Move</th><th>Teams</th></tr>${rows.map((row, index) => {
-    const expected = (row.p / 100) * WC.FIRST_PRIZE + (1 - row.p / 100) * WC.SECOND_PRIZE;
-    return `<tr class="${index === 0 ? 'leader-row' : ''}"><td>#${index + 1}</td><td><b>${row.o}</b></td><td><b>${row.p.toFixed(1)}%</b><div class="bar"><div class="fill" style="width:${row.p}%"></div></div></td>${showExpected ? `<td><b>$${expected.toFixed(2)}</b></td>` : ''}<td>${WC.oddsMove(row.o, row.p)}</td><td>${row.teams.map((team) => `<span class="badge">${takeovers.some((x) => x[0] === team) ? '🔁 ' : '⚽ '}${team}</span>`).join('')}</td></tr>`;
-  }).join('')}</table>${showExpected ? `<div class="muted" style="margin-top:10px">Expected prize = win probability × $${WC.FIRST_PRIZE.toLocaleString()} + loss probability × $${WC.SECOND_PRIZE.toLocaleString()}.</div>` : ''}`;
+  const finalGame = WC.getFinalGame();
+  const finalConfirmed = finalGame.ho && finalGame.ao && !finalGame.h.startsWith('Winner ') && !finalGame.a.startsWith('Winner ');
+
+  if (finalConfirmed) {
+    WC.$('odds').innerHTML = `<div class="scenario-title">💰 Final Prize Outcomes</div><table><tr><th>Team</th><th>Owner</th><th>If Win</th><th>If Lose</th></tr><tr class="leader-row"><td><b>${finalGame.h}</b></td><td><b>${finalGame.ho}</b></td><td>🥇 <b>$${WC.FIRST_PRIZE.toLocaleString()}</b></td><td>🥈 $${WC.SECOND_PRIZE.toLocaleString()}</td></tr><tr><td><b>${finalGame.a}</b></td><td><b>${finalGame.ao}</b></td><td>🥇 <b>$${WC.FIRST_PRIZE.toLocaleString()}</b></td><td>🥈 $${WC.SECOND_PRIZE.toLocaleString()}</td></tr></table>`;
+    return;
+  }
+
+  WC.$('odds').innerHTML = `<table><tr><th>Rank</th><th>Owner</th><th>Odds</th><th>Move</th><th>Teams</th></tr>${rows.map((row, index) => `<tr class="${index === 0 ? 'leader-row' : ''}"><td>#${index + 1}</td><td><b>${row.o}</b></td><td><b>${row.p.toFixed(1)}%</b><div class="bar"><div class="fill" style="width:${row.p}%"></div></div></td><td>${WC.oddsMove(row.o, row.p)}</td><td>${row.teams.map((team) => `<span class="badge">${takeovers.some((x) => x[0] === team) ? '🔁 ' : '⚽ '}${team}</span>`).join('')}</td></tr>`).join('')}</table>`;
 };
 
 WC.renderOwnerCards = function renderOwnerCards(cards, takeovers) {
@@ -91,9 +85,11 @@ WC.renderDashboard = function renderDashboard() {
   const qfDone = WC.qfGames.filter(WC.isFinal).length;
   const sfDone = WC.getSemifinalGames().filter(WC.isFinal).length;
   const roundName = sfDone === 2 ? 'Finals' : qfDone === 4 ? 'Semifinals' : 'Quarterfinals';
+  const finalGame = WC.getFinalGame();
+  const finalConfirmed = finalGame.ho && finalGame.ao && !finalGame.h.startsWith('Winner ') && !finalGame.a.startsWith('Winner ');
 
   WC.$('stamp').textContent = WC.state.lastRefresh === 'Never' ? 'World Cup: not refreshed yet' : `World Cup updated: ${WC.state.lastRefresh}`;
-  WC.$('recap').innerHTML = `✅ ${WC.currentRoundRecap()}<br>🔁 Takeovers: ${takeovers.length}<br>👥 Teams Remaining: ${WC.getAlive().length}<br>🏆 Leader: <b>${leader.o}</b> ${leader.p.toFixed(1)}%`;
+  WC.$('recap').innerHTML = finalConfirmed ? `✅ ${WC.currentRoundRecap()}<br>💰 Winner: $${WC.FIRST_PRIZE.toLocaleString()}<br>🥈 Runner-up: $${WC.SECOND_PRIZE.toLocaleString()}<br>🏆 ${finalGame.ho} (${finalGame.h}) vs ${finalGame.ao} (${finalGame.a})` : `✅ ${WC.currentRoundRecap()}<br>🔁 Takeovers: ${takeovers.length}<br>👥 Teams Remaining: ${WC.getAlive().length}<br>🏆 Leader: <b>${leader.o}</b> ${leader.p.toFixed(1)}%`;
   WC.$('insights').innerHTML = `⚽ Alive teams: <b>${WC.getAlive().length}</b><br>🚫 Eliminated shown: <b>${eliminatedCount}</b>`;
   WC.$('top').innerHTML = `<div class="card round-card"><span>Current Round</span><div class="big">⚽ ${roundName}</div></div><div class="card round-card"><span>Takeovers</span><div class="big">🔁 ${takeovers.length}</div></div>`;
   WC.renderTakeoverHistory(takeovers);
