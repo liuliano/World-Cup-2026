@@ -1,5 +1,8 @@
 window.WC = window.WC || {};
 
+WC.FIRST_PRIZE = 1120;
+WC.SECOND_PRIZE = 480;
+
 WC.renderRound16 = function renderRound16() { WC.$('r16').innerHTML = WC.round16Games.map(WC.gameCard).join(''); };
 WC.renderQuarterfinals = function renderQuarterfinals() { WC.$('qf').innerHTML = WC.qfGames.map(WC.gameCard).join(''); };
 
@@ -22,16 +25,31 @@ WC.renderSemifinals = function renderSemifinals() {
   WC.$('sf').innerHTML = [WC.semifinalCard(games[0], WC.qfGames[0], WC.qfGames[1]), WC.semifinalCard(games[1], WC.qfGames[2], WC.qfGames[3])].join('');
 };
 
-WC.medalMatchCard = function medalMatchCard(game, icon, scenarioTitle, firstScenarios, secondScenarios) {
+WC.medalMatchCard = function medalMatchCard(game, icon, scenarioTitle, firstScenarios, secondScenarios, extraContent = '') {
   const result = WC.resolveGame(game);
   const scenarios = result ? '' : WC.scenarioBlock(scenarioTitle, firstScenarios, secondScenarios);
-  return `<div class="card match-card final-card"><div class="match-kicker">${icon} ${game.date} · ${WC.isFinal(game) ? 'Final' : (game.status || 'Scheduled')}</div><div class="venue">📍 ${game.venue}</div><div class="match-title">${game.h} <span>vs</span> ${game.a}</div><div class="team"><span>${game.h} ${WC.rankBadge(game.h)}<span class="owner">${game.ho}</span></span><span><b>${game.hs ?? 0}</b> <span class="${WC.spreadClass(game.line)}">${WC.spreadText(game.line)}</span></span></div><div class="team"><span>${game.a} ${WC.rankBadge(game.a)}<span class="owner">${game.ao}</span></span><span><b>${game.as ?? 0}</b> <span class="${WC.spreadClass(-game.line)}">${WC.spreadText(-game.line)}</span></span></div>${result ? `<div class="muted">Winner: <b>${result.team}</b> · Owner: <b>${result.owner}</b></div>` : scenarios}</div>`;
+  return `<div class="card match-card final-card"><div class="match-kicker">${icon} ${game.date} · ${WC.isFinal(game) ? 'Final' : (game.status || 'Scheduled')}</div><div class="venue">📍 ${game.venue}</div><div class="match-title">${game.h} <span>vs</span> ${game.a}</div><div class="team"><span>${game.h} ${WC.rankBadge(game.h)}<span class="owner">${game.ho}</span></span><span><b>${game.hs ?? 0}</b> <span class="${WC.spreadClass(game.line)}">${WC.spreadText(game.line)}</span></span></div><div class="team"><span>${game.a} ${WC.rankBadge(game.a)}<span class="owner">${game.ao}</span></span><span><b>${game.as ?? 0}</b> <span class="${WC.spreadClass(-game.line)}">${WC.spreadText(-game.line)}</span></span></div>${result ? `<div class="muted">Winner: <b>${result.team}</b> · Owner: <b>${result.owner}</b></div>` : scenarios}${extraContent}</div>`;
+};
+
+WC.prizeOutlook = function prizeOutlook(rows) {
+  if (!rows || rows.length !== 2) return '';
+  return `<div class="scenario-block"><div class="scenario-title">💰 Prize Outlook</div>${rows.map((row) => {
+    const expected = (row.p / 100) * WC.FIRST_PRIZE + (1 - row.p / 100) * WC.SECOND_PRIZE;
+    return `<div class="team"><span><b>${row.o}</b><span class="owner">${row.teams.join(', ')}</span></span><span><b>${row.p.toFixed(1)}%</b><span class="owner">Expected: $${expected.toFixed(2)}</span></span></div>`;
+  }).join('')}<div class="muted" style="margin-top:10px">🥇 First: $${WC.FIRST_PRIZE.toLocaleString()} · 🥈 Second: $${WC.SECOND_PRIZE.toLocaleString()}</div></div>`;
+};
+
+WC.finalPayoutScenarios = function finalPayoutScenarios(game) {
+  if (!game.ho || !game.ao || game.h.startsWith('Winner ') || game.a.startsWith('Winner ')) return '';
+  return `<div class="scenario-block"><div class="scenario-title">🏆 Final Payout Scenarios</div><div class="team"><span>If <b>${game.h}</b> wins</span><span>🥇 ${game.ho}: $${WC.FIRST_PRIZE.toLocaleString()}<br>🥈 ${game.ao}: $${WC.SECOND_PRIZE.toLocaleString()}</span></div><div class="team"><span>If <b>${game.a}</b> wins</span><span>🥇 ${game.ao}: $${WC.FIRST_PRIZE.toLocaleString()}<br>🥈 ${game.ho}: $${WC.SECOND_PRIZE.toLocaleString()}</span></div></div>`;
 };
 
 WC.renderFinal = function renderFinal() {
   const semifinalGames = WC.getSemifinalGames();
   const game = WC.getFinalGame();
-  WC.$('finals').innerHTML = WC.medalMatchCard(game, '👑', 'Possible Final owner / team outcomes', WC.getAdvancementScenarios(semifinalGames[0]), WC.getAdvancementScenarios(semifinalGames[1]));
+  const rows = WC.simulateTournament();
+  const extra = WC.prizeOutlook(rows) + WC.finalPayoutScenarios(game);
+  WC.$('finals').innerHTML = WC.medalMatchCard(game, '👑', 'Possible Final owner / team outcomes', WC.getAdvancementScenarios(semifinalGames[0]), WC.getAdvancementScenarios(semifinalGames[1]), extra);
 };
 
 WC.renderBronze = function renderBronze() {
@@ -45,7 +63,11 @@ WC.renderTakeoverHistory = function renderTakeoverHistory(takeovers) {
 };
 
 WC.renderChampionshipProbability = function renderChampionshipProbability(rows, takeovers) {
-  WC.$('odds').innerHTML = `<table><tr><th>Rank</th><th>Owner</th><th>Odds</th><th>Move</th><th>Teams</th></tr>${rows.map((row, index) => `<tr class="${index === 0 ? 'leader-row' : ''}"><td>#${index + 1}</td><td><b>${row.o}</b></td><td><b>${row.p.toFixed(1)}%</b><div class="bar"><div class="fill" style="width:${row.p}%"></div></div></td><td>${WC.oddsMove(row.o, row.p)}</td><td>${row.teams.map((team) => `<span class="badge">${takeovers.some((x) => x[0] === team) ? '🔁 ' : '⚽ '}${team}</span>`).join('')}</td></tr>`).join('')}</table>`;
+  const showExpected = rows.length === 2;
+  WC.$('odds').innerHTML = `<table><tr><th>Rank</th><th>Owner</th><th>Odds</th>${showExpected ? '<th>Expected Prize</th>' : ''}<th>Move</th><th>Teams</th></tr>${rows.map((row, index) => {
+    const expected = (row.p / 100) * WC.FIRST_PRIZE + (1 - row.p / 100) * WC.SECOND_PRIZE;
+    return `<tr class="${index === 0 ? 'leader-row' : ''}"><td>#${index + 1}</td><td><b>${row.o}</b></td><td><b>${row.p.toFixed(1)}%</b><div class="bar"><div class="fill" style="width:${row.p}%"></div></div></td>${showExpected ? `<td><b>$${expected.toFixed(2)}</b></td>` : ''}<td>${WC.oddsMove(row.o, row.p)}</td><td>${row.teams.map((team) => `<span class="badge">${takeovers.some((x) => x[0] === team) ? '🔁 ' : '⚽ '}${team}</span>`).join('')}</td></tr>`;
+  }).join('')}</table>${showExpected ? `<div class="muted" style="margin-top:10px">Expected prize = win probability × $${WC.FIRST_PRIZE.toLocaleString()} + loss probability × $${WC.SECOND_PRIZE.toLocaleString()}.</div>` : ''}`;
 };
 
 WC.renderOwnerCards = function renderOwnerCards(cards, takeovers) {
