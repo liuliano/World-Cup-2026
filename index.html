@@ -137,6 +137,11 @@ button{font-family:inherit!important}
  .league-games .game{padding:11px 12px!important}
  .mobile-player{padding:12px!important}
 }
+</style><style id="live-odds-cards-v1">
+.game-main{min-width:0;flex:1}.game-side{min-width:82px;text-align:right;align-self:center}
+.live-odds{display:flex;flex-direction:column;gap:2px;margin-left:8px;padding:6px 8px;border:1px solid #315675;border-radius:8px;background:#071827;font-size:10px}
+.live-odds small{color:#5fc2ff;font-size:8px;font-weight:900;letter-spacing:.7px}
+.live-odds span{display:flex;justify-content:space-between;gap:7px;color:#a9bdcf}.live-odds b{color:#fff;font-size:11px}
 </style></head><body><div class="wrap">
 <div class="hero"><div style="font-weight:900;letter-spacing:2px;color:#fff">NFL</div><h1>🏈 PICK'EM LIVE</h1><div style="color:#dcecff">WEEK 2 • 2026 • STRAIGHT-UP</div></div>
 <div class="grid league-summary">
@@ -218,7 +223,7 @@ let raw=starter; localStorage.setItem("nflw2entries",starter);
 function entries(){return raw.split(/\n+/).map(x=>x.trim()).filter(Boolean).map(line=>{let [name,p,tb]=line.split("|");return{name,picks:(p||"").split(",").map(x=>x.trim().toUpperCase()),tb:+tb||0}}).filter(x=>x.picks.length===16)}
 function render(){
  const gamesEl=document.getElementById("games");
- gamesEl.innerHTML=games.map((g,i)=>{const r=results[gameKey(i)]||"";return '<div class="game"><div><b>'+g[0]+' @ '+g[1]+'</b><div style="font-size:22px;font-weight:900">'+(liveScore[i]||'—  •  —')+'</div><div class="muted">'+(liveGame[i]||('Game '+(i+1)))+'</div><div class="stadium">📍 '+stadiums[i]+'</div></div><div style="text-align:right">'+(r?'<div class="chip" style="font-size:14px">'+r+'</div>':'')+'</div></div>'}).join("");
+ gamesEl.innerHTML=games.map((g,i)=>{const r=results[gameKey(i)]||"",o=liveML[i]||week2MarketML[i],fmt=n=>Number.isFinite(n)?(n>0?"+":"")+n:"—",src=liveML[i]?(liveML[i].provider||"LIVE"):"WK2";return '<div class="game"><div class="game-main"><b>'+g[0]+' @ '+g[1]+'</b><div style="font-size:22px;font-weight:900">'+(liveScore[i]||'—  •  —')+'</div><div class="muted">'+(liveGame[i]||('Game '+(i+1)))+'</div><div class="stadium">📍 '+stadiums[i]+'</div></div><div class="game-side">'+(r?'<div class="chip" style="font-size:14px">'+r+'</div>':'')+(!r&&o?'<div class="live-odds"><small>'+src+' ML</small><span>'+g[0]+' <b>'+fmt(o.away)+'</b></span><span>'+g[1]+' <b>'+fmt(o.home)+'</b></span></div>':'')+'</div></div>'}).join("");
  const done=games.filter((g,i)=>results[gameKey(i)]).length, es=entries(), N=20000, stats={};
  es.forEach(e=>stats[e.name]={p1:0,p2:0,p3:0,any:0,money:0});
  const normal=(mu,sd)=>{let u=1-Math.random(),v=1-Math.random();return mu+sd*Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
