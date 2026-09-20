@@ -7,7 +7,7 @@
 <div class="grid">
 <div class="card"><div class="muted">Lawrence</div><div class="big" id="score">0</div><div>correct so far</div></div>
 <div class="card"><div class="muted">Projected finish</div><div class="big" id="place">—</div><div id="alive" class="muted">Update game winners below</div></div>
-<div class="card"><div class="muted">MNF tiebreaker</div><div class="big">47</div><div>NYG @ LAR total points</div></div>
+<div class="card"><div class="muted">Live 1st-place probability</div><div class="big" id="winProb">—</div><div id="probNote" class="muted">Monte Carlo from live ESPN game state</div></div><div class="card"><div class="muted">MNF tiebreaker</div><div class="big">47</div><div>NYG @ LAR total points</div></div>
 </div>
 <div class="card"><div class="row"><h2 style="margin-right:auto">Week 2 games</h2><button onclick="refreshNFL()">↻ ESPN Live</button><button onclick="resetGames()">Reset</button></div><div id="apiStatus" class="muted">Using the same ESPN scoreboard API pattern as the World Cup app. Results refresh automatically.</div><div id="games" class="games"></div></div>
 <div class="card"><h2>Your card</h2><div id="myPicks" class="chips"></div></div>
@@ -39,8 +39,8 @@ const starter=[
 "Sharon Duffy|BUF,CAR,CHI,PHI,PIT,NYJ,CLE,BAL,HOU,JAC,LV,WAS,SEA,SF,KC,NYG|45",
 "Sue Esposito|BUF,ATL,CHI,PHI,PIT,GB,TB,BAL,CIN,DEN,LAC,DAL,SEA,SF,KC,NYG|48"
 ].join("\n");
-let results=JSON.parse(localStorage.getItem("nflw2results")||"{}");
-let raw=localStorage.getItem("nflw2entries")||starter;
+let results=JSON.parse(localStorage.getItem("nflw2results")||"{}"); let liveP={};
+let raw=starter; localStorage.setItem("nflw2entries",starter);
 function entries(){return raw.split(/\n+/).map(x=>x.trim()).filter(Boolean).map(line=>{let [name,p,tb]=line.split("|");return{name,picks:(p||"").split(",").map(x=>x.trim().toUpperCase()),tb:+tb||0}}).filter(x=>x.picks.length===16)}
 function render(){
  document.getElementById("myPicks").innerHTML=me.map(x=>'<span class="chip">'+x+'</span>').join("");
@@ -51,10 +51,11 @@ function render(){
  let rank=mine?arr.findIndex(x=>x===mine)+1:0;document.getElementById("place").textContent=rank?rank+" / "+arr.length:"—";
  document.getElementById("alive").textContent=done+" of 16 games final/entered";
  document.getElementById("standings").innerHTML=arr.map((e,i)=>'<tr class="'+(e.name.includes("Lawrence")?"me":"")+'"><td>'+(i+1)+'</td><td>'+e.name+'</td><td>'+e.correct+'</td><td>'+e.possible+'</td><td>'+e.tb+'</td></tr>').join("");
- document.getElementById("editor").value=raw;
+ document.getElementById("editor").value=raw; calcProb(arr);
 }
+function calcProb(arr){let es=entries(),N=12000,w=0;for(let n=0;n<N;n++){let winners=[];for(let i=0;i<16;i++){if(results[i])winners[i]=results[i];else{let p=liveP[i]??.5;winners[i]=Math.random()<p?games[i][1]:games[i][0]}}let scores=es.map(e=>({e,s:e.picks.reduce((a,p,i)=>a+(p===winners[i]),0)}));let max=Math.max(...scores.map(x=>x.s));let tops=scores.filter(x=>x.s===max);if(tops.some(x=>x.e.name==="Lawrence Iuliano"))w+=1/tops.length}document.getElementById("winProb").textContent=(100*w/N).toFixed(1)+"%";document.getElementById("probNote").textContent="12,000 simulations • "+Object.keys(results).filter(k=>results[k]).length+" finals entered";}
 function setResult(i,v){if(v)results[i]=v;else delete results[i];localStorage.setItem("nflw2results",JSON.stringify(results));render()}
-async function refreshNFL(){const s=document.getElementById("apiStatus");s.textContent="Refreshing ESPN NFL scores…";try{const u="https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20260917-20260921&limit=100&_="+Date.now();const d=await fetch(u).then(r=>{if(!r.ok)throw Error("ESPN "+r.status);return r.json()});let matched=0;(d.events||[]).forEach(ev=>{const comp=ev.competitions?.[0],cs=comp?.competitors||[],st=(comp?.status||ev.status||{}).type||{};if(cs.length<2)return;const away=cs.find(x=>x.homeAway==="away"),home=cs.find(x=>x.homeAway==="home");const aa=away?.team?.abbreviation,ha=home?.team?.abbreviation;const i=games.findIndex(g=>g[0]===aa&&g[1]===ha);if(i<0)return;matched++;if(st.completed===true){let w=cs.find(x=>x.winner===true);if(!w){let as=Number(away.score),hs=Number(home.score);w=as>hs?away:home}results[i]=w.team.abbreviation}});localStorage.setItem("nflw2results",JSON.stringify(results));render();s.textContent="ESPN refreshed • "+matched+" Week 2 games matched • "+new Date().toLocaleTimeString();}catch(e){s.textContent="ESPN refresh failed: "+e.message+" • manual results still work."}}
+async function refreshNFL(){const s=document.getElementById("apiStatus");s.textContent="Refreshing ESPN NFL scores…";try{const u="https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20260917-20260921&limit=100&_="+Date.now();const d=await fetch(u).then(r=>{if(!r.ok)throw Error("ESPN "+r.status);return r.json()});let matched=0;liveP={};(d.events||[]).forEach(ev=>{const comp=ev.competitions?.[0],cs=comp?.competitors||[],st=(comp?.status||ev.status||{}).type||{};if(cs.length<2)return;const away=cs.find(x=>x.homeAway==="away"),home=cs.find(x=>x.homeAway==="home");const aa=away?.team?.abbreviation,ha=home?.team?.abbreviation;const i=games.findIndex(g=>g[0]===aa&&g[1]===ha);if(i<0)return;matched++;if(st.completed===true){let w=cs.find(x=>x.winner===true);if(!w){let as=Number(away.score),hs=Number(home.score);w=as>hs?away:home}results[i]=w.team.abbreviation}else{let pred=comp?.predictor?.homeTeam?.gameProjection;if(pred!=null)liveP[i]=Number(pred)/100;else{let odds=comp?.odds?.[0];let hp=odds?.homeTeamOdds?.winPercentage;if(hp!=null)liveP[i]=Number(hp)}}});localStorage.setItem("nflw2results",JSON.stringify(results));render();s.textContent="ESPN refreshed • "+matched+" Week 2 games matched • "+new Date().toLocaleTimeString();}catch(e){s.textContent="ESPN refresh failed: "+e.message+" • manual results still work."}}
 function resetGames(){results={};localStorage.removeItem("nflw2results");render()}
 function saveEntries(){raw=document.getElementById("editor").value;localStorage.setItem("nflw2entries",raw);render()}
 function restoreEntries(){raw=starter;localStorage.removeItem("nflw2entries");render()}
