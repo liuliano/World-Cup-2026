@@ -166,42 +166,9 @@ function render(){
  let mine=arr.find(x=>x.name.toLowerCase().includes("lawrence")); document.getElementById("score").textContent=done;
  let rank=mine?arr.findIndex(x=>x===mine)+1:0;document.getElementById("place").textContent=arr.length+" PLAYERS";
  document.getElementById("alive").textContent=done+" of 16 games final/entered";
- document.getElementById("standings").innerHTML=arr.map((e,i)=>'<tr>'<td>'+(i+1)+'</td><td>'+e.name+'</td><td>'+e.correct+'</td><td>'+e.possible+'</td><td>'+e.tb+'</td></tr>').join("");
- calcProb(arr);
-}
-function calcProb(arr){
- const es=entries(),N=20000,stats={}; es.forEach(e=>stats[e.name]={p1:0,p2:0,p3:0,any:0,money:0});
- function normal(mu,sd){let u=1-Math.random(),v=1-Math.random();return mu+sd*Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
- function award(sorted){
-   let pos=1,idx=0;
-   while(idx<sorted.length&&pos<=3){
-     const score=sorted[idx].s; let same=[]; while(idx<sorted.length&&sorted[idx].s===score){same.push(sorted[idx++])}
-     // Pool sheet says ties split prize money for that place. For ties in wins, MNF total breaks ordering.
-     same.sort((a,b)=>a.tbd-b.tbd||Math.random()-.5);
-     let j=0;
-     while(j<same.length&&pos<=3){
-       const d=same[j].tbd; let tied=[]; while(j<same.length&&same[j].tbd===d)tied.push(same[j++]);
-       let prizeSlots=[]; for(let k=0;k<tied.length&&pos+k<=3;k++)prizeSlots.push(pos+k);
-       const cash=prizeSlots.reduce((z,p)=>z+(p===1?156:p===2?60:24),0)/tied.length;
-       tied.forEach(x=>{let st=stats[x.e.name]; if(pos===1)st.p1+=1/tied.length; if(pos<=2&&pos+tied.length-1>=2)st.p2+=1/tied.length; if(pos<=3&&pos+tied.length-1>=3)st.p3+=1/tied.length; if(cash>0)st.any+=1; st.money+=cash});
-       pos+=tied.length;
-     }
-   }
- }
- for(let n=0;n<N;n++){
-   let winners=[];
-   for(let i=0;i<16;i++){if(results[i])winners[i]=results[i];else{let p=liveP[i]??.5;winners[i]=Math.random()<p?games[i][1]:games[i][0]}}
-   // MNF market total is ~47.5; simulate integer final total around that market expectation.
-   const mnfTotal=Math.max(0,Math.round(normal(47.5,10.5)));
-   let rows=es.map(e=>({e,s:e.picks.reduce((a,p,i)=>a+(p===winners[i]),0),tbd:Math.abs(e.tb-mnfTotal)}));
-   rows.sort((a,b)=>b.s-a.s||a.tbd-b.tbd); award(rows);
- }
- window.latestStats=stats; let mine=stats["Lawrence Iuliano"]||{};
- document.getElementById("winProb").textContent=(100*(mine.p1||0)/N).toFixed(1)+"%";
- document.getElementById("probNote").textContent=N.toLocaleString()+" simulations • "+es.length+" entries • live ESPN state • MNF tiebreak";
- arr.forEach(e=>{let z=stats[e.name];e.p1=100*z.p1/N;e.p2=100*z.p2/N;e.p3=100*z.p3/N;e.any=100*z.any/N;e.ev=z.money/N});
- arr.sort((a,b)=>b.p1-a.p1||b.ev-a.ev||b.correct-a.correct);
- document.getElementById("standings").innerHTML=arr.map((e,i)=>{const id=i;const btn=v=>'<button type="button" class="odds-link" data-player="'+id+'">'+v+'</button>';return '<tr class="'+(e.name.includes("Lawrence")?"me":"")+'"><td>'+(i+1)+'</td><td>'+btn(e.name)+'</td><td>'+e.correct+'</td><td>'+e.possible+'</td><td>'+btn('<b>'+e.p1.toFixed(1)+'%</b>')+'</td><td>'+btn(e.p2.toFixed(1)+'%')+'</td><td>'+btn(e.p3.toFixed(1)+'%')+'</td><td>'+btn(e.any.toFixed(1)+'%')+'</td><td>'+btn('<b>$'+e.ev.toFixed(2)+'</b>')+'</td><td>'+e.tb+'</td></tr>'}).join(""); window.displayedEntries=arr; document.getElementById("mobileStandings").innerHTML=arr.map((e,i)=>'<button type="button" class="mobile-player" onclick="showPlayerByIndex('+i+')" data-player="'+i+'"><div class="mp-top"><div><span class="mp-rank">#'+(i+1)+'</span> <span class="mp-name">'+e.name+'</span></div><span class="tap-note">VIEW PICKS ›</span></div><div class="league-record"><span><small>CORRECT</small><b>'+e.correct+'</b></span><span><small>POSSIBLE</small><b>'+e.possible+'</b></span><span><small>TB</small><b>'+e.tb+'</b></span><span><small>EV</small><b>).join("");
+ document.getElementById("standings").innerHTML=arr.map((e,i)=>{const id=i,btn=v=>'<button type="button" class="odds-link" data-player="'+id+'">'+v+'</button>';return '<tr><td>'+(i+1)+'</td><td>'+btn(e.name)+'</td><td>'+e.correct+'</td><td>'+e.possible+'</td><td>'+btn('<b>'+e.p1.toFixed(1)+'%</b>')+'</td><td>'+btn(e.p2.toFixed(1)+'%')+'</td><td>'+btn(e.p3.toFixed(1)+'%')+'</td><td>'+btn(e.any.toFixed(1)+'%')+'</td><td>'+btn('<b>$'+e.ev.toFixed(2)+'</b>')+'</td><td>'+e.tb+'</td></tr>'}).join("");
+ window.displayedEntries=arr;
+ document.getElementById("mobileStandings").innerHTML=arr.map((e,i)=>'<button type="button" class="mobile-player" onclick="showPlayerByIndex('+i+')" data-player="'+i+'"><div class="mp-top"><div><span class="mp-rank">#'+(i+1)+'</span> <span class="mp-name">'+e.name+'</span></div><span class="tap-note">VIEW PICKS ›</span></div><div class="league-record"><span><small>CORRECT</small><b>'+e.correct+'</b></span><span><small>POSSIBLE</small><b>'+e.possible+'</b></span><span><small>TB</small><b>'+e.tb+'</b></span><span><small>EV</small><b>$'+e.ev.toFixed(2)+'</b></span></div><div class="mp-odds"><span><small>1ST</small><b>'+e.p1.toFixed(1)+'%</b></span><span><small>2ND</small>'+e.p2.toFixed(1)+'%</span><span><small>3RD</small>'+e.p3.toFixed(1)+'%</span><span><small>ANY $</small>'+e.any.toFixed(1)+'%</span></div></button>').join("");
 }
 function showPlayerByIndex(i){const e=(window.displayedEntries||[])[i];if(e)showPlayer(e.name)}
 const week2MarketML=[
@@ -233,7 +200,7 @@ function resetGames(){results={};localStorage.removeItem("nflw2results");render(
 function saveEntries(){raw=document.getElementById("editor").value;localStorage.setItem("nflw2entries",raw);render()}
 function restoreEntries(){raw=starter;localStorage.removeItem("nflw2entries");render()}
 render();refreshNFL();setInterval(refreshNFL,60000);
-</script></body></html>+e.ev.toFixed(2)+'</b></span></div><div class="mp-odds"><span><small>1ST</small><b>'+e.p1.toFixed(1)+'%</b></span><span><small>2ND</small>'+e.p2.toFixed(1)+'%</span><span><small>3RD</small>'+e.p3.toFixed(1)+'%</span><span><small>ANY $</small>'+e.any.toFixed(1)+'%</span></div></button>').join("");
+</body></html>+e.ev.toFixed(2)+'</b></span></div><div class="mp-odds"><span><small>1ST</small><b>'+e.p1.toFixed(1)+'%</b></span><span><small>2ND</small>'+e.p2.toFixed(1)+'%</span><span><small>3RD</small>'+e.p3.toFixed(1)+'%</span><span><small>ANY $</small>'+e.any.toFixed(1)+'%</span></div></button>').join("");
 }
 function showPlayerByIndex(i){const e=(window.displayedEntries||[])[i];if(e)showPlayer(e.name)}
 const week2MarketML=[
