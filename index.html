@@ -9,7 +9,7 @@
 <div class="card"><div class="muted">Projected finish</div><div class="big" id="place">—</div><div id="alive" class="muted">Update game winners below</div></div>
 <div class="card"><div class="muted">MNF tiebreaker</div><div class="big">47</div><div>NYG @ LAR total points</div></div>
 </div>
-<div class="card"><div class="row"><h2 style="margin-right:auto">Week 2 games</h2><button onclick="resetGames()">Reset</button></div><div class="muted">Tap a result as games finish. Your score and standings recalculate instantly on this device.</div><div id="games" class="games"></div></div>
+<div class="card"><div class="row"><h2 style="margin-right:auto">Week 2 games</h2><button onclick="refreshNFL()">↻ ESPN Live</button><button onclick="resetGames()">Reset</button></div><div id="apiStatus" class="muted">Using the same ESPN scoreboard API pattern as the World Cup app. Results refresh automatically.</div><div id="games" class="games"></div></div>
 <div class="card"><h2>Your card</h2><div id="myPicks" class="chips"></div></div>
 <div class="card"><h2>Pool standings</h2><div class="muted">All 49 rows visible across the supplied Week 2 master-sheet screenshots are loaded. Lawrence is highlighted.</div><div class="scroll"><table><thead><tr><th>#</th><th>Name</th><th>Correct</th><th>Possible</th><th>TB</th></tr></thead><tbody id="standings"></tbody></table></div></div>
 <div class="card"><h2>Pool data editor</h2><div class="muted">One entry per line: Name | 16 picks | tiebreaker. Saved locally on your phone.</div><textarea id="editor"></textarea><div class="row"><button onclick="saveEntries()">Save entries</button><button onclick="restoreEntries()">Restore starter data</button></div></div>
@@ -54,8 +54,9 @@ function render(){
  document.getElementById("editor").value=raw;
 }
 function setResult(i,v){if(v)results[i]=v;else delete results[i];localStorage.setItem("nflw2results",JSON.stringify(results));render()}
+async function refreshNFL(){const s=document.getElementById("apiStatus");s.textContent="Refreshing ESPN NFL scores…";try{const u="https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20260917-20260921&limit=100&_="+Date.now();const d=await fetch(u).then(r=>{if(!r.ok)throw Error("ESPN "+r.status);return r.json()});let matched=0;(d.events||[]).forEach(ev=>{const comp=ev.competitions?.[0],cs=comp?.competitors||[],st=(comp?.status||ev.status||{}).type||{};if(cs.length<2)return;const away=cs.find(x=>x.homeAway==="away"),home=cs.find(x=>x.homeAway==="home");const aa=away?.team?.abbreviation,ha=home?.team?.abbreviation;const i=games.findIndex(g=>g[0]===aa&&g[1]===ha);if(i<0)return;matched++;if(st.completed===true){let w=cs.find(x=>x.winner===true);if(!w){let as=Number(away.score),hs=Number(home.score);w=as>hs?away:home}results[i]=w.team.abbreviation}});localStorage.setItem("nflw2results",JSON.stringify(results));render();s.textContent="ESPN refreshed • "+matched+" Week 2 games matched • "+new Date().toLocaleTimeString();}catch(e){s.textContent="ESPN refresh failed: "+e.message+" • manual results still work."}}
 function resetGames(){results={};localStorage.removeItem("nflw2results");render()}
 function saveEntries(){raw=document.getElementById("editor").value;localStorage.setItem("nflw2entries",raw);render()}
 function restoreEntries(){raw=starter;localStorage.removeItem("nflw2entries");render()}
-render();
+render();refreshNFL();setInterval(refreshNFL,60000);
 </script></body></html>
