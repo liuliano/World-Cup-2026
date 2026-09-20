@@ -12,7 +12,7 @@
 <div class="card"><div class="row"><h2 style="margin-right:auto">Week 2 games</h2><button onclick="refreshNFL()">↻ ESPN Live</button><button onclick="resetGames()">Reset</button></div><div id="apiStatus" class="muted">Using the same ESPN scoreboard API pattern as the World Cup app. Results refresh automatically.</div><div id="games" class="games"></div></div>
 <div class="card"><h2>Your card</h2><div id="myPicks" class="chips"></div></div>
 <div class="card"><h2>Pool standings</h2><div class="muted">All 49 entries from the Week 2 master sheet are loaded and included in the live probability calculation. Lawrence is highlighted.</div><div class="scroll"><table><thead><tr><th>#</th><th>Name</th><th>Correct</th><th>Possible</th><th>1st</th><th>2nd</th><th>3rd</th><th>Any $</th><th>EV $</th><th>TB</th></tr></thead><tbody id="standings"></tbody></table></div></div>
-<div class="card" style="display:none"><h2>Pool data editor</h2><div class="muted">One entry per line: Name | 16 picks | tiebreaker. Saved locally on your phone.</div><textarea id="editor"></textarea><div class="row"><button onclick="saveEntries()">Save entries</button><button onclick="restoreEntries()">Restore starter data</button></div></div>
+
 <div class="card"><b>Payout:</b> 1st $156 • 2nd $60 • 3rd $24 <span class="muted">• ties split that place</span></div>
 </div><script>
 const games=[["DET","BUF"],["CAR","ATL"],["MIN","CHI"],["PHI","TEN"],["PIT","NE"],["GB","NYJ"],["CLE","TB"],["NO","BAL"],["CIN","HOU"],["JAC","DEN"],["LV","LAC"],["WAS","DAL"],["SEA","ARI"],["MIA","SF"],["IND","KC"],["NYG","LAR"]];
@@ -51,7 +51,7 @@ function render(){
  let rank=mine?arr.findIndex(x=>x===mine)+1:0;document.getElementById("place").textContent=rank?rank+" / "+arr.length:"—";
  document.getElementById("alive").textContent=done+" of 16 games final/entered";
  document.getElementById("standings").innerHTML=arr.map((e,i)=>'<tr class="'+(e.name.includes("Lawrence")?"me":"")+'"><td>'+(i+1)+'</td><td>'+e.name+'</td><td>'+e.correct+'</td><td>'+e.possible+'</td><td>'+e.tb+'</td></tr>').join("");
- document.getElementById("editor").value=raw; calcProb(arr);
+ calcProb(arr);
 }
 function calcProb(arr){
  const es=entries(),N=20000,stats={}; es.forEach(e=>stats[e.name]={p1:0,p2:0,p3:0,any:0,money:0});
