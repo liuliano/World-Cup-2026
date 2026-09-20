@@ -101,7 +101,43 @@ h2{text-transform:uppercase;letter-spacing:1.2px;font-size:16px!important;color:
  .rw-name{font-size:12px!important}
  .rw-right,.rw-wrong{font-size:10px!important}
 }
-</style><style id="stadiums-v1">.stadium{font-size:11px;color:#718aa1;margin-top:4px;font-weight:600;letter-spacing:.1px}</style></head><body><div class="wrap">
+</style><style id="stadiums-v1">.stadium{font-size:11px;color:#718aa1;margin-top:4px;font-weight:600;letter-spacing:.1px}</style><style id="nfl-cleanup-v2">
+:root{--nfl-navy:#07192b;--nfl-card:#0c263d;--nfl-blue:#1477c9;--nfl-red:#d50a0a;--nfl-line:#284761;--nfl-text:#f5f8fb;--nfl-muted:#91a5b8}
+body{background:linear-gradient(180deg,#06111d 0%,#07192b 42%,#050e17 100%)!important;color:var(--nfl-text)!important}
+.wrap{max-width:760px!important;padding:12px 14px 34px!important}
+.hero{border-top:4px solid var(--nfl-red)!important;border-bottom:1px solid #31506a!important;background:linear-gradient(135deg,#0b2943,#07192b)!important;box-shadow:0 10px 28px rgba(0,0,0,.3)!important}
+.hero h1,.card h2{text-transform:uppercase!important;letter-spacing:1.4px!important}
+.card{background:linear-gradient(180deg,#0d2942,#0a2136)!important;border:1px solid #294a65!important;border-radius:14px!important;box-shadow:0 8px 20px rgba(0,0,0,.18)!important}
+.summary-grid{gap:8px!important}.summary-grid .card{border-top:3px solid var(--nfl-blue)!important;text-align:center!important}
+.big{font-variant-numeric:tabular-nums!important}
+.leaders-card{border-top:4px solid #d4af37!important}
+.top10-card{border-top:4px solid var(--nfl-red)!important}
+.league-games{border-top:4px solid var(--nfl-blue)!important}
+.game{position:relative!important;border:1px solid #294b67!important;border-left:4px solid var(--nfl-blue)!important;border-radius:12px!important;background:#0b2942!important;padding:13px 14px!important;box-shadow:none!important}
+.game b{font-size:18px!important;letter-spacing:.3px!important}
+.game .muted{font-size:13px!important}.stadium{font-size:10px!important;text-transform:uppercase!important;letter-spacing:.45px!important}
+.mobile-player{background:#0b263c!important;border:1px solid #2b4d68!important;border-radius:12px!important;margin:9px 0!important;padding:14px!important}
+.mp-top{border-bottom:1px solid #294961!important;padding-bottom:10px!important;margin-bottom:10px!important}
+.mp-rank{background:#153c5c!important;border-radius:999px!important;padding:5px 8px!important;color:#cfe8fb!important}
+.mp-name{font-size:17px!important;letter-spacing:.15px!important}
+.tap-note{color:#63bdf3!important;font-size:10px!important;letter-spacing:.6px!important}
+.league-record{background:#081b2c!important;border-radius:9px!important;padding:10px 6px!important}
+.mp-odds{gap:5px!important;margin-top:8px!important}.mp-odds span{background:#071827!important;border:1px solid #294961!important;border-radius:8px!important;padding:8px 3px!important}
+.rw-row,.leader-row{min-height:48px!important;border-bottom:1px solid #294961!important}
+button{font-family:inherit!important}
+#apiStatus{background:#071827!important;border-radius:8px!important;padding:8px 10px!important;margin:8px 0 12px!important}
+.live-dot{box-shadow:0 0 0 3px rgba(34,197,94,.12)!important}
+@media(max-width:520px){
+ .wrap{padding:8px 10px 28px!important}
+ .card{padding:14px!important;margin-bottom:12px!important}
+ .hero{padding:16px 14px!important}
+ .hero h1{font-size:24px!important}
+ .summary-grid .card{padding:10px 6px!important}
+ .summary-grid .big{font-size:20px!important}
+ .league-games .game{padding:11px 12px!important}
+ .mobile-player{padding:12px!important}
+}
+</style></head><body><div class="wrap">
 <div class="hero"><div style="font-weight:900;letter-spacing:2px;color:#fff">NFL</div><h1>🏈 PICK'EM LIVE</h1><div style="color:#dcecff">WEEK 2 • 2026 • STRAIGHT-UP</div></div>
 <div class="grid league-summary">
 <div class="card"><div class="muted">POOL</div><div class="big">49</div><div>entries</div></div>
