@@ -199,11 +199,18 @@ function calcProb(arr){
  document.getElementById("standings").innerHTML=arr.map((e,i)=>{const id=i;const btn=v=>'<button type="button" class="odds-link" data-player="'+id+'">'+v+'</button>';return '<tr class="'+(e.name.includes("Lawrence")?"me":"")+'"><td>'+(i+1)+'</td><td>'+btn(e.name)+'</td><td>'+e.correct+'</td><td>'+e.possible+'</td><td>'+btn('<b>'+e.p1.toFixed(1)+'%</b>')+'</td><td>'+btn(e.p2.toFixed(1)+'%')+'</td><td>'+btn(e.p3.toFixed(1)+'%')+'</td><td>'+btn(e.any.toFixed(1)+'%')+'</td><td>'+btn('<b>$'+e.ev.toFixed(2)+'</b>')+'</td><td>'+e.tb+'</td></tr>'}).join(""); window.displayedEntries=arr; document.getElementById("mobileStandings").innerHTML=arr.map((e,i)=>'<button type="button" class="mobile-player '+(e.name.includes("Lawrence")?"me-card":"")+'" onclick="showPlayerByIndex('+i+')" data-player="'+i+'"><div class="mp-top"><div><span class="mp-rank">#'+(i+1)+'</span> <span class="mp-name">'+e.name+'</span></div><span class="tap-note">TAP FOR ODDS ›</span></div><div class="mp-odds"><span><small>1st</small><b>'+e.p1.toFixed(1)+'%</b></span><span><small>2nd</small>'+e.p2.toFixed(1)+'%</span><span><small>3rd</small>'+e.p3.toFixed(1)+'%</span><span><small>Any $</small>'+e.any.toFixed(1)+'%</span></div></button>').join("");
 }
 function showPlayerByIndex(i){const e=(window.displayedEntries||[])[i];if(e)showPlayer(e.name)}
+const week2MarketML=[
+ {away:202,home:-244},{away:-146,home:124},{away:185,home:-222},{away:-344,home:273},
+ {away:199,home:-239},{away:-187,home:158},{away:338,home:-438},{away:330,home:-426},
+ {away:124,home:-146},{away:131,home:-154},{away:247,home:-306},{away:173,home:-209},
+ {away:-207,home:175},{away:652,home:-986},{away:255,home:-311},{away:273,home:-343}
+];
 function pickOdds(i,pick){
  if(results[i]) return {line:results[i]===pick?"WIN":"LOSS",src:"FINAL"};
  const o=liveML[i];
- if(o){const ml=pick===games[i][1]?o.home:o.away;if(Number.isFinite(ml))return {line:(ml>0?"+":"")+ml,src:o.provider||"MONEYLINE"}}
- return {line:"—",src:"NO LIVE ML"};
+ if(o){const ml=pick===games[i][1]?o.home:o.away;if(Number.isFinite(ml))return {line:(ml>0?"+":"")+ml,src:o.provider||"LIVE MONEYLINE"}}
+ const m=week2MarketML[i]; if(m){const ml=pick===games[i][1]?m.home:m.away;return {line:(ml>0?"+":"")+ml,src:"WEEK 2 MONEYLINE"}}
+ return {line:"—",src:"ODDS UNAVAILABLE"};
 }
 function showPlayer(name){
  const list=window.displayedEntries||[], e=list.find(x=>x.name===name)||entries().find(x=>x.name===name); if(!e)return;
