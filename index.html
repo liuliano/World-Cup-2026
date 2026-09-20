@@ -87,13 +87,14 @@ h2{text-transform:uppercase;letter-spacing:1.2px;font-size:16px!important;color:
 .dash-pick{display:grid!important;grid-template-columns:minmax(0,1fr) 72px 78px!important;align-items:center!important;padding:9px 10px!important}.pick-team{min-width:0}.line-box{border-left:1px solid #24435e;border-right:1px solid #24435e;text-align:center;padding:2px 5px}.line-box b{display:block;font-size:18px;line-height:1.1;color:#f4f7fb}.line-box small{display:block!important;font-size:8px!important;color:#93aac0!important;margin-top:4px}.line-box b:first-letter{}.pick-right b{font-size:18px}.dash-pick.loss .line-box b,.dash-pick.win .line-box b{color:#f4f7fb}@media(max-width:390px){.dash-pick{grid-template-columns:minmax(0,1fr) 62px 68px!important}.line-box b,.pick-right b{font-size:16px}}
 </style></head><body><div class="wrap">
 <div class="hero"><div style="font-weight:900;letter-spacing:2px;color:#fff">NFL</div><h1>🏈 PICK'EM LIVE</h1><div style="color:#dcecff">WEEK 2 • 2026 • STRAIGHT-UP</div></div>
-<div class="grid">
-<div class="card"><div class="muted">Lawrence</div><div class="big" id="score">0</div><div>correct so far</div></div>
-<div class="card"><div class="muted">Projected finish</div><div class="big" id="place">—</div><div id="alive" class="muted">Update game winners below</div></div>
-<div class="card"><div class="muted">Live 1st-place probability</div><div class="big" id="winProb">—</div><div id="probNote" class="muted">Monte Carlo from live ESPN game state</div></div><div class="card"><div class="muted">MNF tiebreaker</div><div class="big">47</div><div>NYG @ LAR total points</div></div>
+<div class="grid league-summary">
+<div class="card"><div class="muted">POOL</div><div class="big">49</div><div>entries</div></div>
+<div class="card"><div class="muted">GAMES FINAL</div><div class="big" id="score">0</div><div id="alive" class="muted">of 16</div></div>
+<div class="card"><div class="muted">WEEK</div><div class="big">2</div><div>2026 NFL</div></div>
+<div class="card"><div class="muted">PRIZE POOL</div><div class="big">$240</div><div>$156 • $60 • $24</div></div>
 </div>
-<div class="card"><div class="row"><h2 style="margin-right:auto">Week 2 games</h2><button onclick="refreshNFL()">↻ ESPN Live</button><button onclick="resetGames()">Reset</button></div><div id="apiStatus" class="muted"><span class="live-dot"></span>ESPN LIVE • Scores refresh automatically every 60 seconds</div><div id="games" class="games"></div></div>
-<div class="card"><h2>Your card</h2><div id="myPicks" class="chips"></div></div>
+<div class="card league-games"><div class="row"><h2 style="margin-right:auto">League scoreboard</h2><button onclick="refreshNFL()">↻ ESPN Live</button></div><div id="apiStatus" class="muted"><span class="live-dot"></span>ESPN LIVE • Scores refresh automatically every 60 seconds</div><div id="games" class="games"></div></div>
+<div id="place" style="display:none"></div><div id="winProb" style="display:none"></div><div id="probNote" style="display:none"></div><div id="myPicks" style="display:none"></div>
 <div class="card"><h2>Pool standings</h2><div class="muted">Tap any player to see their live odds and original picks.</div><div id="mobileStandings" class="mobile-standings"></div><div class="scroll desktop-standings"><table><thead><tr><th>#</th><th>Name</th><th>Correct</th><th>Possible</th><th>1st</th><th>2nd</th><th>3rd</th><th>Any $</th><th>EV $</th><th>TB</th></tr></thead><tbody id="standings"></tbody></table></div></div>
 
 <div id="playerModal" class="player-modal" aria-hidden="true"><div class="player-sheet"><button class="player-close" onclick="closePlayer()" aria-label="Close">×</button><div id="playerDetail"></div></div></div>
@@ -163,7 +164,7 @@ function render(){
  let mine=arr.find(x=>x.name.toLowerCase().includes("lawrence")); document.getElementById("score").textContent=done;
  let rank=mine?arr.findIndex(x=>x===mine)+1:0;document.getElementById("place").textContent=arr.length+" PLAYERS";
  document.getElementById("alive").textContent=done+" of 16 games final/entered";
- document.getElementById("standings").innerHTML=arr.map((e,i)=>'<tr class="'+(e.name.includes("Lawrence")?"me":"")+'"><td>'+(i+1)+'</td><td>'+e.name+'</td><td>'+e.correct+'</td><td>'+e.possible+'</td><td>'+e.tb+'</td></tr>').join("");
+ document.getElementById("standings").innerHTML=arr.map((e,i)=>'<tr>'<td>'+(i+1)+'</td><td>'+e.name+'</td><td>'+e.correct+'</td><td>'+e.possible+'</td><td>'+e.tb+'</td></tr>').join("");
  calcProb(arr);
 }
 function calcProb(arr){
@@ -198,7 +199,7 @@ function calcProb(arr){
  document.getElementById("probNote").textContent=N.toLocaleString()+" simulations • "+es.length+" entries • live ESPN state • MNF tiebreak";
  arr.forEach(e=>{let z=stats[e.name];e.p1=100*z.p1/N;e.p2=100*z.p2/N;e.p3=100*z.p3/N;e.any=100*z.any/N;e.ev=z.money/N});
  arr.sort((a,b)=>b.p1-a.p1||b.ev-a.ev||b.correct-a.correct);
- document.getElementById("standings").innerHTML=arr.map((e,i)=>{const id=i;const btn=v=>'<button type="button" class="odds-link" data-player="'+id+'">'+v+'</button>';return '<tr class="'+(e.name.includes("Lawrence")?"me":"")+'"><td>'+(i+1)+'</td><td>'+btn(e.name)+'</td><td>'+e.correct+'</td><td>'+e.possible+'</td><td>'+btn('<b>'+e.p1.toFixed(1)+'%</b>')+'</td><td>'+btn(e.p2.toFixed(1)+'%')+'</td><td>'+btn(e.p3.toFixed(1)+'%')+'</td><td>'+btn(e.any.toFixed(1)+'%')+'</td><td>'+btn('<b>$'+e.ev.toFixed(2)+'</b>')+'</td><td>'+e.tb+'</td></tr>'}).join(""); window.displayedEntries=arr; document.getElementById("mobileStandings").innerHTML=arr.map((e,i)=>'<button type="button" class="mobile-player '+(e.name.includes("Lawrence")?"me-card":"")+'" onclick="showPlayerByIndex('+i+')" data-player="'+i+'"><div class="mp-top"><div><span class="mp-rank">#'+(i+1)+'</span> <span class="mp-name">'+e.name+'</span></div><span class="tap-note">TAP FOR ODDS ›</span></div><div class="mp-odds"><span><small>1st</small><b>'+e.p1.toFixed(1)+'%</b></span><span><small>2nd</small>'+e.p2.toFixed(1)+'%</span><span><small>3rd</small>'+e.p3.toFixed(1)+'%</span><span><small>Any $</small>'+e.any.toFixed(1)+'%</span></div></button>').join("");
+ document.getElementById("standings").innerHTML=arr.map((e,i)=>{const id=i;const btn=v=>'<button type="button" class="odds-link" data-player="'+id+'">'+v+'</button>';return '<tr class="'+(e.name.includes("Lawrence")?"me":"")+'"><td>'+(i+1)+'</td><td>'+btn(e.name)+'</td><td>'+e.correct+'</td><td>'+e.possible+'</td><td>'+btn('<b>'+e.p1.toFixed(1)+'%</b>')+'</td><td>'+btn(e.p2.toFixed(1)+'%')+'</td><td>'+btn(e.p3.toFixed(1)+'%')+'</td><td>'+btn(e.any.toFixed(1)+'%')+'</td><td>'+btn('<b>$'+e.ev.toFixed(2)+'</b>')+'</td><td>'+e.tb+'</td></tr>'}).join(""); window.displayedEntries=arr; document.getElementById("mobileStandings").innerHTML=arr.map((e,i)=>'<button type="button" class="mobile-player" onclick="showPlayerByIndex('+i+')" data-player="'+i+'"><div class="mp-top"><div><span class="mp-rank">#'+(i+1)+'</span> <span class="mp-name">'+e.name+'</span></div><span class="tap-note">TAP FOR ODDS ›</span></div><div class="mp-odds"><span><small>1st</small><b>'+e.p1.toFixed(1)+'%</b></span><span><small>2nd</small>'+e.p2.toFixed(1)+'%</span><span><small>3rd</small>'+e.p3.toFixed(1)+'%</span><span><small>Any $</small>'+e.any.toFixed(1)+'%</span></div></button>').join("");
 }
 function showPlayerByIndex(i){const e=(window.displayedEntries||[])[i];if(e)showPlayer(e.name)}
 const week2MarketML=[
