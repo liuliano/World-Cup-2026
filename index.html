@@ -157,11 +157,11 @@ let raw=starter; localStorage.setItem("nflw2entries",starter);
 function entries(){return raw.split(/\n+/).map(x=>x.trim()).filter(Boolean).map(line=>{let [name,p,tb]=line.split("|");return{name,picks:(p||"").split(",").map(x=>x.trim().toUpperCase()),tb:+tb||0}}).filter(x=>x.picks.length===16)}
 function render(){
  document.getElementById("myPicks").innerHTML=me.map(x=>'<span class="chip">'+x+'</span>').join("");
- document.getElementById("games").innerHTML=games.map((g,i)=>{let r=results[i]||"";return '<div class="game"><div><b>'+g[0]+' @ '+g[1]+'</b><div style="font-size:22px;font-weight:900">'+(liveScore[i]||'—  •  —')+'</div><div class="muted">'+(liveGame[i]||('Game '+(i+1)))+'</div><div style="margin-top:6px;font-weight:800;color:#61d095">YOUR PICK: '+me[i]+'</div></div><div style="text-align:right"><div class="muted" style="font-size:11px">ORIGINAL PICK</div><div class="chip" style="font-size:18px">'+me[i]+'</div></div></div>'}).join("");
+ document.getElementById("games").innerHTML=games.map((g,i)=>{let r=results[i]||"";return '<div class="game"><div><b>'+g[0]+' @ '+g[1]+'</b><div style="font-size:22px;font-weight:900">'+(liveScore[i]||'—  •  —')+'</div><div class="muted">'+(liveGame[i]||('Game '+(i+1)))+'</div></div><div style="text-align:right">'+(r?'<div class="chip" style="font-size:14px">'+r+'</div>':'')+'</div></div>'}).join("");
  let done=Object.keys(results).filter(k=>results[k]).length;
  let arr=entries().map(e=>{let correct=0;for(let i=0;i<16;i++)if(results[i]&&e.picks[i]===results[i])correct++;return{...e,correct,possible:correct+(16-done),prob:0}}).sort((a,b)=>b.correct-a.correct||b.possible-a.possible||Math.abs(a.tb-47)-Math.abs(b.tb-47));
- let mine=arr.find(x=>x.name.toLowerCase().includes("lawrence")); document.getElementById("score").textContent=mine?mine.correct:0;
- let rank=mine?arr.findIndex(x=>x===mine)+1:0;document.getElementById("place").textContent=rank?rank+" / "+arr.length:"—";
+ let mine=arr.find(x=>x.name.toLowerCase().includes("lawrence")); document.getElementById("score").textContent=done;
+ let rank=mine?arr.findIndex(x=>x===mine)+1:0;document.getElementById("place").textContent=arr.length+" PLAYERS";
  document.getElementById("alive").textContent=done+" of 16 games final/entered";
  document.getElementById("standings").innerHTML=arr.map((e,i)=>'<tr class="'+(e.name.includes("Lawrence")?"me":"")+'"><td>'+(i+1)+'</td><td>'+e.name+'</td><td>'+e.correct+'</td><td>'+e.possible+'</td><td>'+e.tb+'</td></tr>').join("");
  calcProb(arr);
