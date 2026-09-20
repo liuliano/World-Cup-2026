@@ -101,7 +101,7 @@ h2{text-transform:uppercase;letter-spacing:1.2px;font-size:16px!important;color:
  .rw-name{font-size:12px!important}
  .rw-right,.rw-wrong{font-size:10px!important}
 }
-</style></head><body><div class="wrap">
+</style><style id="stadiums-v1">.stadium{font-size:11px;color:#718aa1;margin-top:4px;font-weight:600;letter-spacing:.1px}</style></head><body><div class="wrap">
 <div class="hero"><div style="font-weight:900;letter-spacing:2px;color:#fff">NFL</div><h1>🏈 PICK'EM LIVE</h1><div style="color:#dcecff">WEEK 2 • 2026 • STRAIGHT-UP</div></div>
 <div class="grid league-summary">
 <div class="card"><div class="muted">POOL</div><div class="big">49</div><div>entries</div></div>
@@ -119,6 +119,7 @@ h2{text-transform:uppercase;letter-spacing:1.2px;font-size:16px!important;color:
 <div class="card" style="text-align:center"><div class="muted" style="font-size:11px;letter-spacing:1px">WEEK 2 PRIZE POOL</div><div style="font-size:18px;font-weight:900;margin-top:5px">🥇 $156 &nbsp; • &nbsp; 🥈 $60 &nbsp; • &nbsp; 🥉 $24</div><div class="muted" style="margin-top:5px">Ties split prize money for that place</div></div>
 </div><script>
 const games=[["DET","BUF"],["CAR","ATL"],["MIN","CHI"],["PHI","TEN"],["PIT","NE"],["GB","NYJ"],["CLE","TB"],["NO","BAL"],["CIN","HOU"],["JAC","DEN"],["LV","LAC"],["WAS","DAL"],["SEA","ARI"],["MIA","SF"],["IND","KC"],["NYG","LAR"]];
+const stadiums=["Highmark Stadium","Mercedes-Benz Stadium","Soldier Field","Nissan Stadium","Gillette Stadium","MetLife Stadium","Raymond James Stadium","M&T Bank Stadium","NRG Stadium","Empower Field at Mile High","SoFi Stadium","AT&T Stadium","State Farm Stadium","Levi's Stadium","GEHA Field at Arrowhead Stadium","SoFi Stadium"];
 const me=["BUF","ATL","CHI","PHI","NE","GB","TB","BAL","HOU","DEN","LAC","DAL","SEA","SF","KC","LAR"];
 const starter=[
 "Amber Lannan|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,CIN,DEN,LAC,DAL,ARI,SF,KC,LAR|44",
@@ -181,7 +182,7 @@ let raw=starter; localStorage.setItem("nflw2entries",starter);
 function entries(){return raw.split(/\n+/).map(x=>x.trim()).filter(Boolean).map(line=>{let [name,p,tb]=line.split("|");return{name,picks:(p||"").split(",").map(x=>x.trim().toUpperCase()),tb:+tb||0}}).filter(x=>x.picks.length===16)}
 function render(){
  const gamesEl=document.getElementById("games");
- gamesEl.innerHTML=games.map((g,i)=>{const r=results[gameKey(i)]||"";return '<div class="game"><div><b>'+g[0]+' @ '+g[1]+'</b><div style="font-size:22px;font-weight:900">'+(liveScore[i]||'—  •  —')+'</div><div class="muted">'+(liveGame[i]||('Game '+(i+1)))+'</div></div><div style="text-align:right">'+(r?'<div class="chip" style="font-size:14px">'+r+'</div>':'')+'</div></div>'}).join("");
+ gamesEl.innerHTML=games.map((g,i)=>{const r=results[gameKey(i)]||"";return '<div class="game"><div><b>'+g[0]+' @ '+g[1]+'</b><div style="font-size:22px;font-weight:900">'+(liveScore[i]||'—  •  —')+'</div><div class="muted">'+(liveGame[i]||('Game '+(i+1)))+'</div><div class="stadium">📍 '+stadiums[i]+'</div></div><div style="text-align:right">'+(r?'<div class="chip" style="font-size:14px">'+r+'</div>':'')+'</div></div>'}).join("");
  const done=games.filter((g,i)=>results[gameKey(i)]).length, es=entries(), N=20000, stats={};
  es.forEach(e=>stats[e.name]={p1:0,p2:0,p3:0,any:0,money:0});
  const normal=(mu,sd)=>{let u=1-Math.random(),v=1-Math.random();return mu+sd*Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
