@@ -2,6 +2,24 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b1220"><title>NFL Pick'em Live</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#06182d 0,#07101d 360px);color:#eef4ff;font:15px system-ui,-apple-system,Segoe UI,sans-serif}.wrap{max-width:980px;margin:auto;padding:18px}.hero{padding:26px 18px 18px;border-radius:0 0 22px 22px;background:linear-gradient(135deg,#013369,#0b4f8a);border-bottom:4px solid #d50a0a;box-shadow:0 8px 28px #0006}h1{margin:0;font-size:30px}.sub,.muted{color:#91a4bf}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.card{background:#0d1b2d;border:1px solid #29415e;border-radius:16px;padding:16px;margin:12px 0}.big{font-size:32px;font-weight:800}.good{color:#61d095}.warn{color:#ffd166}.bad{color:#ff7b7b}button,select,input,textarea{background:#16263b;color:#fff;border:1px solid #35506f;border-radius:10px;padding:10px;font:inherit}button{font-weight:700;cursor:pointer}.games{display:grid;gap:8px}.game{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:10px;border-radius:12px;background:#0b1625}.chips{display:flex;gap:6px;flex-wrap:wrap}.chip{padding:6px 10px;border-radius:7px;background:#013369;border:1px solid #315e8c;font-weight:800}.me{outline:2px solid #61d095}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px;border-bottom:1px solid #24364e;text-align:left}th{position:sticky;top:0;background:#101c2d}.scroll{overflow-x:auto;overflow-y:visible;max-height:none}textarea{width:100%;min-height:110px}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}@media(max-width:600px){.wrap{padding:12px}h1{font-size:26px}.hide-sm{display:none}}
+</style><style>
+:root{--nfl:#013369;--red:#d50a0a;--ink:#07111f;--panel:#0d1b2d;--line:#29415e;--silver:#a5acaf}
+body{background:radial-gradient(circle at 50% -120px,#164b7d 0,#07111f 430px);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1120px}.hero{position:relative;overflow:hidden;padding:28px 22px 22px;background:linear-gradient(125deg,#013369,#061b32 72%);border-bottom:5px solid var(--red)}
+.hero:after{content:"";position:absolute;right:-35px;top:-65px;width:190px;height:190px;border:24px solid #ffffff0b;border-radius:50%}
+.hero h1{font-size:32px;letter-spacing:.8px;text-shadow:0 2px 10px #0008}
+.card{border-radius:14px;background:linear-gradient(180deg,#10233a,#0b1727);box-shadow:0 10px 24px #0003;border:1px solid #29415e}
+.grid .card{border-top:3px solid var(--nfl)}.grid .card:first-child{border-top-color:#3aa76d}.grid .card:nth-child(2){border-top-color:#d50a0a}
+.big{font-variant-numeric:tabular-nums;letter-spacing:-1px}
+.game{position:relative;border:1px solid #213955;background:linear-gradient(90deg,#0b1625,#10223a);padding:13px 12px}
+.game b{font-size:16px;letter-spacing:.3px}.game .chip{min-width:54px;text-align:center}
+.chip{background:linear-gradient(180deg,#0c4c85,#013369);border:1px solid #4d7aa5;box-shadow:inset 0 1px #ffffff22}
+#apiStatus{padding:9px 11px;margin:8px 0 12px;border-radius:8px;background:#071423;border-left:3px solid #3aa76d}
+table{font-variant-numeric:tabular-nums}thead th{background:#07182b;color:#cfe5ff;text-transform:uppercase;font-size:11px;letter-spacing:.55px;z-index:2}
+tbody tr:nth-child(even){background:#ffffff05}tbody tr:hover{background:#ffffff0a}.me{outline:2px solid #39c77a;background:#0d3b2a!important}
+button{background:linear-gradient(180deg,#164d7f,#0b3158);border-color:#47739b}button:hover{filter:brightness(1.12)}
+.live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#35d07f;margin-right:6px;box-shadow:0 0 9px #35d07f}
+@media(max-width:600px){.hero{margin:-12px -12px 12px;border-radius:0 0 18px 18px}.hero h1{font-size:27px}.card{padding:13px}.game{grid-template-columns:minmax(0,1fr) auto}th,td{white-space:nowrap;padding:8px 7px}}
 </style></head><body><div class="wrap">
 <div class="hero"><div style="font-weight:900;letter-spacing:2px;color:#fff">NFL</div><h1>🏈 PICK'EM LIVE</h1><div style="color:#dcecff">WEEK 2 • 2026 • STRAIGHT-UP</div></div>
 <div class="grid">
@@ -9,11 +27,11 @@
 <div class="card"><div class="muted">Projected finish</div><div class="big" id="place">—</div><div id="alive" class="muted">Update game winners below</div></div>
 <div class="card"><div class="muted">Live 1st-place probability</div><div class="big" id="winProb">—</div><div id="probNote" class="muted">Monte Carlo from live ESPN game state</div></div><div class="card"><div class="muted">MNF tiebreaker</div><div class="big">47</div><div>NYG @ LAR total points</div></div>
 </div>
-<div class="card"><div class="row"><h2 style="margin-right:auto">Week 2 games</h2><button onclick="refreshNFL()">↻ ESPN Live</button><button onclick="resetGames()">Reset</button></div><div id="apiStatus" class="muted">Using the same ESPN scoreboard API pattern as the World Cup app. Results refresh automatically.</div><div id="games" class="games"></div></div>
+<div class="card"><div class="row"><h2 style="margin-right:auto">Week 2 games</h2><button onclick="refreshNFL()">↻ ESPN Live</button><button onclick="resetGames()">Reset</button></div><div id="apiStatus" class="muted"><span class="live-dot"></span>ESPN LIVE • Scores refresh automatically every 60 seconds</div><div id="games" class="games"></div></div>
 <div class="card"><h2>Your card</h2><div id="myPicks" class="chips"></div></div>
 <div class="card"><h2>Pool standings</h2><div class="muted">All 49 entries from the Week 2 master sheet are loaded and included in the live probability calculation. Lawrence is highlighted.</div><div class="scroll"><table><thead><tr><th>#</th><th>Name</th><th>Correct</th><th>Possible</th><th>1st</th><th>2nd</th><th>3rd</th><th>Any $</th><th>EV $</th><th>TB</th></tr></thead><tbody id="standings"></tbody></table></div></div>
 
-<div class="card"><b>Payout:</b> 1st $156 • 2nd $60 • 3rd $24 <span class="muted">• ties split that place</span></div>
+<div class="card" style="text-align:center"><div class="muted" style="font-size:11px;letter-spacing:1px">WEEK 2 PRIZE POOL</div><div style="font-size:18px;font-weight:900;margin-top:5px">🥇 $156 &nbsp; • &nbsp; 🥈 $60 &nbsp; • &nbsp; 🥉 $24</div><div class="muted" style="margin-top:5px">Ties split prize money for that place</div></div>
 </div><script>
 const games=[["DET","BUF"],["CAR","ATL"],["MIN","CHI"],["PHI","TEN"],["PIT","NE"],["GB","NYJ"],["CLE","TB"],["NO","BAL"],["CIN","HOU"],["JAC","DEN"],["LV","LAC"],["WAS","DAL"],["SEA","ARI"],["MIA","SF"],["IND","KC"],["NYG","LAR"]];
 const me=["BUF","ATL","CHI","PHI","NE","GB","TB","BAL","HOU","DEN","LAC","DAL","SEA","SF","KC","LAR"];
