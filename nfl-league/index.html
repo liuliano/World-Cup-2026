@@ -1,0 +1,71 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NFL Pick'em • League</title><style>
+*{box-sizing:border-box}html,body{margin:0;background:#020912;color:#eef6ff;font-family:Arial,sans-serif}body{min-height:100vh}.wrap{max-width:780px;margin:auto;padding:12px}.hero{background:linear-gradient(135deg,#0b3155,#071b2b);border-bottom:5px solid #d71920;padding:20px;margin:-12px -12px 14px;border-radius:0 0 18px 18px}.hero h1{margin:4px 0;font-size:29px}.hero p{margin:5px 0;color:#c8d8e7}.nav{display:flex;gap:8px;margin:12px 0}.btn,.see{display:inline-block;text-decoration:none;text-align:center;color:white;background:#0d4f83;border:1px solid #3c82b8;border-radius:9px;padding:10px 12px;font-weight:900;font-size:11px}.btn{flex:1}.status{background:#071b2b;border-left:5px solid #32df83;border-radius:10px;padding:10px;color:#9db2c6;margin:10px 0}.game{background:#0b2b45;border:1px solid #2a5373;border-left:6px solid #1477c9;border-radius:14px;padding:14px;margin:10px 0}.game h2{margin:0;font-size:21px}.score{font-size:24px;font-weight:900;margin:5px 0}.muted{color:#9cb0c4}.see{margin-top:10px}.view{display:none}.view.active{display:block}.back{display:inline-block;color:#bfe4ff;text-decoration:none;font-weight:900;margin:2px 0 12px}.matchHero{background:#0b3155;border-bottom:5px solid #d71920;border-radius:14px;padding:16px;margin-bottom:12px}.matchHero h1{margin:4px 0}.sides{display:grid;grid-template-columns:1fr 1fr;gap:8px}.side{background:#081d30;border:1px solid #294961;border-radius:12px;padding:10px;min-width:0}.side.win{border-color:#238b57}.side.loss{opacity:.8}.side h2{margin:0}.ml{float:right;font-size:12px}.count{font-size:10px;color:#8fa7ba;padding:5px 0 8px;border-bottom:1px solid #294961}.person{display:block;color:#eef6ff;text-decoration:none;padding:8px 1px;border-bottom:1px solid #17354c;font-size:11px;font-weight:700}.foot{color:#6f879b;text-align:center;font-size:10px;margin:18px 0}@media(max-width:380px){.sides{gap:5px}.side{padding:7px}.person{font-size:10px}}
+</style></head><body><div class="wrap"><section id="leagueView" class="view active"><div class="hero"><small>WEEK 2 • 2026</small><h1>NFL PICK'EM LEAGUE</h1><p>Live league scoreboard. Use <b>SEE PICKS</b> to open a game's pick breakdown.</p></div><div class="nav"><a class="btn" href="../">MAIN DASHBOARD</a></div><div id="status" class="status">Loading ESPN scores…</div><div id="gamesEl"></div></section><section id="picksView" class="view"><a class="back" href="#" id="back">‹ LEAGUE SCOREBOARD</a><div id="pickContent"></div></section><div class="foot">Scores refresh from ESPN every 60 seconds.</div></div><script>
+const games=[["DET","BUF"],["CAR","ATL"],["MIN","CHI"],["PHI","TEN"],["PIT","NE"],["GB","NYJ"],["CLE","TB"],["NO","BAL"],["CIN","HOU"],["JAC","DEN"],["LV","LAC"],["WAS","DAL"],["SEA","ARI"],["MIA","SF"],["IND","KC"],["NYG","LAR"]];
+const stadiums=["Highmark Stadium","Mercedes-Benz Stadium","Soldier Field","Nissan Stadium","Gillette Stadium","MetLife Stadium","Raymond James Stadium","M&T Bank Stadium","NRG Stadium","Empower Field at Mile High","SoFi Stadium","AT&T Stadium","State Farm Stadium","Levi's Stadium","GEHA Field at Arrowhead Stadium","SoFi Stadium"];
+const starter=[
+"Amber Lannan|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,CIN,DEN,LAC,DAL,ARI,SF,KC,LAR|44",
+"Ann Lavis|BUF,ATL,MIN,PHI,PIT,NYJ,TB,BAL,CIN,JAC,LAC,WAS,SEA,SF,KC,LAR|47",
+"Ashley Lavis|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,JAC,LAC,DAL,SEA,SF,KC,LAR|49",
+"B & S Duffy|BUF,CAR,CHI,PHI,PIT,GB,TB,BAL,CIN,JAC,LAC,DAL,SEA,SF,KC,LAR|46",
+"Barb Bialek|BUF,CAR,CHI,PHI,PIT,GB,TB,BAL,HOU,DEN,LAC,WAS,SEA,SF,KC,NYG|44",
+"Barbara Andrews|BUF,CAR,CHI,PHI,PIT,GB,TB,BAL,CIN,DEN,LV,DAL,ARI,SF,KC,LAR|48",
+"Bernard Phifer|BUF,ATL,CHI,PHI,PIT,GB,TB,BAL,HOU,DEN,LV,DAL,SEA,SF,KC,NYG|43",
+"Bill Beaton|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,CIN,DEN,LAC,DAL,SEA,SF,KC,LAR|48",
+"Bill Bennett|BUF,CAR,CHI,PHI,PIT,NYJ,TB,BAL,HOU,DEN,LAC,DAL,ARI,SF,KC,LAR|46",
+"Bill Chisholm|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,JAC,LAC,DAL,SEA,SF,KC,LAR|48",
+"Bill Lilburn|DET,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,DEN,LAC,WAS,SEA,SF,KC,LAR|48",
+"Bonnie Dean|BUF,ATL,CHI,PHI,NE,GB,TB,BAL,HOU,DEN,LAC,DAL,ARI,SF,KC,LAR|45",
+"Brad Watkins|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,CIN,JAC,LAC,DAL,SEA,SF,KC,LAR|47",
+"Carl Esposito|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,DEN,LAC,DAL,SEA,SF,KC,NYG|32",
+"Cindy Chisholm|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,CIN,JAC,LAC,DAL,ARI,SF,KC,LAR|46",
+"Dan Bialek|BUF,CAR,CHI,PHI,PIT,GB,TB,BAL,CIN,DEN,LAC,DAL,SEA,SF,KC,LAR|49",
+"Dianne Beaton|BUF,ATL,CHI,PHI,NE,NYJ,TB,BAL,CIN,DEN,LV,WAS,SEA,SF,KC,LAR|44",
+"Doug & Carol Hartle|BUF,CAR,CHI,PHI,NE,NYJ,TB,NO,HOU,JAC,LV,DAL,SEA,SF,KC,LAR|40",
+"Gloria Collins|BUF,ATL,MIN,PHI,NE,GB,TB,BAL,CIN,JAC,LAC,DAL,SEA,MIA,KC,LAR|41",
+"James Strickland|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,DEN,LAC,DAL,SEA,SF,KC,LAR|45",
+"Jeff Partin|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,CIN,DEN,LAC,DAL,SEA,SF,KC,LAR|59",
+"Jenny Wern|BUF,ATL,MIN,TEN,PIT,NYJ,CLE,NO,HOU,JAC,LAC,DAL,ARI,MIA,IND,NYG|43",
+"Jim Martin|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,DEN,LAC,DAL,SEA,SF,KC,LAR|45",
+"Jim Trehearne|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,DEN,LAC,DAL,SEA,SF,KC,LAR|48",
+"John Anzilotti|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,DEN,LAC,WAS,ARI,SF,KC,LAR|51",
+"Jon Lavis|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,DEN,LAC,DAL,SEA,SF,KC,LAR|49",
+"Kevin Lyons|BUF,CAR,CHI,TEN,NE,GB,TB,BAL,HOU,DEN,LV,WAS,SEA,SF,KC,LAR|39",
+"Lawrence Iuliano|BUF,ATL,CHI,PHI,NE,GB,TB,BAL,HOU,DEN,LAC,DAL,SEA,SF,KC,LAR|47",
+"Linda Simpson|BUF,CAR,CHI,PHI,PIT,NYJ,TB,BAL,HOU,JAC,LV,WAS,ARI,SF,KC,NYG|47",
+"Lisa Soriano|BUF,ATL,CHI,PHI,PIT,NYJ,TB,BAL,CIN,JAC,LV,DAL,SEA,SF,KC,NYG|51",
+"LuAnne Pezel|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,JAC,LAC,DAL,SEA,SF,KC,LAR|41",
+"Michelle Iuliano|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,DEN,LAC,DAL,SEA,SF,KC,LAR|45",
+"Mike Herrilko|BUF,CAR,MIN,PHI,NE,GB,TB,BAL,CIN,DEN,LAC,DAL,SEA,SF,KC,LAR|42",
+"Mike Leonard|BUF,ATL,CHI,PHI,PIT,GB,TB,BAL,CIN,JAC,LAC,DAL,SEA,SF,KC,LAR|41",
+"Mike Pezel|BUF,CAR,CHI,PHI,NE,NYJ,TB,BAL,CIN,DEN,LV,DAL,SEA,SF,KC,NYG|39",
+"P & B Duffy|BUF,ATL,CHI,PHI,NE,GB,TB,BAL,HOU,JAC,LAC,DAL,ARI,SF,KC,LAR|55",
+"P & S Duffy|BUF,CAR,CHI,PHI,PIT,GB,TB,NO,HOU,JAC,LAC,WAS,SEA,MIA,KC,LAR|41",
+"Pat Kennelly|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,JAC,LAC,DAL,ARI,SF,KC,LAR|46",
+"Penny Rehm|BUF,CAR,CHI,PHI,PIT,GB,TB,BAL,CIN,DEN,LAC,DAL,SEA,SF,KC,LAR|45",
+"Ray Simpson|BUF,CAR,CHI,PHI,PIT,NYJ,TB,BAL,CIN,JAC,LV,DAL,SEA,MIA,KC,NYG|44",
+"Reenie Leonard|BUF,ATL,MIN,PHI,NE,NYJ,TB,BAL,HOU,JAC,LAC,WAS,SEA,SF,KC,LAR|47",
+"Rhonda Frey|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,DEN,LAC,DAL,SEA,SF,KC,LAR|48",
+"Rod Herrilko|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,DEN,LAC,DAL,SEA,SF,KC,LAR|51",
+"Roxanne & Bernard Phifer|BUF,ATL,CHI,PHI,PIT,GB,TB,BAL,HOU,DEN,LAC,DAL,SEA,SF,KC,LAR|46",
+"Ruth Lilburn|DET,CAR,CHI,TEN,PIT,GB,TB,NO,CIN,DEN,LAC,DAL,SEA,SF,KC,LAR|42",
+"Scott Anzilotti|BUF,CAR,CHI,PHI,NE,NYJ,TB,BAL,CIN,JAC,LAC,WAS,SEA,SF,KC,LAR|58",
+"Sharon Duffy|BUF,CAR,CHI,PHI,PIT,NYJ,CLE,BAL,HOU,JAC,LV,WAS,SEA,SF,KC,NYG|45",
+"Sue Esposito|BUF,ATL,CHI,PHI,PIT,GB,TB,BAL,CIN,DEN,LAC,DAL,SEA,SF,KC,NYG|48",
+"Tom Haak|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,DEN,LAC,DAL,SEA,SF,KC,LAR|47"
+].join("\n");
+const gameKey=i=>games[i][0]+"-"+games[i][1];
+const week2MarketML=[
+ {away:202,home:-244},{away:-146,home:124},{away:185,home:-222},{away:-344,home:273},
+ {away:199,home:-239},{away:-187,home:158},{away:338,home:-438},{away:330,home:-426},
+ {away:124,home:-146},{away:131,home:-154},{away:247,home:-306},{away:173,home:-209},
+ {away:-207,home:175},{away:652,home:-986},{away:255,home:-311},{away:273,home:-343}
+];
+const norm=t=>({JAX:"JAC",WSH:"WAS"}[t]||t),fmt=n=>Number.isFinite(n)?(n>0?"+":"")+n:"—",entries=starter.map(x=>{const [name,p,tb]=x.split("|");return{name,picks:p.split(","),tb:+tb}});let live={},results={},odds={};
+function league(){document.getElementById("gamesEl").innerHTML=games.map((g,i)=>'<div class="game"><h2>'+g[0]+' @ '+g[1]+'</h2><div class="score">'+(live[i]?.score||'— • —')+'</div><div class="muted">'+(live[i]?.status||'Game '+(i+1))+' • 📍 '+stadiums[i]+'</div><a class="see" href="#game-'+i+'">SEE PICKS ›</a></div>').join("")}
+function picks(i){const g=games[i],a=entries.filter(e=>e.picks[i]===g[0]),h=entries.filter(e=>e.picks[i]===g[1]),w=results[i]||"",o=odds[i]||week2MarketML[i],side=(t,list,line)=>'<div class="side '+(w?(w===t?'win':'loss'):'')+'"><h2>'+t+' <span class="ml">'+fmt(line)+' ML</span></h2><div class="count">'+list.length+' PICKS • '+Math.round(list.length/entries.length*100)+'%</div>'+list.map(e=>'<a class="person" href="../?player='+encodeURIComponent(e.name)+'">'+(w?(w===t?'✓ ':'✕ '):'')+e.name+'</a>').join("")+'</div>';document.getElementById("pickContent").innerHTML='<div class="matchHero"><small>WEEK 2 • GAME '+(i+1)+'</small><h1>'+g[0]+' @ '+g[1]+'</h1><div class="score">'+(live[i]?.score||'— • —')+'</div><div>'+(live[i]?.status||'')+' • 📍 '+stadiums[i]+'</div></div><div class="sides">'+side(g[0],a,o?.away)+side(g[1],h,o?.home)+'</div>'}
+function route(){const m=location.hash.match(/^#game-(\d+)$/);if(m){const i=+m[1];if(i>=0&&i<games.length){picks(i);document.getElementById("leagueView").classList.remove("active");document.getElementById("picksView").classList.add("active");scrollTo(0,0);return}}document.getElementById("picksView").classList.remove("active");document.getElementById("leagueView").classList.add("active");}
+document.getElementById("back").onclick=e=>{e.preventDefault();history.pushState(null,"",location.pathname);route()};window.onhashchange=route;
+async function refresh(){try{const d=await fetch("https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=2&seasontype=2&limit=100&_="+Date.now()).then(r=>r.json());let n=0;(d.events||[]).forEach(ev=>{const cp=ev.competitions?.[0],cs=cp?.competitors||[],st=(cp?.status||ev.status||{}).type||{},a=cs.find(x=>x.homeAway==="away"),h=cs.find(x=>x.homeAway==="home"),aa=norm(a?.team?.abbreviation),hh=norm(h?.team?.abbreviation),i=games.findIndex(g=>g[0]===aa&&g[1]===hh);if(i<0)return;n++;live[i]={score:aa+" "+(a?.score??"-")+" • "+hh+" "+(h?.score??"-"),status:st.shortDetail||st.description||"Scheduled"};if(st.completed){const w=cs.find(x=>x.winner);results[i]=norm(w?.team?.abbreviation)}const o=cp?.odds?.[0],hm=Number(o?.homeTeamOdds?.moneyLine),am=Number(o?.awayTeamOdds?.moneyLine);if(Number.isFinite(hm)&&hm!==0)odds[i]={home:hm,away:am}});document.getElementById("status").textContent="ESPN LIVE • "+n+" Week 2 games matched";league();route()}catch(e){document.getElementById("status").textContent="ESPN unavailable • showing saved pool data";league();route()}}
+league();route();refresh();setInterval(refresh,60000);
+</script></body></html>
