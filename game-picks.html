@@ -54,7 +54,7 @@ const starter=[
 ].join("\n");
 const gameKey=i=>games[i][0]+"-"+games[i][1];
 const q=new URLSearchParams(location.search);let i=parseInt(q.get("game"),10);if(!Number.isInteger(i)||i<0||i>=games.length)i=0;
-const entries=starter.map(x=>{const [name,p]=x.split("|");return{name,picks:p.split(",")}});
+const entries=(Array.isArray(starter)?starter:starter.split(/\n+/)).filter(Boolean).map(x=>{const [name,p]=x.split("|");return{name,picks:(p||"").split(",")}});
 const winners=["BUF","CAR","MIN","PHI","NE","GB","TB","BAL","HOU","DEN","LAC","DAL","SEA","SF","KC","LAR"];
 const g=games[i],w=winners[i],groups=g.map(t=>[t,entries.filter(e=>e.picks[i]===t)]);
 function side([t,x]){const right=t===w;return '<section class="side '+(right?'right':'wrong')+'"><div class="head"><strong>'+t+'</strong><span>'+x.length+' picks • '+Math.round(x.length/entries.length*100)+'%</span></div><div class="label">'+(right?'✓ RIGHT':'✕ WRONG')+'</div>'+x.map(e=>'<div class="name"><b>'+(right?'✓':'✕')+'</b>'+e.name+'</div>').join("")+'</section>'}
