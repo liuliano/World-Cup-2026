@@ -1,0 +1,63 @@
+<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><meta charset="utf-8"><title>Game Picks • NFL Pick'em</title><style>*{box-sizing:border-box}body{margin:0;background:#020912;color:#eef6ff;font-family:Arial,sans-serif}.wrap{max-width:760px;margin:auto;padding:12px}.back{display:inline-block;color:#bfe4ff;text-decoration:none;font-weight:900;padding:10px 0}.hero{background:#0b3155;border-bottom:5px solid #d71920;padding:18px;border-radius:0 0 18px 18px;margin:-12px -12px 14px}.hero h1{margin:4px 0}.score{font-size:24px;font-weight:900}.sides{display:grid;grid-template-columns:1fr 1fr;gap:8px}.side{background:#081d30;border:1px solid #294961;border-radius:12px;padding:10px;min-width:0}.side.win{border-color:#238b57}.side h2{margin:0}.ml{float:right;font-size:12px}.count{font-size:10px;color:#8fa7ba;padding:5px 0 8px;border-bottom:1px solid #294961}.person{display:block;color:#eef6ff;text-decoration:none;padding:8px 1px;border-bottom:1px solid #17354c;font-size:11px;font-weight:700}@media(max-width:360px){.sides{gap:5px}.side{padding:7px}.person{font-size:10px}}</style></head><body><div class="wrap"><a class="back" href="league.html">‹ LEAGUE SCOREBOARD</a><div id="content"></div></div><script>const games=[["DET","BUF"],["CAR","ATL"],["MIN","CHI"],["PHI","TEN"],["PIT","NE"],["GB","NYJ"],["CLE","TB"],["NO","BAL"],["CIN","HOU"],["JAC","DEN"],["LV","LAC"],["WAS","DAL"],["SEA","ARI"],["MIA","SF"],["IND","KC"],["NYG","LAR"]];
+const stadiums=["Highmark Stadium","Mercedes-Benz Stadium","Soldier Field","Nissan Stadium","Gillette Stadium","MetLife Stadium","Raymond James Stadium","M&T Bank Stadium","NRG Stadium","Empower Field at Mile High","SoFi Stadium","AT&T Stadium","State Farm Stadium","Levi's Stadium","GEHA Field at Arrowhead Stadium","SoFi Stadium"];
+const starter=[
+"Amber Lannan|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,CIN,DEN,LAC,DAL,ARI,SF,KC,LAR|44",
+"Ann Lavis|BUF,ATL,MIN,PHI,PIT,NYJ,TB,BAL,CIN,JAC,LAC,WAS,SEA,SF,KC,LAR|47",
+"Ashley Lavis|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,JAC,LAC,DAL,SEA,SF,KC,LAR|49",
+"B & S Duffy|BUF,CAR,CHI,PHI,PIT,GB,TB,BAL,CIN,JAC,LAC,DAL,SEA,SF,KC,LAR|46",
+"Barb Bialek|BUF,CAR,CHI,PHI,PIT,GB,TB,BAL,HOU,DEN,LAC,WAS,SEA,SF,KC,NYG|44",
+"Barbara Andrews|BUF,CAR,CHI,PHI,PIT,GB,TB,BAL,CIN,DEN,LV,DAL,ARI,SF,KC,LAR|48",
+"Bernard Phifer|BUF,ATL,CHI,PHI,PIT,GB,TB,BAL,HOU,DEN,LV,DAL,SEA,SF,KC,NYG|43",
+"Bill Beaton|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,CIN,DEN,LAC,DAL,SEA,SF,KC,LAR|48",
+"Bill Bennett|BUF,CAR,CHI,PHI,PIT,NYJ,TB,BAL,HOU,DEN,LAC,DAL,ARI,SF,KC,LAR|46",
+"Bill Chisholm|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,JAC,LAC,DAL,SEA,SF,KC,LAR|48",
+"Bill Lilburn|DET,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,DEN,LAC,WAS,SEA,SF,KC,LAR|48",
+"Bonnie Dean|BUF,ATL,CHI,PHI,NE,GB,TB,BAL,HOU,DEN,LAC,DAL,ARI,SF,KC,LAR|45",
+"Brad Watkins|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,CIN,JAC,LAC,DAL,SEA,SF,KC,LAR|47",
+"Carl Esposito|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,DEN,LAC,DAL,SEA,SF,KC,NYG|32",
+"Cindy Chisholm|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,CIN,JAC,LAC,DAL,ARI,SF,KC,LAR|46",
+"Dan Bialek|BUF,CAR,CHI,PHI,PIT,GB,TB,BAL,CIN,DEN,LAC,DAL,SEA,SF,KC,LAR|49",
+"Dianne Beaton|BUF,ATL,CHI,PHI,NE,NYJ,TB,BAL,CIN,DEN,LV,WAS,SEA,SF,KC,LAR|44",
+"Doug & Carol Hartle|BUF,CAR,CHI,PHI,NE,NYJ,TB,NO,HOU,JAC,LV,DAL,SEA,SF,KC,LAR|40",
+"Gloria Collins|BUF,ATL,MIN,PHI,NE,GB,TB,BAL,CIN,JAC,LAC,DAL,SEA,MIA,KC,LAR|41",
+"James Strickland|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,DEN,LAC,DAL,SEA,SF,KC,LAR|45",
+"Jeff Partin|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,CIN,DEN,LAC,DAL,SEA,SF,KC,LAR|59",
+"Jenny Wern|BUF,ATL,MIN,TEN,PIT,NYJ,CLE,NO,HOU,JAC,LAC,DAL,ARI,MIA,IND,NYG|43",
+"Jim Martin|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,DEN,LAC,DAL,SEA,SF,KC,LAR|45",
+"Jim Trehearne|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,DEN,LAC,DAL,SEA,SF,KC,LAR|48",
+"John Anzilotti|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,DEN,LAC,WAS,ARI,SF,KC,LAR|51",
+"Jon Lavis|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,DEN,LAC,DAL,SEA,SF,KC,LAR|49",
+"Kevin Lyons|BUF,CAR,CHI,TEN,NE,GB,TB,BAL,HOU,DEN,LV,WAS,SEA,SF,KC,LAR|39",
+"Lawrence Iuliano|BUF,ATL,CHI,PHI,NE,GB,TB,BAL,HOU,DEN,LAC,DAL,SEA,SF,KC,LAR|47",
+"Linda Simpson|BUF,CAR,CHI,PHI,PIT,NYJ,TB,BAL,HOU,JAC,LV,WAS,ARI,SF,KC,NYG|47",
+"Lisa Soriano|BUF,ATL,CHI,PHI,PIT,NYJ,TB,BAL,CIN,JAC,LV,DAL,SEA,SF,KC,NYG|51",
+"LuAnne Pezel|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,JAC,LAC,DAL,SEA,SF,KC,LAR|41",
+"Michelle Iuliano|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,DEN,LAC,DAL,SEA,SF,KC,LAR|45",
+"Mike Herrilko|BUF,CAR,MIN,PHI,NE,GB,TB,BAL,CIN,DEN,LAC,DAL,SEA,SF,KC,LAR|42",
+"Mike Leonard|BUF,ATL,CHI,PHI,PIT,GB,TB,BAL,CIN,JAC,LAC,DAL,SEA,SF,KC,LAR|41",
+"Mike Pezel|BUF,CAR,CHI,PHI,NE,NYJ,TB,BAL,CIN,DEN,LV,DAL,SEA,SF,KC,NYG|39",
+"P & B Duffy|BUF,ATL,CHI,PHI,NE,GB,TB,BAL,HOU,JAC,LAC,DAL,ARI,SF,KC,LAR|55",
+"P & S Duffy|BUF,CAR,CHI,PHI,PIT,GB,TB,NO,HOU,JAC,LAC,WAS,SEA,MIA,KC,LAR|41",
+"Pat Kennelly|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,JAC,LAC,DAL,ARI,SF,KC,LAR|46",
+"Penny Rehm|BUF,CAR,CHI,PHI,PIT,GB,TB,BAL,CIN,DEN,LAC,DAL,SEA,SF,KC,LAR|45",
+"Ray Simpson|BUF,CAR,CHI,PHI,PIT,NYJ,TB,BAL,CIN,JAC,LV,DAL,SEA,MIA,KC,NYG|44",
+"Reenie Leonard|BUF,ATL,MIN,PHI,NE,NYJ,TB,BAL,HOU,JAC,LAC,WAS,SEA,SF,KC,LAR|47",
+"Rhonda Frey|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,DEN,LAC,DAL,SEA,SF,KC,LAR|48",
+"Rod Herrilko|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,DEN,LAC,DAL,SEA,SF,KC,LAR|51",
+"Roxanne & Bernard Phifer|BUF,ATL,CHI,PHI,PIT,GB,TB,BAL,HOU,DEN,LAC,DAL,SEA,SF,KC,LAR|46",
+"Ruth Lilburn|DET,CAR,CHI,TEN,PIT,GB,TB,NO,CIN,DEN,LAC,DAL,SEA,SF,KC,LAR|42",
+"Scott Anzilotti|BUF,CAR,CHI,PHI,NE,NYJ,TB,BAL,CIN,JAC,LAC,WAS,SEA,SF,KC,LAR|58",
+"Sharon Duffy|BUF,CAR,CHI,PHI,PIT,NYJ,CLE,BAL,HOU,JAC,LV,WAS,SEA,SF,KC,NYG|45",
+"Sue Esposito|BUF,ATL,CHI,PHI,PIT,GB,TB,BAL,CIN,DEN,LAC,DAL,SEA,SF,KC,NYG|48",
+"Tom Haak|BUF,CAR,CHI,PHI,NE,GB,TB,BAL,HOU,DEN,LAC,DAL,SEA,SF,KC,LAR|47"
+].join("\n");
+const gameKey=i=>games[i][0]+"-"+games[i][1];
+const week2MarketML=[
+ {away:202,home:-244},{away:-146,home:124},{away:185,home:-222},{away:-344,home:273},
+ {away:199,home:-239},{away:-187,home:158},{away:338,home:-438},{away:330,home:-426},
+ {away:124,home:-146},{away:131,home:-154},{away:247,home:-306},{away:173,home:-209},
+ {away:-207,home:175},{away:652,home:-986},{away:255,home:-311},{away:273,home:-343}
+];
+const norm=t=>({JAX:"JAC",WSH:"WAS"}[t]||t),fmt=n=>Number.isFinite(n)?(n>0?"+":"")+n:"—";const entries=starter.map(x=>{const [name,p,tb]=x.split("|");return{name,picks:p.split(","),tb:+tb}});const q=new URLSearchParams(location.search),i=Math.max(0,Math.min(15,Number(q.get("game"))||0)),g=games[i];let live={},winner="",odd=week2MarketML[i];
+function draw(){const a=entries.filter(e=>e.picks[i]===g[0]),h=entries.filter(e=>e.picks[i]===g[1]);const side=(t,list,line)=>'<div class="side '+(winner===t?'win':'')+'"><h2>'+t+' <span class="ml">'+fmt(line)+' ML</span></h2><div class="count">'+list.length+' PICKS • '+Math.round(list.length/entries.length*100)+'%</div>'+list.map(e=>'<a class="person" href="./?player='+encodeURIComponent(e.name)+'">'+(winner?(winner===t?'✓ ':'✕ '):'')+e.name+'</a>').join("")+'</div>';document.getElementById("content").innerHTML='<div class="hero"><small>WEEK 2 • GAME '+(i+1)+'</small><h1>'+g[0]+' @ '+g[1]+'</h1><div class="score">'+(live.score||'— • —')+'</div><div>'+(live.status||'')+' • 📍 '+stadiums[i]+'</div></div><div class="sides">'+side(g[0],a,odd?.away)+side(g[1],h,odd?.home)+'</div>'}
+async function refresh(){try{const d=await fetch("https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=2&seasontype=2&limit=100&_="+Date.now()).then(r=>r.json());(d.events||[]).forEach(ev=>{const cp=ev.competitions?.[0],cs=cp?.competitors||[],st=(cp?.status||ev.status||{}).type||{},a=cs.find(x=>x.homeAway==="away"),h=cs.find(x=>x.homeAway==="home"),aa=norm(a?.team?.abbreviation),hh=norm(h?.team?.abbreviation);if(aa!==g[0]||hh!==g[1])return;live={score:aa+" "+(a?.score??"-")+" • "+hh+" "+(h?.score??"-"),status:st.shortDetail||st.description||""};if(st.completed){const w=cs.find(x=>x.winner);winner=norm(w?.team?.abbreviation)}const o=cp?.odds?.[0],hm=Number(o?.homeTeamOdds?.moneyLine),am=Number(o?.awayTeamOdds?.moneyLine);if(Number.isFinite(hm)&&hm!==0)odd={home:hm,away:am}});draw()}catch(e){draw()}}draw();refresh();</script></body></html>
