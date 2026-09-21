@@ -220,6 +220,8 @@ body.game-picks-mode .lm-wrap{max-width:620px!important}
 .pick-only-head{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:13px 14px;background:#0b2b45}.pick-only-head strong{font-size:22px}.pick-only-head span{font-size:11px;color:#9cb0c4}
 .pick-only-label{padding:8px 14px;font-size:11px;font-weight:900;letter-spacing:.8px}.pick-only-group.right .pick-only-label{color:#7ce3aa}.pick-only-group.wrong .pick-only-label{color:#ff9da8}
 .pick-only-name{display:flex;gap:10px;align-items:center;padding:11px 14px;border-top:1px solid #17354c;font-size:13px;font-weight:800}.pick-only-group.right .pick-only-name b{color:#7ce3aa}.pick-only-group.wrong .pick-only-name b{color:#ff9da8}
+</style><style id="standalone-picks-button-v2">
+#games button.main-see-picks{appearance:none!important;-webkit-appearance:none!important;border:1px solid #278fd5!important;background:#0d4f83!important;color:#fff!important;font-family:inherit!important;cursor:pointer!important}
 </style></head><body><section id="leagueModule"><div class="lm-wrap"><div id="lmList"><div class="lm-hero"><a class="lm-back" href="?">‹ MAIN DASHBOARD</a><small style="display:block;margin-top:12px">WEEK 2 • 2026</small><h1>NFL PICK'EM LEAGUE</h1><div>Tap SEE PICKS for a separate matchup view.</div></div><div id="lmStatus" class="lm-status">Loading ESPN scores…</div><div id="lmGames"></div></div><div id="lmPicks" class="lm-picks"></div></div></section><div class="wrap">
 <div class="hero"><div style="font-weight:900;letter-spacing:2px;color:#fff">NFL</div><h1>🏈 PICK'EM LIVE</h1><div style="color:#dcecff">WEEK 2 • 2026 • STRAIGHT-UP</div></div>
 <div class="grid league-summary">
@@ -299,6 +301,7 @@ localStorage.setItem("nflw2results",JSON.stringify(results));
 let liveP={},liveML={},liveGame={},liveScore={};
 let raw=starter; localStorage.setItem("nflw2entries",starter);
 function entries(){return raw.split(/\n+/).map(x=>x.trim()).filter(Boolean).map(line=>{let [name,p,tb]=line.split("|");return{name,picks:(p||"").split(",").map(x=>x.trim().toUpperCase()),tb:+tb||0}}).filter(x=>x.picks.length===16)}
+function openStandalonePicks(i){window.location.href="/World-Cup-2026/game-picks.html?game="+encodeURIComponent(i)+"&v=2"}
 function render(){
  const gamesEl=document.getElementById("games");
  gamesEl.innerHTML=games.map((g,i)=>{const r=results[gameKey(i)]||"",o=liveML[i]||week2MarketML[i],fmt=n=>Number.isFinite(n)?(n>0?"+":"")+n:"—",src=liveML[i]?(liveML[i].provider||"LIVE"):"WK2";return '<div class="game" data-game-index="'+i+'"><div class="game-top"><div class="game-main"><b>'+g[0]+' @ '+g[1]+'</b><div style="font-size:22px;font-weight:900">'+(liveScore[i]||'—  •  —')+'</div><div class="muted">'+(liveGame[i]||('Game '+(i+1)))+'</div><div class="stadium">📍 '+stadiums[i]+'</div></div><div class="game-side">'+(r?'<div class="chip" style="font-size:14px">'+r+'</div>':'')+(!r&&o?'<div class="live-odds"><small>'+src+' ML</small><span>'+g[0]+' <b>'+fmt(o.away)+'</b></span><span>'+g[1]+' <b>'+fmt(o.home)+'</b></span></div>':'')+'</div></div><a class="main-see-picks" href="./game-picks.html?game='+i+'">SEE PICKS ›</a></div>'}).join("");
