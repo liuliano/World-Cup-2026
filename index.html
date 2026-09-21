@@ -232,7 +232,7 @@ let raw=starter; localStorage.setItem("nflw2entries",starter);
 function entries(){return raw.split(/\n+/).map(x=>x.trim()).filter(Boolean).map(line=>{let [name,p,tb]=line.split("|");return{name,picks:(p||"").split(",").map(x=>x.trim().toUpperCase()),tb:+tb||0}}).filter(x=>x.picks.length===16)}
 function render(){
  const gamesEl=document.getElementById("games");
- gamesEl.innerHTML=games.map((g,i)=>{const r=results[gameKey(i)]||"",o=liveML[i]||week2MarketML[i],fmt=n=>Number.isFinite(n)?(n>0?"+":"")+n:"—",src=liveML[i]?(liveML[i].provider||"LIVE"):"WK2";return '<div class="game game-drill" role="button" tabindex="0" data-game-index="'+i+'" aria-label="See pool picks for '+g[0]+' at '+g[1]+'"><div class="game-main"><b>'+g[0]+' @ '+g[1]+'</b><div style="font-size:22px;font-weight:900">'+(liveScore[i]||'—  •  —')+'</div><div class="muted">'+(liveGame[i]||('Game '+(i+1)))+'</div><div class="stadium">📍 '+stadiums[i]+'</div></div><div class="game-side">'+(r?'<div class="chip" style="font-size:14px">'+r+'</div>':'')+(!r&&o?'<div class="live-odds"><small>'+src+' ML</small><span>'+g[0]+' <b>'+fmt(o.away)+'</b></span><span>'+g[1]+' <b>'+fmt(o.home)+'</b></span></div>':'')+'<div class="pick-drill">TAP TO SEE PICKS ›</div></div></div>'}).join("");
+ gamesEl.innerHTML=games.map((g,i)=>{const r=results[gameKey(i)]||"",o=liveML[i]||week2MarketML[i],fmt=n=>Number.isFinite(n)?(n>0?"+":"")+n:"—",src=liveML[i]?(liveML[i].provider||"LIVE"):"WK2";return '<div class="game game-drill" role="button" tabindex="0" data-game-index="'+i+'" onclick="showGamePicks('+i+')" aria-label="See pool picks for '+g[0]+' at '+g[1]+'"><div class="game-main"><b>'+g[0]+' @ '+g[1]+'</b><div style="font-size:22px;font-weight:900">'+(liveScore[i]||'—  •  —')+'</div><div class="muted">'+(liveGame[i]||('Game '+(i+1)))+'</div><div class="stadium">📍 '+stadiums[i]+'</div></div><div class="game-side">'+(r?'<div class="chip" style="font-size:14px">'+r+'</div>':'')+(!r&&o?'<div class="live-odds"><small>'+src+' ML</small><span>'+g[0]+' <b>'+fmt(o.away)+'</b></span><span>'+g[1]+' <b>'+fmt(o.home)+'</b></span></div>':'')+'<div class="pick-drill">TAP TO SEE PICKS ›</div></div></div>'}).join("");
  const done=games.filter((g,i)=>results[gameKey(i)]).length, es=entries(), N=20000, stats={};
  es.forEach(e=>stats[e.name]={p1:0,p2:0,p3:0,any:0,money:0});
  const normal=(mu,sd)=>{let u=1-Math.random(),v=1-Math.random();return mu+sd*Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
@@ -268,16 +268,15 @@ function render(){
 }
 function openGameFromTarget(t){const card=t.closest(".game-drill");if(!card)return;const i=Number(card.dataset.gameIndex);if(Number.isInteger(i))showGamePicks(i)}
 const gamesElTap=document.getElementById("games");
-gamesElTap.addEventListener("click",e=>openGameFromTarget(e.target));
-gamesElTap.addEventListener("touchend",e=>{const card=e.target.closest(".game-drill");if(!card)return;e.preventDefault();openGameFromTarget(e.target)},{passive:false});
-gamesElTap.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.closest(".game-drill")){e.preventDefault();openGameFromTarget(e.target)}});
+gamesElTap.onclick=e=>openGameFromTarget(e.target);
+gamesElTap.onkeydown=e=>{if((e.key==="Enter"||e.key===" ")&&e.target.closest(".game-drill")){e.preventDefault();openGameFromTarget(e.target)}};
 function showGamePicks(i){
  const g=games[i],all=entries(),away=all.filter(e=>e.picks[i]===g[0]),home=all.filter(e=>e.picks[i]===g[1]),o=liveML[i]||week2MarketML[i],winner=results[gameKey(i)]||"",fmt=n=>Number.isFinite(n)?(n>0?"+":"")+n:"—",pct=n=>Math.round(n/all.length*100);
  const side=(team,list,line)=>'<div class="gp-side '+(winner?(winner===team?'gp-win':'gp-loss'):'')+'"><div class="gp-head"><b>'+team+'</b><span>'+fmt(line)+' ML</span><em>'+list.length+' picks • '+pct(list.length)+'%</em></div><div class="gp-list">'+list.map(e=>'<button type="button" onclick="showPlayer(\''+e.name.replace(/'/g,"\\'")+'\')">'+(winner?(winner===team?'✓ ':'✕ '):'')+e.name+'</button>').join("")+'</div></div>';
  const detail='<div class="gp-title"><small>LEAGUE GAME BREAKDOWN</small><h2>'+g[0]+' @ '+g[1]+'</h2><div>'+(liveScore[i]||liveGame[i]||"")+'</div><div class="gp-note">Tap any player to open their individual dashboard.</div></div><div class="gp-grid">'+side(g[0],away,o?.away)+side(g[1],home,o?.home)+'</div>';
- const box=document.getElementById("leagueGameDetail");box.innerHTML=detail;box.classList.add("open");box.scrollIntoView({behavior:"smooth",block:"start"});
+ const box=document.getElementById("leagueGameDetail");box.innerHTML=detail;box.style.display="block";box.classList.add("open");setTimeout(()=>box.scrollIntoView({behavior:"smooth",block:"nearest"}),50);
 }
-function closeLeagueGame(){const box=document.getElementById("leagueGameDetail");box.classList.remove("open");box.innerHTML=""}
+function closeLeagueGame(){const box=document.getElementById("leagueGameDetail");box.classList.remove("open");box.style.display="none";box.innerHTML=""}
 function showPlayerByIndex(i){const e=(window.displayedEntries||[])[i];if(e)showPlayer(e.name)}
 const week2MarketML=[
  {away:202,home:-244},{away:-146,home:124},{away:185,home:-222},{away:-344,home:273},
