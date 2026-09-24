@@ -343,7 +343,7 @@ localStorage.setItem("nflw3results",JSON.stringify(results));
 let liveP={},liveML={},liveGame={},liveScore={};
 let raw=starter; localStorage.setItem("nflw3entries",starter);
 function entries(){return raw.split(/\n+/).map(x=>x.trim()).filter(Boolean).map(line=>{let [name,p,tb]=line.split("|");return{name,picks:(p||"").split(",").map(x=>x.trim().toUpperCase()),tb:+tb||0}}).filter(x=>x.picks.length===16)}
-function openStandalonePicks(i){window.location.href="/World-Cup-2026/game-picks.html?game="+encodeURIComponent(i)+"&v=2"}
+function openStandalonePicks(i){window.location.href="/World-Cup-2026/game-picks.html?game="+encodeURIComponent(i)+"&v=3"}
 function render(){
  const gamesEl=document.getElementById("games");
  gamesEl.innerHTML=games.map((g,i)=>{const r=results[gameKey(i)]||"",o=liveML[i]||week2MarketML[i],fmt=n=>Number.isFinite(n)?(n>0?"+":"")+n:"—",src=liveML[i]?(liveML[i].provider||"LIVE"):"WK2";return '<div class="game" data-game-index="'+i+'"><div class="game-top"><div class="game-main"><b>'+g[0]+' @ '+g[1]+'</b><div style="font-size:22px;font-weight:900">'+(liveScore[i]||'—  •  —')+'</div><div class="muted">'+(liveGame[i]||('Game '+(i+1)))+'</div><div class="stadium">📍 '+stadiums[i]+'</div></div><div class="game-side">'+(r?'<div class="chip" style="font-size:14px">'+r+'</div>':'')+(!r&&o?'<div class="live-odds"><small>'+src+' ML</small><span>'+g[0]+' <b>'+fmt(o.away)+'</b></span><span>'+g[1]+' <b>'+fmt(o.home)+'</b></span></div>':'')+'</div></div><a class="main-see-picks" href="./game-picks.html?game='+i+'">SEE PICKS ›</a></div>'}).join("");
